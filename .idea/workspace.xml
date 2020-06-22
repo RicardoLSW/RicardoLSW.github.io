@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1df53455-2c83-4358-ada9-3ed47a9544dd" name="Default Changelist" comment="" />
+    <list default="true" id="1df53455-2c83-4358-ada9-3ed47a9544dd" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="Git.Settings">
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
         <entry key="$PROJECT_DIR$" value="dev" />
@@ -39,6 +54,7 @@
       <workItem from="1592808288016" duration="206000" />
       <workItem from="1592808613340" duration="335000" />
       <workItem from="1592809115729" duration="55000" />
+      <workItem from="1592810132528" duration="565000" />
     </task>
     <servers />
   </component>
@@ -46,6 +62,10 @@
     <option name="version" value="2" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="887" y="375" key="CommitChangelistDialog2" timestamp="1592810764684">
+      <screen x="0" y="0" width="2560" height="1600" />
+    </state>
+    <state x="887" y="375" key="CommitChangelistDialog2/0.0.2560.1600@0.0.2560.1600" timestamp="1592810764684" />
     <state x="256" y="149" key="MergeDialog" timestamp="1592808431970">
       <screen x="0" y="0" width="2560" height="1600" />
     </state>
@@ -54,9 +74,17 @@
       <screen x="0" y="0" width="2560" height="1600" />
     </state>
     <state x="921" y="568" key="MultipleFileMergeDialog/0.0.2560.1600@0.0.2560.1600" timestamp="1592808432014" />
-    <state x="880" y="540" key="Vcs.Push.Dialog.v2" timestamp="1592808656274">
+    <state x="880" y="540" key="Vcs.Push.Dialog.v2" timestamp="1592810208379">
       <screen x="0" y="0" width="2560" height="1600" />
     </state>
-    <state x="880" y="540" key="Vcs.Push.Dialog.v2/0.0.2560.1600@0.0.2560.1600" timestamp="1592808656274" />
+    <state x="880" y="540" key="Vcs.Push.Dialog.v2/0.0.2560.1600@0.0.2560.1600" timestamp="1592810208379" />
+    <state x="1082" y="721" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1592810740455">
+      <screen x="0" y="0" width="2560" height="1600" />
+    </state>
+    <state x="1082" y="721" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.2560.1600@0.0.2560.1600" timestamp="1592810740455" />
+    <state x="1048" y="520" key="git4idea.branch.GitSmartOperationDialog" timestamp="1592810756035">
+      <screen x="0" y="0" width="2560" height="1600" />
+    </state>
+    <state x="1048" y="520" key="git4idea.branch.GitSmartOperationDialog/0.0.2560.1600@0.0.2560.1600" timestamp="1592810756035" />
   </component>
 </project>
