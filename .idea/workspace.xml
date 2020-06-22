@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1df53455-2c83-4358-ada9-3ed47a9544dd" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="dev" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1dfFYLFXjGisdPaN1hSm8uVRdU6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1df53455-2c83-4358-ada9-3ed47a9544dd" name="Default Changelist" comment="" />
+      <created>1592808286148</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1592808286148</updated>
+      <workItem from="1592808288016" duration="206000" />
+      <workItem from="1592808613340" duration="335000" />
+      <workItem from="1592809115729" duration="55000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="256" y="149" key="MergeDialog" timestamp="1592808431970">
+      <screen x="0" y="0" width="2560" height="1600" />
+    </state>
+    <state x="256" y="149" key="MergeDialog/0.0.2560.1600@0.0.2560.1600" timestamp="1592808431970" />
+    <state x="921" y="568" key="MultipleFileMergeDialog" timestamp="1592808432014">
+      <screen x="0" y="0" width="2560" height="1600" />
+    </state>
+    <state x="921" y="568" key="MultipleFileMergeDialog/0.0.2560.1600@0.0.2560.1600" timestamp="1592808432014" />
+    <state x="880" y="540" key="Vcs.Push.Dialog.v2" timestamp="1592808656274">
+      <screen x="0" y="0" width="2560" height="1600" />
+    </state>
+    <state x="880" y="540" key="Vcs.Push.Dialog.v2/0.0.2560.1600@0.0.2560.1600" timestamp="1592808656274" />
+  </component>
+</project>
