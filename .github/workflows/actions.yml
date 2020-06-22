@@ -1,23 +1,22 @@
-name: Ricardo blog
-
-on:
-  push
-
 jobs:
-  jekyll:
-    runs-on: ubuntu-16.04
-    steps:
-    - uses: actions/checkout@v2
+  build-site:
+    runs-on: ubuntu-latest
+    ...
 
-    # Use GitHub Actions' cache to shorten build times and decrease load on servers
-    - uses: actions/cache@v1
+    - name: convert notebooks and word docs to posts
+      uses: RicardoLSW/blog@master
+
+    ...
+
+    - name: Jekyll build
+      uses: docker://jekyll/jekyll
       with:
-        path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-gems-
+        args: jekyll build
 
-    # Standard usage
-    - uses:  helaili/jekyll-action@2.0.3
-      env:
-        JEKYLL_PAT: ${{ secrets.ACCESS_TOKEN }}
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.event_name == 'push'
+      with:
+        deploy_key: ${{ secrets.ACCESS_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./_site
