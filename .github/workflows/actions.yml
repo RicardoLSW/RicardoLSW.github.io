@@ -3,8 +3,8 @@ jobs:
     runs-on: ubuntu-latest
     ...
 
-    - name: blog
-      uses: RicardoLSW/blog@master
+    - name: convert notebooks and word docs to posts
+        uses: fastai/fastpages@master
 
     ...
 
