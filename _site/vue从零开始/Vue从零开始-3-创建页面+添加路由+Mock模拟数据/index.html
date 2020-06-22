@@ -1,0 +1,1208 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Vue从零开始（3）：创建页面+添加路由+Mock模拟数据 - 让我留在你身边</title>
+<meta name="description" content="前言  ">
+
+
+  <meta name="author" content="Ricardo">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="让我留在你身边">
+<meta property="og:title" content="Vue从零开始（3）：创建页面+添加路由+Mock模拟数据">
+<meta property="og:url" content="http://localhost:4000/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-3-%E5%88%9B%E5%BB%BA%E9%A1%B5%E9%9D%A2+%E6%B7%BB%E5%8A%A0%E8%B7%AF%E7%94%B1+Mock%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE/">
+
+
+  <meta property="og:description" content="前言  ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2020-04-30T00:00:00+08:00">
+
+
+
+  <meta property="article:modified_time" content="2020-04-30T19:23:37+08:00">
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-3-%E5%88%9B%E5%BB%BA%E9%A1%B5%E9%9D%A2+%E6%B7%BB%E5%8A%A0%E8%B7%AF%E7%94%B1+Mock%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="让我留在你身边 Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          让我留在你身边
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">年度</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">类别</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">标签</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">关于</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Ricardo" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Ricardo</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>吾十有五，而志于学</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Vue从零开始（3）：创建页面+添加路由+Mock模拟数据">
+    <meta itemprop="description" content="前言">
+    <meta itemprop="datePublished" content="2020-04-30T00:00:00+08:00">
+    <meta itemprop="dateModified" content="2020-04-30T19:23:37+08:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Vue从零开始（3）：创建页面+添加路由+Mock模拟数据
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  6 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <h3 id="前言">前言</h3>
+
+<p>本来这篇想讲讲怎么打包项目的，但是刚好最近在做一个后台维护的前端项目，然后想想打包这部分可以往后放一放，可以先通过这个项目讲一讲怎么创建页面、添加路由然后如何使用Mock模拟数据。</p>
+
+<p>上一篇大家对于Vue CLI搭建脚手架有了一些了解，这篇介绍一款比较容易上手的企业级中后台前端/设计解决方案<a href="https://pro.loacg.com/docs/getting-started">Ant Design Pro</a>。它基于<a href="https://antdv.com/docs/vue/introduce-cn/">Ant Design Vue</a>并提供了一些常用的模板、组件，可以帮助你快速搭建企业级中后台产品原型。</p>
+
+<h3 id="创建项目">创建项目</h3>
+
+<p>创建一个名为my-project的项目：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>git clone <span class="nt">--depth</span><span class="o">=</span>1 https://github.com/sendya/ant-design-pro-vue.git my-project
+</code></pre></div></div>
+
+<h3 id="目录结构">目录结构</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>├── public
+│   └── logo.png             # LOGO
+|   └── index.html           # Vue 入口模板
+├── src
+│   ├── api                  # Api ajax 等
+│   ├── assets               # 本地静态资源
+│   ├── config               # 项目基础配置，包含路由，全局设置
+│   ├── components           # 业务通用组件
+│   ├── core                 # 项目引导, 全局配置初始化，依赖包引入等
+│   ├── router               # Vue-Router
+│   ├── store                # Vuex
+│   ├── utils                # 工具库
+│   ├── locales              # 国际化资源
+│   ├── views                # 业务页面入口和常用模板
+│   ├── App.vue              # Vue 模板入口
+│   └── main.js              # Vue 入口 JS
+│   └── permission.js        # 路由守卫(路由权限控制)
+├── tests                    # 测试工具
+├── README.md
+└── package.json
+</code></pre></div></div>
+
+<h3 id="本地开发">本地开发</h3>
+
+<ol>
+  <li>
+    <p>安装依赖：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm i
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>启动项目：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm run serve
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>浏览器访问http://localhost:8000</p>
+  </li>
+</ol>
+
+<h3 id="创建页面">创建页面</h3>
+
+<p>先上一张原型图：</p>
+
+<p><img src="https://blog.ricardolsw.com/image/jWbQ5x1OZQhcRIfdt0H8csMDbRJ3ii9k.jpg" alt="" /></p>
+
+<p><strong>功能比较简单，全凭自己想象</strong>，在<code class="language-plaintext highlighter-rouge">src/views/</code>目录下面创建install文件夹，用于存放安装部分所有页面，然后在<code class="language-plaintext highlighter-rouge">install</code>文件夹下新建一个vue文件：<code class="language-plaintext highlighter-rouge">DynamicData.vue</code>（动态数据概览页面），然后写一大坨代码：</p>
+
+<div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">template</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div&gt;</span>
+    <span class="nt">&lt;a-card</span> <span class="na">:bordered=</span><span class="s">"false"</span> <span class="na">title=</span><span class="s">"历年安装电梯总台数"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"table-page-search-wrapper"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;a-form</span> <span class="na">layout=</span><span class="s">"inline"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;a-row</span> <span class="na">:gutter=</span><span class="s">"48"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"年份"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-select</span> <span class="na">style=</span><span class="s">"width: 100%;"</span><span class="nt">&gt;</span>
+                  <span class="nt">&lt;a-select-option</span> <span class="na">value=</span><span class="s">"2019"</span><span class="nt">&gt;</span>
+                    2019
+                  <span class="nt">&lt;/a-select-option&gt;</span>
+                  <span class="nt">&lt;a-select-option</span> <span class="na">value=</span><span class="s">"2020"</span><span class="nt">&gt;</span>
+                    2020
+                  <span class="nt">&lt;/a-select-option&gt;</span>
+                <span class="nt">&lt;/a-select&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"16"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"table-page-search-submitButtons"</span> <span class="na">style=</span><span class="s">"float: right; overflow: hidden;"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-button&gt;</span>重置<span class="nt">&lt;/a-button&gt;</span>
+                <span class="nt">&lt;a-button</span> <span class="na">type=</span><span class="s">"primary"</span> <span class="na">style=</span><span class="s">"margin-left: 8px;"</span><span class="nt">&gt;</span>查询<span class="nt">&lt;/a-button&gt;</span>
+              <span class="nt">&lt;/span&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+          <span class="nt">&lt;/a-row&gt;</span>
+        <span class="nt">&lt;/a-form&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"table-operator"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;a-button</span> <span class="na">type=</span><span class="s">"primary"</span> <span class="na">icon=</span><span class="s">"plus"</span><span class="nt">&gt;</span>新建<span class="nt">&lt;/a-button&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;s-table</span>
+        <span class="na">ref=</span><span class="s">"table"</span>
+        <span class="na">size=</span><span class="s">"default"</span>
+        <span class="na">rowKey=</span><span class="s">"key"</span>
+        <span class="na">:columns=</span><span class="s">"columns"</span>
+        <span class="na">:data=</span><span class="s">"loadData"</span>
+        <span class="na">showPagination=</span><span class="s">"auto"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;span</span> <span class="na">slot=</span><span class="s">"serial"</span> <span class="na">slot-scope=</span><span class="s">"text, record, index"</span><span class="nt">&gt;</span>
+          
+        <span class="nt">&lt;/span&gt;</span>
+        <span class="nt">&lt;span</span> <span class="na">slot=</span><span class="s">"year"</span> <span class="na">slot-scope=</span><span class="s">"text"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;ellipsis</span> <span class="na">:length=</span><span class="s">"4"</span> <span class="na">tooltip</span><span class="nt">&gt;&lt;/ellipsis&gt;</span>
+        <span class="nt">&lt;/span&gt;</span>
+        <span class="nt">&lt;span</span> <span class="na">slot=</span><span class="s">"installNumber"</span> <span class="na">slot-scope=</span><span class="s">"text"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;ellipsis</span> <span class="na">:length=</span><span class="s">"4"</span> <span class="na">tooltip</span><span class="nt">&gt;&lt;/ellipsis&gt;</span>
+        <span class="nt">&lt;/span&gt;</span>
+        <span class="nt">&lt;span</span> <span class="na">slot=</span><span class="s">"action"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;template&gt;</span>
+            <span class="nt">&lt;a&gt;</span>编辑<span class="nt">&lt;/a&gt;</span>
+            <span class="nt">&lt;a-divider</span> <span class="na">type=</span><span class="s">"vertical"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;a</span> <span class="na">style=</span><span class="s">"color: #f5222d;"</span><span class="nt">&gt;</span>删除<span class="nt">&lt;/a&gt;</span>
+          <span class="nt">&lt;/</span><span class="k">template</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;/span&gt;</span>
+      <span class="nt">&lt;/s-table&gt;</span>
+    <span class="nt">&lt;/a-card&gt;</span>
+    <span class="nt">&lt;a-card</span> <span class="na">title=</span><span class="s">"今年安装台数及进度"</span> <span class="na">style=</span><span class="s">"margin-top: 24px;"</span> <span class="na">class=</span><span class="s">"card"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"table-page-search-wrapper"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;a-form</span> <span class="na">layout=</span><span class="s">"inline"</span> <span class="na">:form=</span><span class="s">"installNumbersForm"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;a-row</span> <span class="na">:gutter=</span><span class="s">"48"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"前期跟踪电梯台数"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-input</span> <span class="na">placeholder=</span><span class="s">""</span> <span class="na">v-decorator=</span><span class="s">"['previousTrack']"</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"进行中电梯台数"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-input</span> <span class="na">placeholder=</span><span class="s">""</span> <span class="na">v-decorator=</span><span class="s">"['ongo']"</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"已完成电梯台数"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-input</span> <span class="na">placeholder=</span><span class="s">""</span> <span class="na">v-decorator=</span><span class="s">"['hasBeenComplet']"</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"24"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"table-page-search-submitButtons"</span> <span class="na">style=</span><span class="s">"float: right; overflow: hidden;"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-button&gt;</span>取消<span class="nt">&lt;/a-button&gt;</span>
+                <span class="nt">&lt;a-button</span> <span class="na">type=</span><span class="s">"primary"</span> <span class="na">style=</span><span class="s">"margin-left: 8px;"</span><span class="nt">&gt;</span>确定<span class="nt">&lt;/a-button&gt;</span>
+              <span class="nt">&lt;/span&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+          <span class="nt">&lt;/a-row&gt;</span>
+        <span class="nt">&lt;/a-form&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/a-card&gt;</span>
+    <span class="nt">&lt;a-card</span> <span class="na">title=</span><span class="s">"样板工程完成台数/优质项目数量"</span> <span class="na">style=</span><span class="s">"margin-top: 24px;"</span> <span class="na">class=</span><span class="s">"card"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"table-page-search-wrapper"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;a-form</span> <span class="na">layout=</span><span class="s">"inline"</span> <span class="na">:form=</span><span class="s">"sampleProjectForm"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;a-row</span> <span class="na">:gutter=</span><span class="s">"48"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"样板工程完成台数"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-input</span> <span class="na">placeholder=</span><span class="s">""</span> <span class="na">v-decorator=</span><span class="s">"['modelProjectCompleteSets']"</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"样板工程计划完成台数"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-input</span> <span class="na">placeholder=</span><span class="s">""</span> <span class="na">v-decorator=</span><span class="s">"['planToCompleteNumbers']"</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"优质项目完成数量"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-input</span> <span class="na">placeholder=</span><span class="s">""</span> <span class="na">v-decorator=</span><span class="s">"['highQualityProjectCompletion']"</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"8"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;a-form-item</span> <span class="na">label=</span><span class="s">"优质项目计划完成数量"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-input</span> <span class="na">placeholder=</span><span class="s">""</span> <span class="na">v-decorator=</span><span class="s">"['highQualityProjectPlanToComplete']"</span> <span class="nt">/&gt;</span>
+              <span class="nt">&lt;/a-form-item&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+            <span class="nt">&lt;a-col</span> <span class="na">:md=</span><span class="s">"16"</span> <span class="na">:sm=</span><span class="s">"24"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"table-page-search-submitButtons"</span> <span class="na">style=</span><span class="s">"float: right; overflow: hidden;"</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a-button&gt;</span>取消<span class="nt">&lt;/a-button&gt;</span>
+                <span class="nt">&lt;a-button</span> <span class="na">type=</span><span class="s">"primary"</span> <span class="na">style=</span><span class="s">"margin-left: 8px;"</span><span class="nt">&gt;</span>确定<span class="nt">&lt;/a-button&gt;</span>
+              <span class="nt">&lt;/span&gt;</span>
+            <span class="nt">&lt;/a-col&gt;</span>
+          <span class="nt">&lt;/a-row&gt;</span>
+        <span class="nt">&lt;/a-form&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/a-card&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;</span><span class="k">script</span><span class="nt">&gt;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">STable</span><span class="p">,</span> <span class="nx">Ellipsis</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/components</span><span class="dl">'</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">DynamicData</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">components</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nx">STable</span><span class="p">,</span>
+    <span class="nx">Ellipsis</span>
+  <span class="p">},</span>
+  <span class="nx">data</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="c1">// 查询参数</span>
+      <span class="na">queryParam</span><span class="p">:</span> <span class="p">{},</span>
+      <span class="c1">// 表头</span>
+      <span class="na">columns</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">scopedSlots</span><span class="p">:</span> <span class="p">{</span> <span class="na">customRender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">serial</span><span class="dl">'</span> <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">年份</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">dataIndex</span><span class="p">:</span> <span class="dl">'</span><span class="s1">year</span><span class="dl">'</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">安装台数</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">dataIndex</span><span class="p">:</span> <span class="dl">'</span><span class="s1">installNumber</span><span class="dl">'</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">操作</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">dataIndex</span><span class="p">:</span> <span class="dl">'</span><span class="s1">action</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">width</span><span class="p">:</span> <span class="dl">'</span><span class="s1">150px</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">scopedSlots</span><span class="p">:</span> <span class="p">{</span> <span class="na">customRender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">action</span><span class="dl">'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="c1">// 表格数据 必须为 Promise 对象</span>
+      <span class="na">loadData</span><span class="p">:</span> <span class="p">(</span><span class="nx">parameter</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="nx">resolve</span><span class="p">({</span>
+            <span class="na">data</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="na">pageSize</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="na">pageNo</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="na">totalPage</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="na">totalCount</span><span class="p">:</span> <span class="mi">0</span>
+          <span class="p">})</span>
+        <span class="p">}).</span><span class="nx">then</span><span class="p">((</span><span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="nx">res</span>
+        <span class="p">})</span>
+      <span class="p">},</span>
+      <span class="na">installNumbersForm</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">$form</span><span class="p">.</span><span class="nx">createForm</span><span class="p">(</span><span class="k">this</span><span class="p">),</span>
+      <span class="na">sampleProjectForm</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">$form</span><span class="p">.</span><span class="nx">createForm</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+
+<span class="nt">&lt;</span><span class="k">style</span> <span class="na">lang=</span><span class="s">"less"</span> <span class="na">scoped</span><span class="nt">&gt;</span>
+.card {
+  .ant-form-item {
+    flex-direction: column;
+  }
+  /deep/ .ant-form-item-label {
+    text-align: left;
+  }
+  .table-page-search-submitButtons {
+    margin-bottom: 0px;
+    margin-top: 24px;
+  }
+}
+<span class="nt">&lt;/</span><span class="k">style</span><span class="nt">&gt;</span>
+
+</code></pre></div></div>
+
+<h3 id="添加路由">添加路由</h3>
+
+<p>页面创建完成后，我们怎么在浏览器看到我们创建的页面呢，这时候我们就需要添加一个路由把它跟这个页面绑定起来，然后通过输入路由地址或者点击左侧菜单进入到我们创建的页面。</p>
+
+<p>所有的路由和菜单都在<code class="language-plaintext highlighter-rouge">src/config/</code>目录下面的<code class="language-plaintext highlighter-rouge">router.config.js</code>文件进行统一的配置管理，它主要涉及一下三个功能（详细介绍可以看<a href="https://pro.loacg.com/docs/router-and-nav">这里</a>）：</p>
+
+<ul>
+  <li>路由管理</li>
+  <li>菜单生成</li>
+  <li>面包屑</li>
+</ul>
+
+<p>在<code class="language-plaintext highlighter-rouge">router.config.js</code>里在根路由下面新增安装部分子路由：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// eslint-disable-next-line</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">UserLayout</span><span class="p">,</span> <span class="nx">BasicLayout</span><span class="p">,</span> <span class="nx">RouteView</span><span class="p">,</span> <span class="nx">BlankLayout</span><span class="p">,</span> <span class="nx">PageView</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/layouts</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">bxAnaalyse</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/core/icons</span><span class="dl">'</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">asyncRouterMap</span> <span class="o">=</span> <span class="p">[</span>
+
+  <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">index</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">component</span><span class="p">:</span> <span class="nx">BasicLayout</span><span class="p">,</span>
+    <span class="na">meta</span><span class="p">:</span> <span class="p">{</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">首页</span><span class="dl">'</span> <span class="p">},</span>
+    <span class="na">redirect</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/install/dynamic-data</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">children</span><span class="p">:</span> <span class="p">[</span>
+      <span class="c1">// 安装部分路由</span>
+      <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">install</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Install</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">redirect</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/install/dynamic-data</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="nx">RouteView</span><span class="p">,</span>
+        <span class="c1">// 菜单配置</span>
+        <span class="na">meta</span><span class="p">:</span> <span class="p">{</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">安装部分</span><span class="dl">'</span><span class="p">,</span> <span class="na">keepAlive</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span> <span class="na">icon</span><span class="p">:</span> <span class="nx">bxAnaalyse</span> <span class="p">},</span>
+        <span class="na">children</span><span class="p">:</span> <span class="p">[</span>
+          <span class="c1">// 动态数据概览路由</span>
+          <span class="p">{</span>
+            <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">dynamic-data</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">DynamicData</span><span class="dl">'</span><span class="p">,</span>
+            <span class="c1">// 绑定页面</span>
+            <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">@/views/install/DynamicData</span><span class="dl">'</span><span class="p">),</span>
+            <span class="c1">// 菜单配置</span>
+            <span class="na">meta</span><span class="p">:</span> <span class="p">{</span> <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">动态数据概览</span><span class="dl">'</span><span class="p">,</span> <span class="na">keepAlive</span><span class="p">:</span> <span class="kc">false</span> <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">*</span><span class="dl">'</span><span class="p">,</span> <span class="na">redirect</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/404</span><span class="dl">'</span><span class="p">,</span> <span class="na">hidden</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="cm">/**
+ * 基础路由
+ * @type { *[] }
+ */</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">constantRouterMap</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/user</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">component</span><span class="p">:</span> <span class="nx">UserLayout</span><span class="p">,</span>
+    <span class="na">redirect</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/user/login</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">hidden</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">children</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">login</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">login</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="cm">/* webpackChunkName: "user" */</span> <span class="dl">'</span><span class="s1">@/views/user/Login</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">register</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">register</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="cm">/* webpackChunkName: "user" */</span> <span class="dl">'</span><span class="s1">@/views/user/Register</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">register-result</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">registerResult</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="cm">/* webpackChunkName: "user" */</span> <span class="dl">'</span><span class="s1">@/views/user/RegisterResult</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">recover</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">recover</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="kc">undefined</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+
+  <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/test</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">component</span><span class="p">:</span> <span class="nx">BlankLayout</span><span class="p">,</span>
+    <span class="na">redirect</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/test/home</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">children</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">home</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">TestHome</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">@/views/Home</span><span class="dl">'</span><span class="p">)</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">},</span>
+
+  <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/404</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="cm">/* webpackChunkName: "fail" */</span> <span class="dl">'</span><span class="s1">@/views/exception/404</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">}</span>
+
+<span class="p">]</span>
+
+</code></pre></div></div>
+
+<p>现在我们运行起来看下效果：</p>
+
+<p><img src="https://blog.ricardolsw.com/image/koGYXZZPRsJ3wtlV2Pjee4vQJPoV0cTl.jpg" alt="" /></p>
+
+<p>这时候我们已经成功的创建了一个页面，并且让它在前端展示出来了。</p>
+
+<h3 id="mock模拟数据">Mock模拟数据</h3>
+
+<p>页面写完之后，发现后端接口还没写完，导致页面没有数据展示，表格空荡荡的我看着就很不爽，这时候我们就可以使用Mock生成大量的模拟数据来填充我们的页面。</p>
+
+<p><a href="http://mockjs.com/">Mock.js</a>是一款模拟数据生成器，它可以模拟后端接口，生成随机数据，可模拟对数据的增删改查，用法也非常的简单，在已有接口文档的情况下，我们可以直接按照接口文档来开发，将相应的字段写好，在接口完成之后，只需要改变url地址即可。</p>
+
+<p>在<a href="https://pro.loacg.com/docs/getting-started">Ant Design Pro</a>中已经为我们继承好了Mock，在<code class="language-plaintext highlighter-rouge">src/mock/services/</code>目录下新建<code class="language-plaintext highlighter-rouge">install.js</code>文件，用于编写安装部分的模拟数据，写入以下一小坨的代码：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">Mock</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">mockjs2</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">builder</span><span class="p">,</span> <span class="nx">getQueryParameters</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../util</span><span class="dl">'</span>
+
+<span class="c1">// 历年安装电梯总台数表格模拟数据</span>
+<span class="kd">const</span> <span class="nx">installElevatorAlwaysSetsList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">totalCount</span> <span class="o">=</span> <span class="mi">5701</span> <span class="c1">// 表格数据总数</span>
+    <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1">// 表格数据</span>
+    <span class="kd">const</span> <span class="nx">parameters</span> <span class="o">=</span> <span class="nx">getQueryParameters</span><span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="c1">// 请求参数</span>
+    <span class="kd">const</span> <span class="nx">pageSize</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">parameters</span><span class="p">.</span><span class="nx">pageSize</span><span class="p">)</span> <span class="c1">// 每页条数</span>
+    <span class="kd">const</span> <span class="nx">pageNo</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">parameters</span><span class="p">.</span><span class="nx">pageNo</span><span class="p">)</span> <span class="c1">// 当前页码</span>
+    <span class="kd">const</span> <span class="nx">totalPage</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">ceil</span><span class="p">(</span><span class="nx">totalCount</span> <span class="o">/</span> <span class="nx">pageSize</span><span class="p">)</span> <span class="c1">// 总页数</span>
+    <span class="kd">const</span> <span class="nx">key</span> <span class="o">=</span> <span class="p">(</span><span class="nx">pageNo</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nx">pageSize</span>
+    <span class="kd">const</span> <span class="nx">next</span> <span class="o">=</span> <span class="p">(</span><span class="nx">pageNo</span> <span class="o">&gt;=</span> <span class="nx">totalPage</span> <span class="p">?</span> <span class="nx">totalCount</span> <span class="o">%</span> <span class="nx">pageSize</span> <span class="p">:</span> <span class="nx">pageSize</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">next</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">tmpKey</span> <span class="o">=</span> <span class="nx">key</span> <span class="o">+</span> <span class="nx">i</span>
+    <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">({</span>
+        <span class="na">id</span><span class="p">:</span> <span class="nx">tmpKey</span><span class="p">,</span>
+        <span class="na">key</span><span class="p">:</span> <span class="nx">tmpKey</span><span class="p">,</span>
+        <span class="na">year</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@date("yyyy")</span><span class="dl">'</span><span class="p">),</span> <span class="c1">// 年份-生成随机年份</span>
+        <span class="na">installNumber</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">)</span> <span class="c1">// 安装台数-生成1到9999之间随机数据</span>
+    <span class="p">})</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">builder</span><span class="p">({</span>
+    <span class="na">pageSize</span><span class="p">:</span> <span class="nx">pageSize</span><span class="p">,</span>
+    <span class="na">pageNo</span><span class="p">:</span> <span class="nx">pageNo</span><span class="p">,</span>
+    <span class="na">totalCount</span><span class="p">:</span> <span class="nx">totalCount</span><span class="p">,</span>
+    <span class="na">totalPage</span><span class="p">:</span> <span class="nx">totalPage</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">result</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// 今年安装台数及进度模拟数据</span>
+<span class="kd">const</span> <span class="nx">installNumbers</span> <span class="o">=</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">builder</span><span class="p">({</span>
+        <span class="na">previousTrack</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">),</span> <span class="c1">// 前期跟踪电梯台数</span>
+        <span class="na">ongo</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">),</span> <span class="c1">// 进行中电梯台数</span>
+        <span class="na">hasBeenComplet</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">)</span> <span class="c1">// 已完成电梯台数</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// 样板工程完成台数/优质项目数量模拟数据</span>
+<span class="kd">const</span> <span class="nx">sampleProject</span> <span class="o">=</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">builder</span><span class="p">({</span>
+        <span class="na">modelProjectCompleteSets</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">),</span> <span class="c1">// 样板工程完成台数</span>
+        <span class="na">planToCompleteNumbers</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">),</span> <span class="c1">// 样板工程计划完成台数</span>
+        <span class="na">highQualityProjectCompletion</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">),</span> <span class="c1">// 样板工程计划完成台数</span>
+        <span class="na">highQualityProjectPlanToComplete</span><span class="p">:</span> <span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="dl">'</span><span class="s1">@integer(1, 9999)</span><span class="dl">'</span><span class="p">)</span> <span class="c1">// 优质项目计划完成数量</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// 模拟AJAX请求</span>
+<span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="sr">/</span><span class="se">\/</span><span class="sr">installElevatorAlwaysSetsList/</span><span class="p">,</span> <span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span> <span class="nx">installElevatorAlwaysSetsList</span><span class="p">)</span>
+<span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="sr">/</span><span class="se">\/</span><span class="sr">installNumbers/</span><span class="p">,</span> <span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span> <span class="nx">installNumbers</span><span class="p">)</span>
+<span class="nx">Mock</span><span class="p">.</span><span class="nx">mock</span><span class="p">(</span><span class="sr">/</span><span class="se">\/</span><span class="sr">sampleProject/</span><span class="p">,</span> <span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span> <span class="nx">sampleProject</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>上面我分别写了三个模拟数据的方法，然后在<code class="language-plaintext highlighter-rouge">src/mock/index.js</code>导入该文件：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">isIE</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/utils/util</span><span class="dl">'</span>
+
+<span class="c1">// 判断环境不是 prod 或者 preview 是 true 时，加载 mock 服务</span>
+<span class="k">if</span> <span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">NODE_ENV</span> <span class="o">!==</span> <span class="dl">'</span><span class="s1">production</span><span class="dl">'</span> <span class="o">||</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VUE_APP_PREVIEW</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">true</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">isIE</span><span class="p">())</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">'</span><span class="s1">[antd-pro] ERROR: `mockjs` NOT SUPPORT `IE` PLEASE DO NOT USE IN `production` ENV.</span><span class="dl">'</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="c1">// 使用同步加载依赖</span>
+  <span class="c1">// 防止 vuex 中的 GetInfo 早于 mock 运行，导致无法 mock 请求返回结果</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">[antd-pro] mock mounting</span><span class="dl">'</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">Mock</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">mockjs2</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./services/auth</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./services/user</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./services/manage</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./services/other</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./services/tagCloud</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./services/article</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">./services/install</span><span class="dl">'</span><span class="p">)</span> <span class="c1">// 导入install.js</span>
+
+  <span class="nx">Mock</span><span class="p">.</span><span class="nx">setup</span><span class="p">({</span>
+    <span class="na">timeout</span><span class="p">:</span> <span class="mi">800</span> <span class="c1">// setter delay time</span>
+  <span class="p">})</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">[antd-pro] mock mounted</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<h3 id="axios调用接口">axios调用接口</h3>
+
+<p>我们可以使用<a href="http://www.axios-js.com/">axios</a>来使用我们的Mock数据，这个在<a href="https://pro.loacg.com/docs/getting-started">Ant Design Pro</a>中也已经继承好了，但常用的请求方式我们还是要自己简单的封装一下，在<code class="language-plaintext highlighter-rouge">src/api/</code>目录下新建<code class="language-plaintext highlighter-rouge">util.js</code>，用于封装常用的GET、POST、PUT和DELETE请求：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">axios</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/utils/request</span><span class="dl">'</span>
+
+<span class="c1">// post</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">postAction</span> <span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">post</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// post method= {post | put}</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">httpAction</span> <span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">,</span> <span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="nx">method</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// put</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">putAction</span> <span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">put</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// get</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">getAction</span> <span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">params</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+<span class="c1">// delete</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">deleteAction</span> <span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">axios</span><span class="p">({</span>
+    <span class="na">url</span><span class="p">:</span> <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">delete</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">params</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>然后在<code class="language-plaintext highlighter-rouge">src/api/</code>目录下新建<code class="language-plaintext highlighter-rouge">api.js</code>用于存放接口地址：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// eslint-disable-next-line</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">getAction</span><span class="p">,</span> <span class="nx">postAction</span><span class="p">,</span> <span class="nx">httpAction</span><span class="p">,</span> <span class="nx">putAction</span><span class="p">,</span> <span class="nx">deleteAction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/api/utils</span><span class="dl">'</span>
+
+<span class="kd">const</span> <span class="nx">installElevatorAlwaysSetsList</span> <span class="o">=</span> <span class="p">(</span><span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">getAction</span><span class="p">(</span><span class="dl">'</span><span class="s1">installElevatorAlwaysSetsList</span><span class="dl">'</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="c1">// 获取历年安装电梯总台数数据</span>
+<span class="kd">const</span> <span class="nx">installNumbers</span> <span class="o">=</span> <span class="p">(</span><span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">getAction</span><span class="p">(</span><span class="dl">'</span><span class="s1">installNumbers</span><span class="dl">'</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="c1">// 获取今年安装台数及进度数据</span>
+<span class="kd">const</span> <span class="nx">sampleProject</span> <span class="o">=</span> <span class="p">(</span><span class="nx">params</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">getAction</span><span class="p">(</span><span class="dl">'</span><span class="s1">sampleProject</span><span class="dl">'</span><span class="p">,</span> <span class="nx">params</span><span class="p">)</span> <span class="c1">// 获取样板工程完成台数/优质项目数量数据</span>
+
+<span class="k">export</span> <span class="p">{</span>
+    <span class="nx">installElevatorAlwaysSetsList</span><span class="p">,</span>
+    <span class="nx">installNumbers</span><span class="p">,</span>
+    <span class="nx">sampleProject</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<p>最后我们可以在<code class="language-plaintext highlighter-rouge">DynamicData.vue</code>页面调用这些接口了，在<code class="language-plaintext highlighter-rouge">DynamicData.vue</code>里的<code class="language-plaintext highlighter-rouge">script</code>标签内容做出如下更改：</p>
+
+<div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">script</span><span class="nt">&gt;</span>
+<span class="k">import</span> <span class="nx">pick</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">lodash.pick</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">STable</span><span class="p">,</span> <span class="nx">Ellipsis</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/components</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">installElevatorAlwaysSetsList</span><span class="p">,</span> <span class="nx">installNumbers</span><span class="p">,</span> <span class="nx">sampleProject</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@/api/api</span><span class="dl">'</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">DynamicData</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">components</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nx">STable</span><span class="p">,</span>
+    <span class="nx">Ellipsis</span>
+  <span class="p">},</span>
+  <span class="nx">data</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="c1">// 查询参数</span>
+      <span class="na">queryParam</span><span class="p">:</span> <span class="p">{},</span>
+      <span class="c1">// 表头</span>
+      <span class="na">columns</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">scopedSlots</span><span class="p">:</span> <span class="p">{</span> <span class="na">customRender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">serial</span><span class="dl">'</span> <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">年份</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">dataIndex</span><span class="p">:</span> <span class="dl">'</span><span class="s1">year</span><span class="dl">'</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">安装台数</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">dataIndex</span><span class="p">:</span> <span class="dl">'</span><span class="s1">installNumber</span><span class="dl">'</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+          <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">操作</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">dataIndex</span><span class="p">:</span> <span class="dl">'</span><span class="s1">action</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">width</span><span class="p">:</span> <span class="dl">'</span><span class="s1">150px</span><span class="dl">'</span><span class="p">,</span>
+          <span class="na">scopedSlots</span><span class="p">:</span> <span class="p">{</span> <span class="na">customRender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">action</span><span class="dl">'</span> <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="c1">// 表格数据 必须为 Promise 对象</span>
+      <span class="na">loadData</span><span class="p">:</span> <span class="p">(</span><span class="nx">parameter</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">installElevatorAlwaysSetsList</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nx">parameter</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">queryParam</span><span class="p">)).</span><span class="nx">then</span><span class="p">((</span><span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">result</span>
+        <span class="p">})</span>
+      <span class="p">},</span>
+      <span class="na">installNumbersForm</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">$form</span><span class="p">.</span><span class="nx">createForm</span><span class="p">(</span><span class="k">this</span><span class="p">),</span>
+      <span class="na">sampleProjectForm</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">$form</span><span class="p">.</span><span class="nx">createForm</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nx">created</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">initData</span><span class="p">()</span>
+  <span class="p">},</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nx">initData</span> <span class="p">()</span> <span class="p">{</span>
+            <span class="c1">// 获取今年安装台数及进度数据</span>
+            <span class="nx">installNumbers</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="c1">// 表单赋值</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">installNumbersForm</span><span class="p">.</span><span class="nx">setFieldsValue</span><span class="p">(</span><span class="nx">pick</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">result</span><span class="p">,</span> <span class="p">[</span><span class="dl">'</span><span class="s1">previousTrack</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">ongo</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">hasBeenComplet</span><span class="dl">'</span><span class="p">]))</span>
+            <span class="p">})</span>
+            <span class="c1">// 获取样板工程完成台数/优质项目数量数据</span>
+            <span class="nx">sampleProject</span><span class="p">().</span><span class="nx">then</span><span class="p">((</span><span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="c1">// 表单赋值</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">sampleProjectForm</span><span class="p">.</span><span class="nx">setFieldsValue</span><span class="p">(</span>
+                    <span class="nx">pick</span><span class="p">(</span><span class="nx">res</span><span class="p">.</span><span class="nx">result</span><span class="p">,</span> <span class="p">[</span>
+                        <span class="dl">'</span><span class="s1">modelProjectCompleteSets</span><span class="dl">'</span><span class="p">,</span>
+                        <span class="dl">'</span><span class="s1">planToCompleteNumbers</span><span class="dl">'</span><span class="p">,</span>
+                        <span class="dl">'</span><span class="s1">highQualityProjectCompletion</span><span class="dl">'</span><span class="p">,</span>
+                        <span class="dl">'</span><span class="s1">highQualityProjectPlanToComplete</span><span class="dl">'</span>
+                    <span class="p">])</span>
+                <span class="p">)</span>
+            <span class="p">})</span>
+        <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>最后我们再来看下页面效果：</p>
+
+<p><img src="https://blog.ricardolsw.com/image/gaYYAcLkcYdaiepZ4rINkfLa7q0K4hD9.jpg" alt="" /></p>
+
+<h3 id="写在最后">写在最后</h3>
+
+<p>到这里，从创建页面到添加路由再到模拟数据获取数据这一整个的流程我们就走完了，当然上面那个页面并没有做完，还剩一些功能没有开发：条件搜索、新增、编辑和删除，还有表单提交这个功能，这些留到后面再讲吧，咱还能多混点积分~哈哈哈</p>
+
+<p><img src="https://blog.ricardolsw.com/image/vzhzAh9V8WshxRCjSxaLP9CgS0hfES90.jpg" alt="" /></p>
+
+<p>上一篇：<a href="https://ricardolsw.github.io/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-2-%E4%BD%BF%E7%94%A8Vue-CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/">《Vue从零开始（2）：使用Vue CLI快速生成项目脚手架》</a></p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#vue" class="page__taxonomy-item" rel="tag">Vue</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B" class="page__taxonomy-item" rel="tag">Vue从零开始</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-04-30">April 30, 2020</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%883%EF%BC%89%EF%BC%9A%E5%88%9B%E5%BB%BA%E9%A1%B5%E9%9D%A2%2B%E6%B7%BB%E5%8A%A0%E8%B7%AF%E7%94%B1%2BMock%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE%20http%3A%2F%2Flocalhost%3A4000%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-3-%25E5%2588%259B%25E5%25BB%25BA%25E9%25A1%25B5%25E9%259D%25A2%2B%25E6%25B7%25BB%25E5%258A%25A0%25E8%25B7%25AF%25E7%2594%25B1%2BMock%25E6%25A8%25A1%25E6%258B%259F%25E6%2595%25B0%25E6%258D%25AE%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-3-%25E5%2588%259B%25E5%25BB%25BA%25E9%25A1%25B5%25E9%259D%25A2%2B%25E6%25B7%25BB%25E5%258A%25A0%25E8%25B7%25AF%25E7%2594%25B1%2BMock%25E6%25A8%25A1%25E6%258B%259F%25E6%2595%25B0%25E6%258D%25AE%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-3-%25E5%2588%259B%25E5%25BB%25BA%25E9%25A1%25B5%25E9%259D%25A2%2B%25E6%25B7%25BB%25E5%258A%25A0%25E8%25B7%25AF%25E7%2594%25B1%2BMock%25E6%25A8%25A1%25E6%258B%259F%25E6%2595%25B0%25E6%258D%25AE%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-2-%E4%BD%BF%E7%94%A8Vue-CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/" class="pagination--pager" title="Vue从零开始（2）：使用Vue CLI快速生成项目脚手架
+">Previous</a>
+    
+    
+      <a href="/blog/Typora%E9%85%8D%E7%BD%AE%E5%9B%BE%E5%BA%8A/" class="pagination--pager" title="Typora配置图床
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/blog/Typora%E9%85%8D%E7%BD%AE%E5%9B%BE%E5%BA%8A/" rel="permalink">Typora配置图床
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">待更新。。。
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-2-%E4%BD%BF%E7%94%A8Vue-CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/" rel="permalink">Vue从零开始（2）：使用Vue CLI快速生成项目脚手架
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-1-%E5%89%8D%E7%AB%AF%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="permalink">Vue从零开始（1）：前端环境搭建
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/blog/Vue%E4%BD%BF%E7%94%A8ESlint+Prettier%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81/" rel="permalink">Vue使用ESLint+Prettier格式化代码
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i> Instagram</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 让我留在你身边. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+    <canvas id="cas" width="1680" height="567" style="position: fixed; z-index: -1;"></canvas>
+    <script src="/assets/js/canvas.js" type="text/javascript"></script>
+  </body>
+</html>
