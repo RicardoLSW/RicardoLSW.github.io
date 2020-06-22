@@ -3,7 +3,7 @@ jobs:
     runs-on: ubuntu-latest
     ...
 
-    - name: convert notebooks and word docs to posts
+    - name: blog
       uses: RicardoLSW/blog@master
 
     ...
