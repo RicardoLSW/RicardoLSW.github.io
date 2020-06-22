@@ -3,7 +3,7 @@ classes: wide
 title: "Vue使用ESLint+Prettier格式化代码"
 last_modified_at: 2020-04-17 22:21:00
 categories:
-  - Blog
+  - 前端
 tags:
   - JavaScript
 ---

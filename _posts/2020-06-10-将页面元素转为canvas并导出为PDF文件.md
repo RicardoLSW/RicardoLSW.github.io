@@ -3,10 +3,9 @@ classes: wide
 title: "将页面元素转为canvas并导出为PDF文件"
 last_modified_at: 2020-06-10 19:34:44
 categories:
-  - Blog
+  - 前端
 tags:
   - Vue
-  - 前端
   - JavaScript
 ---
 
