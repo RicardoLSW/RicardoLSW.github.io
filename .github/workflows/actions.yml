@@ -1,12 +1,9 @@
 jobs:
   build-site:
     runs-on: ubuntu-latest
-    ...
 
     - name: convert notebooks and word docs to posts
       uses: fastai/fastpages@master
-
-    ...
 
     - name: Jekyll build
       uses: docker://jekyll/jekyll
