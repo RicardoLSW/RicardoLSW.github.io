@@ -1,0 +1,889 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Vue从零开始（2）：使用Vue CLI快速生成项目脚手架 - 让我留在你身边</title>
+<meta name="description" content="前言  ">
+
+
+  <meta name="author" content="Ricardo">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="让我留在你身边">
+<meta property="og:title" content="Vue从零开始（2）：使用Vue CLI快速生成项目脚手架">
+<meta property="og:url" content="http://localhost:4000/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-2-%E4%BD%BF%E7%94%A8Vue-CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/">
+
+
+  <meta property="og:description" content="前言  ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2020-04-28T00:00:00+08:00">
+
+
+
+  <meta property="article:modified_time" content="2020-04-29T06:12:40+08:00">
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-2-%E4%BD%BF%E7%94%A8Vue-CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "http://localhost:4000/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="让我留在你身边 Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          让我留在你身边
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">年度</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">类别</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">标签</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">关于</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Ricardo" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Ricardo</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>吾十有五，而志于学</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Vue从零开始（2）：使用Vue CLI快速生成项目脚手架">
+    <meta itemprop="description" content="前言">
+    <meta itemprop="datePublished" content="2020-04-28T00:00:00+08:00">
+    <meta itemprop="dateModified" content="2020-04-29T06:12:40+08:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Vue从零开始（2）：使用Vue CLI快速生成项目脚手架
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <h3 id="前言">前言</h3>
+
+<p><a href="https://ricardolsw.github.io/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-1-%E5%89%8D%E7%AB%AF%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">上一篇</a>讲到如何搭建前端环境，这一篇我们开始使用<a href="https://cli.vuejs.org/zh/">Vue CLI</a>来快速生成一个Vue的项目脚手架。</p>
+
+<p>目前Vue CLI有两个版本，新版本Vue CLI3对应@vue/cli，老版本Vue CLI2对应<a href="https://github.com/vuejs/vue-cli/tree/v2#vue-cli--">vue-cli</a>。这里分别介绍这两个版本如何创建一个项目。</p>
+
+<p>首先全局安装这两个的其中一个（看过我第一篇已经安装过的可以忽略掉）：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cnpm <span class="nb">install</span> <span class="nt">-g</span> @vue/cli
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cnpm <span class="nb">install</span> <span class="nt">-g</span> vue-cli
+</code></pre></div></div>
+
+<p><strong>注意</strong>：在同一个环境安装Vue CLI3和Vue CLI2的话，因为他们都是用相同的<code class="language-plaintext highlighter-rouge">vue</code>命令，Vue CLI2会被覆盖掉，这时候想要使用Vue CLI2的<code class="language-plaintext highlighter-rouge">vue init</code>来搭建项目的话，需要全局安装一个桥接工具：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cnpm <span class="nb">install</span> <span class="nt">-g</span> @vue/cli-init
+</code></pre></div></div>
+
+<h3 id="使用vue-cli3创建一个项目">使用Vue CLI3创建一个项目</h3>
+
+<ol>
+  <li>
+    <p>运行以下命令创建一个项目：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vue create vue-demo
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>选择<code class="language-plaintext highlighter-rouge">Manually select features</code>进行手动配置：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/2jwtmDhX2Ub3ehPqhi1QVqNwkHpiecjc.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>依次勾选Babel (语法编译器)、Router (Vue路由)、Vuex (Vue全局状态管理)、CSS Pre-processors (CSS预处理)、Linter/Formatter (代码检查/格式化)</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/Whxu0hih1WP0FmMjrIS3GZ9fId1j1cpA.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>询问是否使用history模式的路由，它的区别是使用history模式的话url不会带有#，这里我们选择y</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/cn1G9unkVLOKLRoAkfgQTPdq8GbiRXJ0.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>选择一种CSS的类型，这里我们使用sass，选择第一个<code class="language-plaintext highlighter-rouge">Sass/SCSS (with dart-sass)</code></p>
+
+    <p><img src="https://blog.ricardolsw.com/image/xtghHpwxyRJ2blMOZTZ2U0ad02i1AXce.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>选择一种代码检查/格式化工具，在<a href="http://pluto.definesys.com/web/home/paperBee/articleDetail?articleId=ba063a599092d418">这一篇文章</a>我有讲到使用ESLint+Prettier来格式化代码，这里我们选择<code class="language-plaintext highlighter-rouge">ESLint + Prettier</code></p>
+
+    <p><img src="https://blog.ricardolsw.com/image/GtKoRKrhOSY1Ct1CGsln5TehlSiqsezj.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>这一步选择<code class="language-plaintext highlighter-rouge">Lint on save</code>：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/cRjIJWk9HgwTAu86oDYjM1kMAccI3lnm.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>询问Babel、ESLint等配置文件存放位置，可以选择生成单独的配置文件，也可以选择在在package.json里生成配置，这里我们选择第一个单独的配置文件</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/uhWPTKV0eC7wlpefK3Hu0A1x4OBMDQHh.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>询问是否保存这些配置，保存配置可以在下次创建项目的时候直接使用已保存的配置快速生成一个Vue项目，选择y，输入预设的名字保存该预设。</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/9ma3KicXpLjojBpyrTnbAbMvA1Wh1i7j.jpg" alt="" /></p>
+
+    <p><img src="https://blog.ricardolsw.com/image/h4TWSuAZ9WWxhs3jnlSMdc2ZJgqohshS.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>询问使用yarn还是npm包管理工具，这里我们选择npm</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/uiEkKuFCiAYpOu24xEAGIDoawRExCYg0.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>等待依赖安装完成：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/ztymbS1UykFJsyM7xwthNu9eJA1wW1MJ.jpg" alt="" /></p>
+
+    <p>当出现以下内容表示安装完成：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/QT7olQecJMThrTzBYxY2mqCMMyMFhDxB.jpg" alt="" /></p>
+  </li>
+</ol>
+
+<p>到这里，一个使用Vue CLI3创建的Vue项目就搭建好了，我们使用VSCode打开来看一下目录结构：</p>
+
+<blockquote>
+  <p>另外Vue CLI3也可以使用图形化界面来搭建项目，使用<code class="language-plaintext highlighter-rouge">vue ui</code>命令启动GUI页面，然后在浏览器地址栏输入<code class="language-plaintext highlighter-rouge">http://localhost:8000</code>就能打开了，搭建过程与上面讲解的一样，可以自己了解一下。</p>
+
+  <p>使用VSCode开发Vue项目需要安装Vetur插件</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>|-- vue-demo
+    |-- .browserslistrc            // 浏览器兼容配置文件
+    |-- .eslintrc.js               // ESLint配置文件
+    |-- .gitignore
+    |-- README.md
+    |-- babel.config.js            // babel配置文件
+    |-- node_modules               // 依赖包文件夹，存放着开发依赖和运行依赖
+    |-- package-lock.json
+    |-- package.json               // 项目描述文件
+    |-- public                     
+    |   |-- favicon.ico            // 网页图标
+    |   |-- index.html             // 入口页面
+    |-- src                        // 源码目录，所以开发的页面都在这里面
+        |-- App.vue                // 根组件
+        |-- main.js                // 程序入口文件
+        |-- assets                 // 资源目录
+        |   |-- logo.png           
+        |-- components             // vue公共组件目录
+        |   |-- HelloWorld.vue     // 这是一个HelloWorld组件
+        |-- router                 // vue前端路由文件目录
+        |   |-- index.js           
+        |-- store                  // vue全局状态管理文件目录
+        |   |-- index.js           
+        |-- views                  // vue视图文件目录
+            |-- About.vue          // About页面
+            |-- Home.vue           // Home页面
+</code></pre></div></div>
+
+<h3 id="使用vue-cli2创建一个项目">使用Vue CLI2创建一个项目</h3>
+
+<ol>
+  <li>
+    <p>运行以下命令开始创建一个项目：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vue init webpack vue2-demo
+</code></pre></div>    </div>
+
+    <p><img src="https://blog.ricardolsw.com/image/qU3VMGBiQqFTDxT03TlTDYKZelCYuZTz.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>配置项目名称，可以使用第一步的vue2-demo，我们直接回车跳过：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/j0uWgaZT6cSEguXmnjDqYZHmr6eeAzUz.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>项目描述，默认就行，后期可在package.json里自行更改：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/jZt8PpxytRJTs8XqFUZphChJuNSqOKhy.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>作者信息，同上：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/ns0PaXbDahYjYxe4J9WTGqDhr8wZ8lJX.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>构建模式我们选择第一个，具体区别可参考<a href="https://cn.vuejs.org/v2/guide/installation.html#%E8%BF%90%E8%A1%8C%E6%97%B6-%E7%BC%96%E8%AF%91%E5%99%A8-vs-%E5%8F%AA%E5%8C%85%E5%90%AB%E8%BF%90%E8%A1%8C%E6%97%B6">官方文档</a>：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/zT4R1JcmmuGOc08zefRBBb4mk57NtB0p.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>选择y使用Vue路由：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/2gYBf1q4pXThJBPZwbLh1YZxRFlsJ5aF.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>ESLint我们也勾上：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/WGs3Gb8LuTVqdvMgbF8aq5YIgj4rNsG5.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>选择ESLint预设，前两种是预设好的风格，后面有提供地址，可以去了解一下，第三个是自定义风格，这里我们默认第一个：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/le6WnRbXQeBbfB4Z065qzXzvBe64zUVe.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>单元测试：n（后期需要，可以手动添加）</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/7ss4s5ISZhhRKyo6eRpHA9gcxbJ9vnlo.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>e2e测试同上：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/zxqGUyMF5waHrEOvRQ9xcscwB0O2OKyK.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>默认使用npm包管理工具：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/dM96UxQkOrjxhCMkb1Pjj4lGS25jtuhK.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>等待依赖下载完成，以下是完整配置：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/4U4WHbVjhi9ChWmItCleeLf6RaWhntbG.jpg" alt="" /></p>
+  </li>
+  <li>
+    <p>当出现<code class="language-plaintext highlighter-rouge">Project initialization finished!</code>的时候表示这个项目就初始化好了：</p>
+
+    <p><img src="https://blog.ricardolsw.com/image/wfqhMX2VoAPhyQpM5gSX6OpWvoST1cE0.jpg" alt="" /></p>
+  </li>
+</ol>
+
+<p>同样，我们用VSCode打开来看一下目录结构：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>|-- vue2-demo
+    |-- .babelrc                   // 浏览器兼容配置文件
+    |-- .editorconfig
+    |-- .eslintignore              // ESLint忽略文件
+    |-- .eslintrc.js               // ESLint配置文件
+    |-- .gitignore
+    |-- .postcssrc.js              // 配置给CSS样式添加浏览器前缀
+    |-- README.md
+    |-- index.html                 // 入口页面
+    |-- node_modules               // 依赖包文件夹，存放着开发依赖和运行依赖
+    |-- package-lock.json
+    |-- package.json               // 项目描述文件
+    |-- build                      // webpack相关配置文件目录
+    |   |-- build.js               // 生产环境构建
+    |   |-- check-versions.js      // 版本检查
+    |   |-- logo.png
+    |   |-- utils.js               // 构建相关工具
+    |   |-- vue-loader.conf.js     // CSS加载器配置
+    |   |-- webpack.base.conf.js   // webpack基础配置
+    |   |-- webpack.dev.conf.js    // webpack开发环境配置
+    |   |-- webpack.prod.conf.js   // webpack生产环境配置
+    |-- config                     // vue配置文件目录
+    |   |-- dev.env.js             // 项目开发环境配置
+    |   |-- index.js               // 项目主要配置
+    |   |-- prod.env.js            // 项目生产环境配置
+    |-- src                        // 源码目录，所以开发的页面都在这里面
+    |   |-- App.vue                // 根组件
+    |   |-- main.js                // 程序入口文件
+    |   |-- assets                 // 资源目录
+    |   |   |-- logo.png
+    |   |-- components             // vue公共组件目录
+    |   |   |-- HelloWorld.vue
+    |   |-- router                 // vue前端路由文件目录
+    |       |-- index.js
+    |-- static                     // 静态资源目录
+        |-- .gitkeep
+</code></pre></div></div>
+
+<h3 id="运行项目">运行项目</h3>
+
+<p>当我们使用Vue CLI3或者2搭建好一个项目后，我们怎么让着个项目运行起来呢？在项目根目录中，有一个package.json文件，它是一个前端项目的描述文件，它包含着许多元信息，比如项目名称(name)、项目版本(version)、项目描述(description)、启动脚本(scipts)以及依赖包配置(其中dependencies是运行依赖，devDependencies是开发依赖)等等。</p>
+
+<p>我们要运行项目的话，只需要关注scripts属性里面的内容即可：</p>
+
+<ul>
+  <li>
+    <p>vue-demo的package.json里的scripts：</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"serve"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vue-cli-service serve"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vue-cli-service build"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vue-cli-service lint"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>在项目根目录下使用命令运行项目：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm run serve
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Vue2-demo的package.json里的scripts：</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"webpack-dev-server --inline --progress --config build/webpack.dev.conf.js"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"npm run dev"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint --ext .js,.vue src"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node build/build.js"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+
+    <p>在项目根目录下使用命令运行项目：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm run start
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<p>可以看出，使用Vue CLI3和2创建的项目启动脚本还是有所区别的，但它们都是基于webpack进行打包构建的。</p>
+
+<p>项目启动成功后，在浏览器地址栏输入：http://localhost:8080 （根据运行后命令行提示的地址打开浏览器，一般默认是http://localhost:8080）就可以查看你的前端页面了。</p>
+
+<h3 id="运行他人的项目">运行他人的项目</h3>
+
+<p>一般我们从git上或者从别人那里拿到一个Vue项目，在运行之前，我们需要在根目录使用命令来安装该项目所需要的所有依赖包。</p>
+
+<ol>
+  <li>
+    <p>使用以下一种命令安装项目依赖：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm i
+<span class="c">#或者</span>
+<span class="nv">$ </span>cnpm i
+<span class="c"># i为install的缩写，也可以使用 npm install / cnpm install</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装完成后，项目根目录会有一个node_modules文件夹，这个文件夹用于存放项目所需的开发依赖以及运行依赖。然后根据package.json里的scripts属性内容来运行项目，一般为<code class="language-plaintext highlighter-rouge">npm run start</code>或<code class="language-plaintext highlighter-rouge">npm run serve</code>。</p>
+  </li>
+</ol>
+
+<h3 id="写在最后">写在最后</h3>
+
+<p>看到这里，我想大家对Vue项目的搭建到运行都有了一个简单的了解，可以拿到一个项目文件，就能自己动手让它跑起来。下一篇将介绍如何打包一个Vue项目以及多环境打包配置。</p>
+
+<p>我慢慢的写，你们慢慢的看~</p>
+
+<p>上一篇：<a href="http://pluto.definesys.com/web/home/paperBee/articleDetail?articleId=97d5049d60ff3088">《Vue从零开始（1）：前端环境搭建》</a></p>
+
+<p>下一篇：<a href="https://ricardolsw.github.io/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-3-%E5%88%9B%E5%BB%BA%E9%A1%B5%E9%9D%A2+%E6%B7%BB%E5%8A%A0%E8%B7%AF%E7%94%B1+Mock%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE/">《Vue从零开始（3）：创建页面+添加路由+Mock模拟数据》</a></p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#vue" class="page__taxonomy-item" rel="tag">Vue</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B" class="page__taxonomy-item" rel="tag">Vue从零开始</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-04-28">April 28, 2020</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%882%EF%BC%89%EF%BC%9A%E4%BD%BF%E7%94%A8Vue+CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6%20http%3A%2F%2Flocalhost%3A4000%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-2-%25E4%25BD%25BF%25E7%2594%25A8Vue-CLI%25E5%25BF%25AB%25E9%2580%259F%25E7%2594%259F%25E6%2588%2590%25E9%25A1%25B9%25E7%259B%25AE%25E8%2584%259A%25E6%2589%258B%25E6%259E%25B6%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-2-%25E4%25BD%25BF%25E7%2594%25A8Vue-CLI%25E5%25BF%25AB%25E9%2580%259F%25E7%2594%259F%25E6%2588%2590%25E9%25A1%25B9%25E7%259B%25AE%25E8%2584%259A%25E6%2589%258B%25E6%259E%25B6%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http%3A%2F%2Flocalhost%3A4000%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-2-%25E4%25BD%25BF%25E7%2594%25A8Vue-CLI%25E5%25BF%25AB%25E9%2580%259F%25E7%2594%259F%25E6%2588%2590%25E9%25A1%25B9%25E7%259B%25AE%25E8%2584%259A%25E6%2589%258B%25E6%259E%25B6%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-1-%E5%89%8D%E7%AB%AF%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="pagination--pager" title="Vue从零开始（1）：前端环境搭建
+">Previous</a>
+    
+    
+      <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-3-%E5%88%9B%E5%BB%BA%E9%A1%B5%E9%9D%A2+%E6%B7%BB%E5%8A%A0%E8%B7%AF%E7%94%B1+Mock%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE/" class="pagination--pager" title="Vue从零开始（3）：创建页面+添加路由+Mock模拟数据
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/blog/Typora%E9%85%8D%E7%BD%AE%E5%9B%BE%E5%BA%8A/" rel="permalink">Typora配置图床
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">待更新。。。
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-3-%E5%88%9B%E5%BB%BA%E9%A1%B5%E9%9D%A2+%E6%B7%BB%E5%8A%A0%E8%B7%AF%E7%94%B1+Mock%E6%A8%A1%E6%8B%9F%E6%95%B0%E6%8D%AE/" rel="permalink">Vue从零开始（3）：创建页面+添加路由+Mock模拟数据
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  4 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-1-%E5%89%8D%E7%AB%AF%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" rel="permalink">Vue从零开始（1）：前端环境搭建
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/blog/Vue%E4%BD%BF%E7%94%A8ESlint+Prettier%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81/" rel="permalink">Vue使用ESLint+Prettier格式化代码
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i> Instagram</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2020 让我留在你身边. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+    <canvas id="cas" width="1680" height="567" style="position: fixed; z-index: -1;"></canvas>
+    <script src="/assets/js/canvas.js" type="text/javascript"></script>
+  </body>
+</html>
