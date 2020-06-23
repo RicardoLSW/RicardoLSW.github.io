@@ -46,6 +46,10 @@ GitHub还有另一个非常有用的功能，那就是Gist。
 
 > 它就像Markdown代码块一样，看起来非常的舒服
 
+刚刚说了，它不止于代码块，它支持非常多的文件格式，它还可以写Markdown文档，像这位老哥，把接口文档给扔上面了~
+
+![image-20200623144045994](https://blog.ricardolsw.com/image/og5S8XZXtAsZBZOQ8Xe9buVBhT3VAwUC.jpg)
+
 ### Cacher工具
 
 我觉得这样在web页上一个一个添加管理gist太麻烦了，然后我就发现一款工具，对于管理gist非常方便，[Cacher](https://www.cacher.io/)是一款管理和快速创建gist的工具，使用起来也很方便，可以使用GitHub账号登录，所有创建的gist都会同步到GitHub Gist上面，也可以给gist添加标签分类什么的便于查找。
