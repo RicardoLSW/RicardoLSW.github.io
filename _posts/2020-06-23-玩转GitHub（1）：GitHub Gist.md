@@ -26,11 +26,11 @@ GitHub还有另一个非常有用的功能，那就是Gist。
 
 你甚至不需要有GitHub账号就能使用它，用浏览器直接打开[gist.github.com](https://gist.github.com)，也可以在GitHub下面选择New gist来创建一个gist：
 
-![image-20200623131804508](https://figure-b.ricardolsw.com/image/DJ7SW8hhoSiOv1kZrDNtgqq63WpQ0k5q.jpg)
+![image-20200623131804508](https://figure-b.ricardolsw.com/image/DJ7SW8hhoSiOv1kZrDNtgqq63WpQ0k5q.jpg?x-oss-process=style/watermark)
 
 然后在窗口中输入你想说的，点击创建，一个gist就创建好了：
 
-![image-20200623131923747](https://figure-b.ricardolsw.com/image/hqGYJZgUEJrfdAxejQiLH6tOWc1XBNsc.jpg)
+![image-20200623131923747](https://figure-b.ricardolsw.com/image/hqGYJZgUEJrfdAxejQiLH6tOWc1XBNsc.jpg?x-oss-process=style/watermark)
 
 > 你也可以创建一个私有gist
 
@@ -38,33 +38,33 @@ GitHub还有另一个非常有用的功能，那就是Gist。
 
 我们创建好一个gist之后，我们选择Embed，可以拿到一个`script`标签，它可以嵌入到任意网页中，即可在相应的网页中嵌入来自`Gist`的数据，并保持语法高亮等功能。例如，我们新建一个html把这个script标签粘贴过去就会看到下面这样的效果：
 
-![image-20200623133304254](https://figure-b.ricardolsw.com/image/v9C4RxeMAz96sEaMcG6jh3lGfyFmOexg.jpg)
+![image-20200623133304254](https://figure-b.ricardolsw.com/image/v9C4RxeMAz96sEaMcG6jh3lGfyFmOexg.jpg?x-oss-process=style/watermark)
 
-![image-20200623133109851](https://figure-b.ricardolsw.com/image/h84Eklw7ueEMV88WzDSWvO8cjhfMKoCo.jpg)
+![image-20200623133109851](https://figure-b.ricardolsw.com/image/h84Eklw7ueEMV88WzDSWvO8cjhfMKoCo.jpg?x-oss-process=style/watermark)
 
-![image-20200623133128531](https://figure-b.ricardolsw.com/image/VbzhzELEjITS7Nlha2n57oZlIfXwVEUm.jpg)
+![image-20200623133128531](https://figure-b.ricardolsw.com/image/VbzhzELEjITS7Nlha2n57oZlIfXwVEUm.jpg?x-oss-process=style/watermark)
 
 > 它就像Markdown代码块一样，看起来非常的舒服
 
 刚刚说了，它不止于代码块，它支持非常多的文件格式，它还可以写Markdown文档，像这位老哥，把接口文档给扔上面了~
 
-![image-20200623144045994](https://figure-b.ricardolsw.com/image/xEwdpWkVudaZCUuvz0kERDNTXAo0JkZK.jpg)
+![image-20200623144045994](https://figure-b.ricardolsw.com/image/xEwdpWkVudaZCUuvz0kERDNTXAo0JkZK.jpg?x-oss-process=style/watermark)
 
 ### Cacher工具
 
 我觉得这样在web页上一个一个添加管理gist太麻烦了，然后我就发现一款工具，对于管理gist非常方便，[Cacher](https://www.cacher.io/)是一款管理和快速创建gist的工具，使用起来也很方便，可以使用GitHub账号登录，所有创建的gist都会同步到GitHub Gist上面，也可以给gist添加标签分类什么的便于查找。
 
-![ ](https://figure-b.ricardolsw.com/image/Fk2yw6VfilWnU04ZsqCoaATehCUq5zNt.jpg)
+![ ](https://figure-b.ricardolsw.com/image/Fk2yw6VfilWnU04ZsqCoaATehCUq5zNt.jpg?x-oss-process=style/watermark)
 
 Cacher还可以运行你的代码片段，如下图：
 
 1. 开启web服务，运行代码
 
-   ![image-20200623134958682](https://figure-b.ricardolsw.com/image/Gh3SZavCH41MxfPX7jN5m7eEpVf4fUdC.jpg)
+   ![image-20200623134958682](https://figure-b.ricardolsw.com/image/Gh3SZavCH41MxfPX7jN5m7eEpVf4fUdC.jpg?x-oss-process=style/watermark)
 
 2. 然后它就跑起来了呀
 
-   ![image-20200623135127706](https://figure-b.ricardolsw.com/image/dICWKN6eSrgFxvkD8GYpGEhqn57RjtV0.jpg)
+   ![image-20200623135127706](https://figure-b.ricardolsw.com/image/dICWKN6eSrgFxvkD8GYpGEhqn57RjtV0.jpg?x-oss-process=style/watermark)
 
 ### 奇怪的知识又增加了-Cacher插件
 
@@ -72,8 +72,8 @@ Cacher还可以运行你的代码片段，如下图：
 
 Cacher在Idea和VSCode等IDE都有同款插件，以webstorm为例，在插件中心下载安装好Cacher插件之后，登陆上自己的账号，就看到下面这样的工具栏：
 
-![image-20200623140141546](https://figure-b.ricardolsw.com/image/GSLcp9mc8M1KLNTCuRoDiv7gT35Qr2eV.jpg)
+![image-20200623140141546](https://figure-b.ricardolsw.com/image/GSLcp9mc8M1KLNTCuRoDiv7gT35Qr2eV.jpg?x-oss-process=style/watermark)
 
 这玩意能干嘛用呢？就比如说吧，我要封装一些axios的常用的请求，手写嫌麻烦，从别的项目复制粘贴我也嫌麻烦，我们可以直接使用之前存下来的代码片段，我们可以通过下面的Cacher工具栏，双击`Axios封装（2）`标题，它的代码就可以快速插入到我们的项目代码中。以后碰到优秀的、常用的代码片段，我们都可以存起来，方便使用～
 
-![真香](https://figure-b.ricardolsw.com/image/iNY1BfEfOCuhkgFXW1LT3YBZcnWTeipU.jpg)
+![真香](https://figure-b.ricardolsw.com/image/iNY1BfEfOCuhkgFXW1LT3YBZcnWTeipU.jpg?x-oss-process=style/watermark)
