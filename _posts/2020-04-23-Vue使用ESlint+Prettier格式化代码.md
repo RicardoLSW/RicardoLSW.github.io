@@ -94,13 +94,13 @@ $ npm install @vue/cli-plugin-eslint @vue/eslint-config-prettier eslint-plugin-p
    - ESLint
    - Prettier
 
-   ![](https://blog.ricardolsw.com/image/23SANtWn82XsNvTrkGTLSZNEPFecSvT3.jpg)
+   ![](https://figure-b.ricardolsw.com/image/23SANtWn82XsNvTrkGTLSZNEPFecSvT3.jpg)
 
-   ![](https://blog.ricardolsw.com/image/CU88wfXV1TDU4CQiVPCXU22v8D7q6nB3.jpg)
+   ![](https://figure-b.ricardolsw.com/image/CU88wfXV1TDU4CQiVPCXU22v8D7q6nB3.jpg)
 
 2. 下载安装好之后，按alt+shift+F格式化代码，顶部会弹出一个窗口让你为Vue文件选择默认的格式化程序，这里我们选择Prettier - Code formatter，使用Prettier来格式化代码：
 
-   ![](https://blog.ricardolsw.com/image/1sTPSqaFAkFRMdhcukSRdrWK35gM1D6h.jpg)
+   ![](https://figure-b.ricardolsw.com/image/1sTPSqaFAkFRMdhcukSRdrWK35gM1D6h.jpg)
 
 3. 修改VSCode的settings.json文件，让VSCode能够在保存的时候自动格式化代码：
 
@@ -114,21 +114,21 @@ $ npm install @vue/cli-plugin-eslint @vue/eslint-config-prettier eslint-plugin-p
 
 1. 在设置→插件里面下载Prettier：
 
-   ![](https://blog.ricardolsw.com/image/xq6xCHwEYIqq79wIWp1pIfn8aWaAnghf.jpg)
+   ![](https://figure-b.ricardolsw.com/image/xq6xCHwEYIqq79wIWp1pIfn8aWaAnghf.jpg)
 
 2. 然后还是在设置里面
 
    - Languages & Frameworks → JavaScript → Prettier，Prettier package选择项目中的Prettier：
 
-     ![](https://blog.ricardolsw.com/image/bsFOF4Rbqy1E93sVCrLIfGMuDllS9Uef.jpg)
+     ![](https://figure-b.ricardolsw.com/image/bsFOF4Rbqy1E93sVCrLIfGMuDllS9Uef.jpg)
 
    - Tools→File Watchers里面点击左下角加号选择Prettier：
 
-     ![](https://blog.ricardolsw.com/image/M9FKAxnZL6WvrCgog5wcstOVZR4gDFVn.jpg)
+     ![](https://figure-b.ricardolsw.com/image/M9FKAxnZL6WvrCgog5wcstOVZR4gDFVn.jpg)
 
    - File Type选择Any，其他默认即可：
 
-     ![](https://blog.ricardolsw.com/image/KFNEeUd0SXFB9oY8J1ewiqbGxL6z0Wph.jpg)
+     ![](https://figure-b.ricardolsw.com/image/KFNEeUd0SXFB9oY8J1ewiqbGxL6z0Wph.jpg)
 
    - 最后点击Apply，OK
 

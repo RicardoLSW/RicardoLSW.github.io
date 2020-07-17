@@ -15,7 +15,7 @@ tags:
 
 ### 原型图
 
-![image-20200611075929124](https://blog.ricardolsw.com/image/7dSzPNKpl16QTz6xxv4NDoS2qYxmPnsj.jpg)
+![image-20200611075929124](https://figure-b.ricardolsw.com/image/7dSzPNKpl16QTz6xxv4NDoS2qYxmPnsj.jpg)
 
 ### 代码实现
 
@@ -138,7 +138,7 @@ tags:
 
    看下效果：
 
-   ![image-20200611075817185](https://blog.ricardolsw.com/image/c8BB3xcFb7KMtOc2WiUGbPRo0ye6Uoww.jpg)
+   ![image-20200611075817185](https://figure-b.ricardolsw.com/image/c8BB3xcFb7KMtOc2WiUGbPRo0ye6Uoww.jpg)
 
 2. 接下来需要把收据这部分导出为PDF文件，这里用到了两个插件，分别是html2canvas和jspdf，其中html2canvas可以把html元素转换成canvas，jspdf可以把图片文件转换成PDF文件，而刚好canvas可以生成图片文件，并且把html转成canvas还可以做到防篡改，无法通过审查元素修改其收据内容，还能给上头加些水印啥的~
 
@@ -258,7 +258,7 @@ tags:
 
    这是点击打印按钮后导出来的PDF效果
 
-   ![image-20200611075848765](https://blog.ricardolsw.com/image/62UzEDmbUAE3FGucf08TxSTLN4EwR87f.jpg)
+   ![image-20200611075848765](https://figure-b.ricardolsw.com/image/62UzEDmbUAE3FGucf08TxSTLN4EwR87f.jpg)
 
 ### 写在最后
 
