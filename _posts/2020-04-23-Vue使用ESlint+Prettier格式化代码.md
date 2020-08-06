@@ -135,3 +135,4 @@ $ npm install @vue/cli-plugin-eslint @vue/eslint-config-prettier eslint-plugin-p
 ### 写在最后
 
 有了prettier我们保存后就能自动格式化代码，也不用为了项目代码不统一和同事争论得面红耳赤，因为我们统一使用prettier的风格。可能刚开始有些地方你看不惯，不过不要紧，想想这么做都是为了团队和睦，世界和平，我们做出的牺牲都是必要的。而且prettier的样式风格已经在很多大型开源项目中被采用，比如vue、react、webpack、babel。
+
