@@ -1,0 +1,719 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>记一次前端项目优化实战 - 让我留在你身边</title>
+<meta name="description" content="前言  ">
+
+
+  <meta name="author" content="Ricardo">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="让我留在你身边">
+<meta property="og:title" content="记一次前端项目优化实战">
+<meta property="og:url" content="/%E5%89%8D%E7%AB%AF/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/">
+
+
+  <meta property="og:description" content="前言  ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2020-08-06T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2020-08-06T23:26:59+00:00">
+
+
+
+
+<link rel="canonical" href="/%E5%89%8D%E7%AB%AF/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="让我留在你身边 Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          让我留在你身边
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">年度</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">类别</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">标签</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">关于</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Ricardo" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Ricardo</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>吾十有五，而志于学</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="记一次前端项目优化实战">
+    <meta itemprop="description" content="前言">
+    <meta itemprop="datePublished" content="2020-08-06T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2020-08-06T23:26:59+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">记一次前端项目优化实战
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <h2 id="前言">前言</h2>
+
+<p>前几天接到某项目的一个前端问题，一个移动端的H5页面，用手机4G网打开加载要十几秒，长达十几秒的白屏让用户接受不了。第二天就跑去现场看了下问题，然后给这个项目做了一些优化，晚上回来就想着把这事给记下来整理成文档，希望能给大家在前端项目优化上有所帮助。</p>
+
+<h2 id="问题收集">问题收集</h2>
+
+<p>在拿到代码还有去现场之前，就拿到了以下几个问题：</p>
+
+<ul>
+  <li>所有手机都会出现这个问题，我这边的三星，苹果还有客户的华为折叠屏都有这种情况。</li>
+  <li>安卓和ios在清理缓存重新打开应用后会出现这个问题。</li>
+  <li>这边的情况是在用4G网的情况下，清理手机缓存后有很大的几率会出现这个问题，这个问题是显示空白页面，无法显示内容，跟群里的截图一样。在用WiFi的情况下，清理手机缓存，然后再进应用第一次加载比较慢，但是能进去，跟前面的进不去问题不一样。</li>
+</ul>
+
+<h2 id="问题分析">问题分析</h2>
+
+<p>拿到这几个问题之后我首先想到这几个点：</p>
+
+<ul>
+  <li>接口慢</li>
+  <li>网络慢</li>
+  <li>静态资源、js体积大导致加载慢</li>
+</ul>
+
+<p>后来拿到url地址之后，我用微信开发者工具看了一下，这个微信开发者工具那来看移动端页面还是蛮方便的。我的电脑用的是WiFi（我这WiFi网速只有450k/s左右），发现加载确实有点慢，用了4s多。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807000002229.png" alt="image-20200807000002229" /></p>
+
+<p>然后我把网络切到Fast 3G，页面加载完花费了11s。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807000151218.png" alt="image-20200807000151218" /></p>
+
+<p>从图中可以看到，一个js文件达到了1.6M，WiFi下加载了4s多，问了下他们那边服务器有用到Gzip压缩，也就是说这个js原本比我们现在看到的还要大，然后找他们拿到了部署在服务器上的前端包，我发现这个js有4.8M。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807001417531.png" alt="image-20200807001417531" /></p>
+
+<p>看到这只能去拿代码分析了，我怀疑可能是引入了不必要的依赖导致的。</p>
+
+<h2 id="webpack插件webpack-bundle-analyzer">webpack插件：webpack-bundle-analyzer</h2>
+
+<p>分析代码之前，先讲一下这个东西，webpack-bundle-analyzer是一款webpack的可视化资源分析工具。它能够帮助我们真正的了解到包里的内容，并且能展示出各个模块在包里所占用的空间大小，最终能够帮助我们优化它。</p>
+
+<h3 id="安装依赖">安装依赖</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># npm</span>
+<span class="nv">$ </span>npm <span class="nb">install</span> <span class="nt">--save-dev</span> webpack-bundle-analyzer
+<span class="c"># yarn</span>
+<span class="nv">$ </span>yarn add <span class="nt">-D</span> webpack-bundle-analyzer
+</code></pre></div></div>
+
+<h3 id="作为插件使用">作为插件使用</h3>
+
+<p>在webpack.config.js中：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">BundleAnalyzerPlugin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">'</span><span class="s1">webpack-bundle-analyzer</span><span class="dl">'</span><span class="p">).</span><span class="nx">BundleAnalyzerPlugin</span><span class="p">;</span>
+ 
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span>
+    <span class="k">new</span> <span class="nx">BundleAnalyzerPlugin</span><span class="p">()</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>在package.json的scripts里加入下面这条命令，就可以npm run build之后看到webpack-bundle-analyzer的效果：</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"analyz"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NODE_ENV=production npm_config_report=true npm run build"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>运行npm run build后弹出的页面（官方效果图）：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/bVLS7n.gif" alt="93f72404-b338-11e6-92d4-9a365550a701.gif" /></p>
+
+<p>我们可以通过使用webpack-bundle-analyzer可以看到项目各模块的大小，可以按需优化。</p>
+
+<h2 id="分析代码">分析代码</h2>
+
+<p>接下来我们看代码，这是用Chameleon框架开发的页面，刚好cml框架已经集成了webpack-bundle-analyzer功能，可以直接使用。</p>
+
+<p>在<code class="language-plaintext highlighter-rouge">chameleon.config.js</code>里web属性下面的dev和build里都加上<code class="language-plaintext highlighter-rouge">analysis: true</code>来开启资源分析工具：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">web</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nl">dev</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">analysis</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="nx">build</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">analysis</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">publicPath</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./</span><span class="dl">'</span><span class="p">,</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807221741430.png" alt="image-20200807221741430" /></p>
+
+<p>这样在本地运行还有打包的时候都可以进行资源分析。</p>
+
+<p>运行<code class="language-plaintext highlighter-rouge">cml web dev</code>启动项目，启动成功后会跟上面讲的一样弹出这样一个页面：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807223020644.png" alt="image-20200807223020644" /></p>
+
+<p>当我看到@antv和ant-design-vue这两个依赖时我就感到非常困惑，这是一个移动端项目，我想怎么着也不会用到ant-design-vue和@antv这两个依赖吧，因为我还看到有用到vant这个移动端UI组件库，在项目中全局搜索了下这两个依赖，发现在app.cml这个文件中有import这两个依赖。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807225308228.png" alt="image-20200807225308228" /></p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807225331352.png" alt="image-20200807225331352" /></p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807225352186.png" alt="image-20200807225352186" /></p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807225432399.png" alt="image-20200807225432399" /></p>
+
+<p>然而在这些地方引入之后，我在项目其他页面并没有发现有用到这两个依赖的任何内容，也就是说这俩依赖并没有被使用到，但是却在构建的时候被扔进了包里，然后这俩依赖就无缘无故的占用了一般的包大小。</p>
+
+<p>在我注释掉这些没用的引用之后再次运行，通过分析页面可以看出这两个依赖就不存在了：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807230619704.png" alt="image-20200807230619704" /></p>
+
+<p>顺藤摸瓜，根据package.json的依赖列表进行逐一排查，依次去掉所有不必要的依赖引入。突然心血来潮，我用编辑器察看了下打包好的js文件，发现了一些被转成base64的图片，然后看了下Chameleon的文档，发现在引入静态资源目录里的图片时在url后面加上了?_inline会被转成base64。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807232352886.png" alt="image-20200807232352886" /></p>
+
+<p>由于时间原因，就只做了这两方面的优化，最终打出来的包体积也非常可观，只有800k左右：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807232741729.png" alt="image-20200807232741729" /></p>
+
+<p>再部署到服务器上使用Gzip压缩后页面加载速度还是很不错的：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20200807232938491.png" alt="image-20200807232938491" /></p>
+
+<h2 id="写在最后">写在最后</h2>
+
+<p>这次优化并没有完全做完，还有很多的点，例如vant组件在代码里是被全部引入的，可以改为按需引入，在代码里还有大量被import却没有使用的包，虽然最终不会压缩进js里，但还是建议去掉这些不必要的import。还有路由懒加载、图片压缩、删除未使用的CSS等等</p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#webpack" class="page__taxonomy-item" rel="tag">Webpack</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#%E5%89%8D%E7%AB%AF" class="page__taxonomy-item" rel="tag">前端</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-08-06">August 6, 2020</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%89%8D%E7%AB%AF%E9%A1%B9%E7%9B%AE%E4%BC%98%E5%8C%96%E5%AE%9E%E6%88%98%20%2F%25E5%2589%258D%25E7%25AB%25AF%2F%25E8%25AE%25B0%25E4%25B8%2580%25E6%25AC%25A1%25E5%2589%258D%25E7%25AB%25AF%25E9%25A1%25B9%25E7%259B%25AE%25E4%25BC%2598%25E5%258C%2596%25E5%25AE%259E%25E6%2588%2598%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2F%25E5%2589%258D%25E7%25AB%25AF%2F%25E8%25AE%25B0%25E4%25B8%2580%25E6%25AC%25A1%25E5%2589%258D%25E7%25AB%25AF%25E9%25A1%25B9%25E7%259B%25AE%25E4%25BC%2598%25E5%258C%2596%25E5%25AE%259E%25E6%2588%2598%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2F%25E5%2589%258D%25E7%25AB%25AF%2F%25E8%25AE%25B0%25E4%25B8%2580%25E6%25AC%25A1%25E5%2589%258D%25E7%25AB%25AF%25E9%25A1%25B9%25E7%259B%25AE%25E4%25BC%2598%25E5%258C%2596%25E5%25AE%259E%25E6%2588%2598%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/blog/Flutter-WebSocket%E5%B0%81%E8%A3%85-%E5%AE%9E%E7%8E%B0%E5%BF%83%E8%B7%B3-%E9%87%8D%E8%BF%9E%E6%9C%BA%E5%88%B6/" class="pagination--pager" title="Flutter：WebSocket封装-实现心跳、重连机制
+">Previous</a>
+    
+    
+      <a href="/%E5%B7%A5%E5%85%B7/%E4%BD%BF%E7%94%A8Charles%E6%8A%93%E5%8C%85%E5%B7%A5%E5%85%B7/" class="pagination--pager" title="Mac下使用Charles抓包工具
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E6%97%85%E6%B8%B8/%E9%87%8D%E5%BA%86/" rel="permalink">清明假期重庆游
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+
+
+
+
+
+
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/gitflow%E6%B5%81%E7%A8%8B%E7%A4%BA%E4%BE%8B/" rel="permalink">gitflow流程示例
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">分支管理
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/%E7%95%AA%E5%A4%96%E7%AF%87-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-GitHub-Actions/" rel="permalink">番外篇：自动部署（GitHub Actions）
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/vue/Vue3%E5%89%8D%E4%BC%A0-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%E6%97%B6%E5%BF%85%E9%A1%BB%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/" rel="permalink">Vue3前传：创建工程时必须要做的事
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  12 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i> Instagram</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 让我留在你身边. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+    <canvas id="cas" width="1680" height="567" style="position: fixed; z-index: -1;"></canvas>
+    <script src="/assets/js/canvas.js" type="text/javascript"></script>
+  </body>
+</html>

@@ -1,0 +1,862 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>微信小程序将页面保存成图片 - 让我留在你身边</title>
+<meta name="description" content="   前言：这玩意是真的坑   ">
+
+
+  <meta name="author" content="Ricardo">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="让我留在你身边">
+<meta property="og:title" content="微信小程序将页面保存成图片">
+<meta property="og:url" content="/%E5%89%8D%E7%AB%AF/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B0%86%E9%A1%B5%E9%9D%A2%E4%BF%9D%E5%AD%98%E6%88%90%E5%9B%BE%E7%89%87/">
+
+
+  <meta property="og:description" content="   前言：这玩意是真的坑   ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-03-15T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2021-03-15T09:55:37+00:00">
+
+
+
+
+<link rel="canonical" href="/%E5%89%8D%E7%AB%AF/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B0%86%E9%A1%B5%E9%9D%A2%E4%BF%9D%E5%AD%98%E6%88%90%E5%9B%BE%E7%89%87/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="让我留在你身边 Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          让我留在你身边
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">年度</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">类别</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">标签</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">关于</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Ricardo" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Ricardo</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>吾十有五，而志于学</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="微信小程序将页面保存成图片">
+    <meta itemprop="description" content="  前言：这玩意是真的坑">
+    <meta itemprop="datePublished" content="2021-03-15T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2021-03-15T09:55:37+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">微信小程序将页面保存成图片
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  2 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <blockquote>
+  <p>前言：这玩意是真的坑</p>
+</blockquote>
+
+<h2 id="开发环境">开发环境</h2>
+
+<p><a href="https://cml.js.org/docs/">chameleon框架</a></p>
+
+<h2 id="原型图">原型图</h2>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210315093335719.png" alt="image-20210315093335719" /></p>
+
+<h2 id="代码实现各种踩坑">代码实现（各种踩坑）</h2>
+
+<p>页面具体怎么画的这里就不多说了，具体讲保存图片这个功能，一看到这个功能就觉得似曾相识，我以前好像做过，立马想到了html2cavas这个插件，开开心心的把这玩意下载下来。这玩意怎么用我在<a href="https://ricardolsw.github.io/%E5%89%8D%E7%AB%AF/%E5%B0%86%E9%A1%B5%E9%9D%A2%E5%85%83%E7%B4%A0%E8%BD%AC%E4%B8%BAcanvas%E5%B9%B6%E5%AF%BC%E5%87%BA%E4%B8%BAPDF%E6%96%87%E4%BB%B6/">《<strong>将页面元素转为canvas并导出为PDF文件</strong>》</a>里面有讲到过，它需要传入一个原生DOM元素，它会把这个DOM绘制成canvas并且返回出来。</p>
+
+<h3 id="这个时候第一个坑来了">这个时候第一个坑来了</h3>
+
+<p>当使用<code class="language-plaintext highlighter-rouge">document.querySelector</code>的时候，直接报错了。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210315123628498.png" alt="image-20210315123628498" /></p>
+
+<p>翻阅文档发现，小程序不支持上面那种方式获取DOM，需要使用小程序提供的api来获取。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210315132433020.png" alt="image-20210315132433020" /></p>
+
+<p>但是使用该api获取到的并不是原生DOM，翻阅了很多资料也没找到解决方案，因此我就放弃了使用html2canvas这个插件。</p>
+
+<h3 id="使用chameleon多态协议调用wxcreatecanvascontext">使用chameleon多态协议调用wx.createCanvasContext</h3>
+
+<p>我只能老老实实的手动去把这个页面用canvas画出来，微信小程序提供了画布的相关api，但是呢，chameleon框架并不能直接访问这些api，它需要使用一个被称作<a href="https://cml.js.org/docs/poly.html">多态协议</a>的一个东西。</p>
+
+<p>在<code class="language-plaintext highlighter-rouge">src/component/html2image/</code>下新建<strong>index.interface</strong></p>
+
+<div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"interface"</span><span class="nt">&gt;</span>
+    <span class="kr">interface</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">code</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">desc</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">img</span><span class="p">:</span> <span class="nx">string</span><span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+<span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"wx"</span><span class="nt">&gt;</span>
+    <span class="kd">class</span> <span class="nx">Method</span> <span class="kr">implements</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="cm">/**
+           * 
+           * @param title 标题
+           * @param code 合同号
+           * @param desc 描述
+           * @param img 二维码
+           */</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">createCanvasContext</span><span class="p">(</span><span class="dl">'</span><span class="s1">qrcode</span><span class="dl">'</span><span class="p">);</span>
+          	<span class="c1">// 设置字体</span>
+            <span class="nx">ctx</span><span class="p">.</span><span class="nx">setFontSize</span><span class="p">(</span><span class="mi">36</span><span class="p">)</span>
+          	<span class="c1">// 设置填充色</span>
+            <span class="nx">ctx</span><span class="p">.</span><span class="nx">setFillStyle</span><span class="p">(</span><span class="dl">'</span><span class="s1">#F9F9F8</span><span class="dl">'</span><span class="p">)</span>
+          	<span class="c1">// 绘制矩形</span>
+            <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillRect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">700</span><span class="p">)</span>
+            <span class="nx">ctx</span><span class="p">.</span><span class="nx">setFillStyle</span><span class="p">(</span><span class="dl">'</span><span class="s1">#000</span><span class="dl">'</span><span class="p">)</span>
+          	<span class="c1">// 设置文字对齐方式</span>
+            <span class="nx">ctx</span><span class="p">.</span><span class="nx">setTextAlign</span><span class="p">(</span><span class="dl">'</span><span class="s1">center</span><span class="dl">'</span><span class="p">)</span>
+          	<span class="c1">// 绘制文字</span>
+            <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillText</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="nx">ctx</span><span class="p">.</span><span class="nx">fillText</span><span class="p">(</span><span class="nx">code</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+          	<span class="c1">// 绘制图片 这里的img是base64字符串</span>
+          	<span class="nx">ctx</span><span class="p">.</span><span class="nx">drawImage</span><span class="p">(</span><span class="nx">img</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
+          	<span class="nx">ctx</span><span class="p">.</span><span class="nx">fillText</span><span class="p">(</span><span class="nx">desc</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">580</span><span class="p">)</span>
+          	<span class="c1">// 开始绘制</span>
+          	<span class="nx">ctx</span><span class="p">.</span><span class="nx">draw</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">export</span> <span class="k">default</span> <span class="k">new</span> <span class="nx">Method</span><span class="p">();</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>在<code class="language-plaintext highlighter-rouge">src/pages/demo.cml</code>页面放入一个canvas标签</p>
+
+<div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">template</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;button</span> <span class="na">btn-style=</span><span class="s">"background-color:#118EE9"</span> <span class="na">style=</span><span class="s">"margin: 0 auto"</span> <span class="na">type=</span><span class="s">"blue"</span> <span class="na">size=</span><span class="s">"big"</span> <span class="na">text=</span><span class="s">"保存图片"</span> <span class="na">c-bind:onclick=</span><span class="s">"saveImage"</span><span class="nt">&gt;&lt;/button&gt;</span>
+	<span class="nt">&lt;canvas</span> <span class="na">style=</span><span class="s">"width: 500px; height: 700px;"</span> <span class="na">canvas-id=</span><span class="s">"qrcode"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/</span><span class="k">template</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>在保存图片按钮中调用多态协议中的方法，因为canvas只是用来转图片的，所以并不需要把它显示在页面上，页面上还是展示我用view画的样式，所以把它隐藏掉即可。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">html2ImageUtil</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../../../components/QuerySelector/index.interface</span><span class="dl">'</span>
+
+<span class="nx">saveImage</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">html2ImageUtil</span><span class="p">.</span><span class="nx">saveImage</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">title</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">code</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">description</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">imageSrc</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="将canvas转为图片并保存">将canvas转为图片并保存</h3>
+
+<p>将canvas转为图片需要用到<code class="language-plaintext highlighter-rouge">wx.canvasToTempFilePath</code>这个api，还是在<code class="language-plaintext highlighter-rouge">index.interface</code>里进行改动。canvas的draw方法里提供一个回调函数，可以在这里面进行转图片</p>
+
+<div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"interface"</span><span class="nt">&gt;</span>
+    <span class="kr">interface</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">code</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">desc</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">img</span><span class="p">:</span> <span class="nx">string</span><span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+<span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"wx"</span><span class="nt">&gt;</span>
+    <span class="kd">class</span> <span class="nx">Method</span> <span class="kr">implements</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="cm">/**
+           * 
+           * @param title 标题
+           * @param code 合同号
+           * @param desc 描述
+           * @param img 二维码
+           */</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//此处省略绘制过程</span>
+          	<span class="c1">// 开始绘制</span>
+          	<span class="nx">ctx</span><span class="p">.</span><span class="nx">draw</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+              <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="nx">wx</span><span class="p">.</span><span class="nx">canvasToTempFilePath</span><span class="p">({</span>
+                  <span class="na">width</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                  <span class="na">height</span><span class="p">:</span> <span class="mi">700</span><span class="p">,</span>
+                  <span class="na">destWidth</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                  <span class="na">destHeight</span><span class="p">:</span> <span class="mi">700</span><span class="p">,</span>
+                  <span class="na">canvasId</span><span class="p">:</span> <span class="dl">'</span><span class="s1">qrcode</span><span class="dl">'</span><span class="p">,</span>
+                  <span class="nx">success</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">// 绘制成功会返回一个res.tempFilePath，就是生成的图片路径，等下需要用到这个</span>
+                  <span class="p">})</span>
+            <span class="p">})</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">export</span> <span class="k">default</span> <span class="k">new</span> <span class="nx">Method</span><span class="p">();</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>转成图片并且拿到图片路径之后，我们就可以把图片保存至相册了。要想保存至相册需要用户同意微信小程序访问相册的权限。</p>
+
+<div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"interface"</span><span class="nt">&gt;</span>
+    <span class="kr">interface</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">code</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">desc</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">img</span><span class="p">:</span> <span class="nx">string</span><span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+<span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"wx"</span><span class="nt">&gt;</span>
+    <span class="kd">class</span> <span class="nx">Method</span> <span class="kr">implements</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="cm">/**
+           * 
+           * @param title 标题
+           * @param code 合同号
+           * @param desc 描述
+           * @param img 二维码
+           */</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//此处省略绘制过程</span>
+          	<span class="c1">// 开始绘制</span>
+          	<span class="nx">ctx</span><span class="p">.</span><span class="nx">draw</span><span class="p">(</span><span class="kc">false</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+              <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="nx">wx</span><span class="p">.</span><span class="nx">canvasToTempFilePath</span><span class="p">({</span>
+                  <span class="na">width</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                  <span class="na">height</span><span class="p">:</span> <span class="mi">700</span><span class="p">,</span>
+                  <span class="na">destWidth</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+                  <span class="na">destHeight</span><span class="p">:</span> <span class="mi">700</span><span class="p">,</span>
+                  <span class="na">canvasId</span><span class="p">:</span> <span class="dl">'</span><span class="s1">qrcode</span><span class="dl">'</span><span class="p">,</span>
+                  <span class="nx">success</span><span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="c1">// 绘制成功会返回一个res.tempFilePath，就是生成的图片路径，等下需要用到这个</span>
+                    <span class="kd">const</span> <span class="p">{</span> <span class="nx">tempFilePath</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">res</span>
+                    <span class="nx">wx</span><span class="p">.</span><span class="nx">getSetting</span><span class="p">({</span>
+                      <span class="nx">success</span><span class="p">(</span><span class="nx">res2</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="c1">// 判断用户是否授权微信小程序访问相册</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">res2</span><span class="p">.</span><span class="nx">authSetting</span><span class="p">[</span><span class="dl">'</span><span class="s1">scope.writePhotosAlbum</span><span class="dl">'</span><span class="p">])</span> <span class="p">{</span>
+                          <span class="c1">// 没有则发起授权弹窗</span>
+                          <span class="nx">wx</span><span class="p">.</span><span class="nx">authorize</span><span class="p">({</span>
+                            <span class="na">scope</span><span class="p">:</span> <span class="dl">"</span><span class="s2">scope.writePhotosAlbum</span><span class="dl">"</span><span class="p">,</span>
+                            <span class="nx">success</span> <span class="p">()</span> <span class="p">{</span>
+                              <span class="c1">// 授权后将图片保存至相册</span>
+                              <span class="nx">wx</span><span class="p">.</span><span class="nx">saveImageToPhotosAlbum</span><span class="p">({</span>
+                                <span class="na">filePath</span><span class="p">:</span> <span class="nx">tempFilePath</span><span class="p">,</span>
+                                <span class="nx">success</span><span class="p">()</span> <span class="p">{</span>
+                                  <span class="c1">// 保存成功</span>
+                                <span class="p">}</span>
+                              <span class="p">})</span>
+                            <span class="p">}</span>
+                          <span class="p">})</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                          <span class="c1">// 授权后将图片保存至相册</span>
+                          <span class="nx">wx</span><span class="p">.</span><span class="nx">saveImageToPhotosAlbum</span><span class="p">({</span>
+                            <span class="na">filePath</span><span class="p">:</span> <span class="nx">tempFilePath</span><span class="p">,</span>
+                            <span class="nx">success</span><span class="p">()</span> <span class="p">{</span>
+                              <span class="c1">// 保存成功</span>
+                            <span class="p">}</span>
+                          <span class="p">})</span>
+                        <span class="p">}</span>
+                      <span class="p">}</span>
+                    <span class="p">})</span>
+                  <span class="p">})</span>
+            <span class="p">})</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">export</span> <span class="k">default</span> <span class="k">new</span> <span class="nx">Method</span><span class="p">();</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<h3 id="第二个坑来咯">第二个坑来咯</h3>
+
+<p>到这里似乎蛮顺利的，试一下，我的mac可以弹出保存窗口了。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210315141215308.png" alt="image-20210315141215308" style="zoom:50%;" /></p>
+
+<p>而且保存下来的图片也挺正常的。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210315141251304.png" alt="image-20210315141251304" style="zoom:50%;" /></p>
+
+<p>可以开开心心的进行真机调试了，当我打开手机，进入页面，保存图片，一切非常顺利，然后当我打开相册我人傻了。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210315141457517.png" alt="image-20210315141457517" style="zoom:50%;" /></p>
+
+<p>？？？就邪门，二维码咋没了。难道是我姿势不对？然后我又单手倒立试了一次，依然是没有二维码，看来跟我姿势没关系。作为一名自身的百度工程师，最后还是被我查到了原因。</p>
+
+<p>base64直接在canvas上绘制，在真机上是显示不出来的。。。。。。</p>
+
+<p>这种情况解决办法有两种：</p>
+
+<ol>
+  <li>让后端直接返回图片url，使用<code class="language-plaintext highlighter-rouge">wx.getImageInfo</code>将图片的网络地址缓存到本地，它会返回一个本地地址，然后使用这个地址把图片绘制到canvas上面。</li>
+  <li>依然使用base64，手动把base64转成图片并存到本地，在拿这个本地地址去绘制到canvas上面。</li>
+</ol>
+
+<p>这里我用的第二种，因为我懒得去麻烦后端了。要在<code class="language-plaintext highlighter-rouge">ctx.drawImage(img, 125, 250, 250, 250)</code>之前，处理下这个img。</p>
+
+<div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"interface"</span><span class="nt">&gt;</span>
+    <span class="kr">interface</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">code</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">desc</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span> <span class="nx">img</span><span class="p">:</span> <span class="nx">string</span><span class="p">):</span> <span class="k">void</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+<span class="nt">&lt;</span><span class="k">script</span> <span class="na">cml-type=</span><span class="s">"wx"</span><span class="nt">&gt;</span>
+    <span class="kd">class</span> <span class="nx">Method</span> <span class="kr">implements</span> <span class="nx">html2ImageInterface</span> <span class="p">{</span>
+        <span class="cm">/**
+           * 
+           * @param title 标题
+           * @param code 合同号
+           * @param desc 描述
+           * @param img 二维码
+           */</span>
+        <span class="nx">saveImage</span><span class="p">(</span><span class="nx">title</span><span class="p">,</span> <span class="nx">code</span><span class="p">,</span> <span class="nx">desc</span><span class="p">,</span> <span class="nx">img</span><span class="p">)</span> <span class="p">{</span>
+          	<span class="c1">// 此处省略绘制图片之外的过程</span>
+          
+          	<span class="c1">// 文件管理对象</span>
+          	<span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">getFileSystemManager</span><span class="p">();</span>
+          	<span class="c1">// 分别获取图片后缀和图片base64内容</span>
+            <span class="kd">const</span> <span class="p">[,</span> <span class="nx">format</span><span class="p">,</span> <span class="nx">bodyData</span><span class="p">]</span> <span class="o">=</span> <span class="sr">/data:image</span><span class="se">\/(\w</span><span class="sr">+</span><span class="se">)</span><span class="sr">;base64,</span><span class="se">(</span><span class="sr">.*</span><span class="se">)</span><span class="sr">/</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">img</span><span class="p">)</span> <span class="o">||</span> <span class="p">[];</span>
+            <span class="kd">const</span> <span class="nx">times</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
+          	<span class="c1">// 自定义本地图片路径 时间戳+图片后缀</span>
+            <span class="kd">const</span> <span class="nx">imgSrc</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">USER_DATA_PATH</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">times</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">.</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">format</span><span class="p">;</span>
+          	<span class="c1">// 将Base64字符串转成ArrayBuffer对象</span>
+            <span class="kd">const</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">wx</span><span class="p">.</span><span class="nx">base64ToArrayBuffer</span><span class="p">(</span><span class="nx">bodyData</span><span class="p">);</span>
+          	<span class="c1">// 保存文件</span>
+          	<span class="nx">fs</span><span class="p">.</span><span class="nx">writeFile</span><span class="p">({</span>
+                <span class="na">filePath</span><span class="p">:</span> <span class="nx">imgSrc</span><span class="p">,</span>
+                <span class="na">data</span><span class="p">:</span> <span class="nx">buffer</span><span class="p">,</span>
+                <span class="na">encoding</span><span class="p">:</span> <span class="dl">'</span><span class="s1">binary</span><span class="dl">'</span><span class="p">,</span>
+                <span class="nx">success</span><span class="p">()</span> <span class="p">{</span>
+                  <span class="c1">// 绘制图片 这里不再使用base64，直接传入上面生成的imgSrc</span>
+          				<span class="nx">ctx</span><span class="p">.</span><span class="nx">drawImage</span><span class="p">(</span><span class="nx">imgSrc</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>
+                  
+                  <span class="c1">// 此处省略将canvas转为图片并保存过程</span>
+                <span class="p">})</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">export</span> <span class="k">default</span> <span class="k">new</span> <span class="nx">Method</span><span class="p">();</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+
+<p>再次真机调试，一切ok。</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210315143549265.png" alt="image-20210315143549265" style="zoom:50%;" /></p>
+
+<h2 id="总结">总结</h2>
+
+<p>微信开发者工具真垃圾！！！</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F" class="page__taxonomy-item" rel="tag">微信小程序</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#%E5%89%8D%E7%AB%AF" class="page__taxonomy-item" rel="tag">前端</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-03-15">March 15, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B0%86%E9%A1%B5%E9%9D%A2%E4%BF%9D%E5%AD%98%E6%88%90%E5%9B%BE%E7%89%87%20%2F%25E5%2589%258D%25E7%25AB%25AF%2F%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E5%25B0%2586%25E9%25A1%25B5%25E9%259D%25A2%25E4%25BF%259D%25E5%25AD%2598%25E6%2588%2590%25E5%259B%25BE%25E7%2589%2587%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2F%25E5%2589%258D%25E7%25AB%25AF%2F%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E5%25B0%2586%25E9%25A1%25B5%25E9%259D%25A2%25E4%25BF%259D%25E5%25AD%2598%25E6%2588%2590%25E5%259B%25BE%25E7%2589%2587%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2F%25E5%2589%258D%25E7%25AB%25AF%2F%25E5%25BE%25AE%25E4%25BF%25A1%25E5%25B0%258F%25E7%25A8%258B%25E5%25BA%258F%25E5%25B0%2586%25E9%25A1%25B5%25E9%259D%25A2%25E4%25BF%259D%25E5%25AD%2598%25E6%2588%2590%25E5%259B%25BE%25E7%2589%2587%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/%E5%B7%A5%E5%85%B7/%E4%BD%BF%E7%94%A8Charles%E6%8A%93%E5%8C%85%E5%B7%A5%E5%85%B7/" class="pagination--pager" title="Mac下使用Charles抓包工具
+">Previous</a>
+    
+    
+      <a href="/%E6%9C%8D%E5%8A%A1%E5%99%A8/Nginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" class="pagination--pager" title="Nginx负载均衡
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E6%97%85%E6%B8%B8/%E9%87%8D%E5%BA%86/" rel="permalink">清明假期重庆游
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+
+
+
+
+
+
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/gitflow%E6%B5%81%E7%A8%8B%E7%A4%BA%E4%BE%8B/" rel="permalink">gitflow流程示例
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">分支管理
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/%E7%95%AA%E5%A4%96%E7%AF%87-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-GitHub-Actions/" rel="permalink">番外篇：自动部署（GitHub Actions）
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/vue/Vue3%E5%89%8D%E4%BC%A0-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%E6%97%B6%E5%BF%85%E9%A1%BB%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/" rel="permalink">Vue3前传：创建工程时必须要做的事
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  12 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i> Instagram</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 让我留在你身边. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+    <canvas id="cas" width="1680" height="567" style="position: fixed; z-index: -1;"></canvas>
+    <script src="/assets/js/canvas.js" type="text/javascript"></script>
+  </body>
+</html>

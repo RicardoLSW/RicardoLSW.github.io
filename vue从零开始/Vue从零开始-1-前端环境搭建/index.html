@@ -1,0 +1,724 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Vue从零开始（1）：前端环境搭建 - 让我留在你身边</title>
+<meta name="description" content="前言  ">
+
+
+  <meta name="author" content="Ricardo">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="让我留在你身边">
+<meta property="og:title" content="Vue从零开始（1）：前端环境搭建">
+<meta property="og:url" content="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-1-%E5%89%8D%E7%AB%AF%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+
+
+  <meta property="og:description" content="前言  ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2020-04-28T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2020-04-28T15:11:25+00:00">
+
+
+
+
+<link rel="canonical" href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-1-%E5%89%8D%E7%AB%AF%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="让我留在你身边 Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          让我留在你身边
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">年度</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">类别</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">标签</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">关于</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Ricardo" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Ricardo</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>吾十有五，而志于学</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Vue从零开始（1）：前端环境搭建">
+    <meta itemprop="description" content="前言">
+    <meta itemprop="datePublished" content="2020-04-28T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2020-04-28T15:11:25+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Vue从零开始（1）：前端环境搭建
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <h3 id="前言">前言</h3>
+
+<blockquote>
+  <p><a href="https://cn.vuejs.org/">Vue</a>是一套用于构建用户界面的渐进式框架。与其它大型框架不同的是，Vue被设计为可以自底向上逐层应用。Vue的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue也完全能够为复杂的单页应用提供驱动。</p>
+
+  <p>本系列将带着大家从零开始快速入门Vue。</p>
+</blockquote>
+
+<h3 id="环境搭建">环境搭建</h3>
+
+<h4 id="1安装nvmnodejs版本管理器">1.安装nvm（Node.js版本管理器）</h4>
+
+<p><a href="https://nodejs.org/">Node.js</a>是一个基于Chrome V8引擎的JavaScript运行环境，它是一个让JavaScript运行在服务端的开发平台。目前Node.js最新版本为v14.0.0。由于Node.js更新速度快，有时候新版本还会将旧版本的一些API废除，以至于写好的代码不能向下兼容。为了应对这种情况，我们可以使用<a href="https://github.com/nvm-sh/nvm">nvm</a>管理器，它是一款Node.js版本管理器，它能够在一台机器上维护多个版本的Node.js，可以按需切换。</p>
+
+<ol>
+  <li>
+    <p>Mac使用curl或者wget方式安装nvm：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>curl <span class="nt">-o-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+</code></pre></div>    </div>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wget <span class="nt">-qO-</span> https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+</code></pre></div>    </div>
+
+    <p>Windows安装在<a href="https://github.com/coreybutler/nvm-windows/releases">这里</a>，下载安装包进行安装。</p>
+  </li>
+  <li>
+    <p>安装完成后，输入<code class="language-plaintext highlighter-rouge">nvm --version</code>查看当前安装版本：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nvm <span class="nt">--version</span>
+</code></pre></div>    </div>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/9UwS4Fm4Gv9VmCWd9QvJHKyNO50lll4P.jpg?x-oss-process=style/watermark" alt="" /></p>
+  </li>
+  <li>
+    <p>使用nvm安装Node.js：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nvm <span class="nb">install </span>10.19.0 	<span class="c">#安装指定版本Node.js(v10.19.0)</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装完成后使用<code class="language-plaintext highlighter-rouge">nvm ls</code>查看当前安装的Node.js列表（我这里还安装了v8.12.0和v13.13.0两个版本）：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nvm <span class="nb">ls</span>
+</code></pre></div>    </div>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/GSOSrnahPh8NoujpCnYXLNgneL55Rzsd.jpg?x-oss-process=style/watermark" alt="" /></p>
+
+    <blockquote>
+      <p>上面第四行：default -&gt; 10 (-&gt; v10.19.0) 表示当前所使用的默认版本是v10.19.0</p>
+
+      <p>使用<code class="language-plaintext highlighter-rouge">nvm alias default &lt;version&gt;</code>指定全局默认的Node.js版本，使用<code class="language-plaintext highlighter-rouge">nvm use &lt;version&gt;</code>将Node.js切换至指定版本。</p>
+
+      <p><strong>注意</strong>：<code class="language-plaintext highlighter-rouge">nvm use &lt;version&gt;</code>所设置的版本只在<strong>当前命令行环境</strong>生效</p>
+    </blockquote>
+  </li>
+  <li>
+    <p>Node.js安装完成后，使用<code class="language-plaintext highlighter-rouge">node -v</code>可以查看当前所使用的Node.js版本：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>node <span class="nt">-v</span>
+</code></pre></div>    </div>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/KmYCYrAhxgJRk85nIykYJzVrhjLYe8Qa.jpg?x-oss-process=style/watermark" alt="" /></p>
+  </li>
+</ol>
+
+<h4 id="2安装cnpm可选">2.安装cnpm（可选）</h4>
+
+<p>安装好Node.js之后，它会自带一个叫<a href="https://www.npmjs.com/">npm</a>的东西，它是随同Node.js一起安装的包管理工具。它允许用户从npm服务器下载他人编写的第三方包到本地使用，也可以上传自己编写的第三方包到npm服务器上面以供别人使用。</p>
+
+<p>可以使用<code class="language-plaintext highlighter-rouge">npm -v</code>来查看当前Node.js所自带的npm版本：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm <span class="nt">-v</span>
+</code></pre></div></div>
+
+<p><img src="https://figure-b.ricardolsw.com/image/brxhU5ZnxMw0bhqB4dshWAudwGM1dSkT.jpg?x-oss-process=style/watermark" alt="" /></p>
+
+<p>由于npm服务器在国外，有时候下载依赖包的时候会很慢甚至超时导致下载失败。如果碰到这种情况我们可以安装<a href="https://developer.aliyun.com/mirror/NPM?from=tnpm">cnpm</a>（淘宝npm镜像），它是一个完整的<code class="language-plaintext highlighter-rouge">npmjs.org</code>镜像，每10分钟同步一次。</p>
+
+<ol>
+  <li>
+    <p>使用npm命令安装cnpm：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm <span class="nb">install</span> <span class="nt">-g</span> cnpm <span class="nt">--registry</span><span class="o">=</span>https://registry.npm.taobao.org
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装完成后，使用<code class="language-plaintext highlighter-rouge">cnpm -v</code>查看当前cnpm版本：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cnpm <span class="nt">-v</span>
+</code></pre></div>    </div>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/053leawrdSEXCOA1C1p4cPLwyphge8GR.jpg?x-oss-process=style/watermark" alt="" /></p>
+
+    <blockquote>
+      <p>这时候我们就可以使用cnpm来替代npm下载依赖包了</p>
+    </blockquote>
+  </li>
+</ol>
+
+<h4 id="3安装vue-cli">3.安装Vue CLI</h4>
+
+<p><a href="https://cli.vuejs.org/zh/">Vue CLI</a>是一个基于Vue.js进行快速开发的完整系统，它可以快速搭建一个项目脚手架，基于webpack构建，支持插件，并且提供图形化界面来管理Vue.js项目。</p>
+
+<blockquote>
+  <p>Node版本要求：Vue CLI需要Node.js8.0或更高版本。</p>
+</blockquote>
+
+<ol>
+  <li>
+    <p>使用npm或cnpm安装：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>npm <span class="nb">install</span> <span class="nt">-g</span> @vue/cli
+</code></pre></div>    </div>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>cnpm <span class="nb">install</span> <span class="nt">-g</span> @vue/cli
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装完成后，使用<code class="language-plaintext highlighter-rouge">vue --version</code>查看当前版本：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>vue <span class="nt">--version</span>
+</code></pre></div>    </div>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/UCA2F8hhmYw7jbayyoh9lPutBLH17o2d.jpg?x-oss-process=style/watermark" alt="" /></p>
+  </li>
+</ol>
+
+<h3 id="写在最后">写在最后</h3>
+
+<p>到这里，运行Vue项目所需要的前端环境已经搭建完毕。下一篇将介绍如何使用Vue CLI快速搭建一个项目脚手架。</p>
+
+<p>我慢慢的写，你们慢慢的看~</p>
+
+<p>下一篇：<a href="https://ricardolsw.github.io/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-2-%E4%BD%BF%E7%94%A8Vue-CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/">《Vue从零开始（2）：使用Vue CLI快速生成项目脚手架》</a></p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#vue" class="page__taxonomy-item" rel="tag">Vue</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B" class="page__taxonomy-item" rel="tag">Vue从零开始</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2020-04-28">April 28, 2020</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%EF%BC%881%EF%BC%89%EF%BC%9A%E5%89%8D%E7%AB%AF%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%20%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-1-%25E5%2589%258D%25E7%25AB%25AF%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-1-%25E5%2589%258D%25E7%25AB%25AF%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2Fvue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B%2FVue%25E4%25BB%258E%25E9%259B%25B6%25E5%25BC%2580%25E5%25A7%258B-1-%25E5%2589%258D%25E7%25AB%25AF%25E7%258E%25AF%25E5%25A2%2583%25E6%2590%25AD%25E5%25BB%25BA%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/%E5%89%8D%E7%AB%AF/Vue%E4%BD%BF%E7%94%A8ESlint+Prettier%E6%A0%BC%E5%BC%8F%E5%8C%96%E4%BB%A3%E7%A0%81/" class="pagination--pager" title="Vue使用ESLint+Prettier格式化代码
+">Previous</a>
+    
+    
+      <a href="/vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/Vue%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B-2-%E4%BD%BF%E7%94%A8Vue-CLI%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E9%A1%B9%E7%9B%AE%E8%84%9A%E6%89%8B%E6%9E%B6/" class="pagination--pager" title="Vue从零开始（2）：使用Vue CLI快速生成项目脚手架
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E6%97%85%E6%B8%B8/%E9%87%8D%E5%BA%86/" rel="permalink">清明假期重庆游
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+
+
+
+
+
+
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/gitflow%E6%B5%81%E7%A8%8B%E7%A4%BA%E4%BE%8B/" rel="permalink">gitflow流程示例
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">分支管理
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/%E7%95%AA%E5%A4%96%E7%AF%87-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-GitHub-Actions/" rel="permalink">番外篇：自动部署（GitHub Actions）
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/vue/Vue3%E5%89%8D%E4%BC%A0-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%E6%97%B6%E5%BF%85%E9%A1%BB%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/" rel="permalink">Vue3前传：创建工程时必须要做的事
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  12 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">前言
+
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i> Instagram</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 让我留在你身边. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+    <canvas id="cas" width="1680" height="567" style="position: fixed; z-index: -1;"></canvas>
+    <script src="/assets/js/canvas.js" type="text/javascript"></script>
+  </body>
+</html>

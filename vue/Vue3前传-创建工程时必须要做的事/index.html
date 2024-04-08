@@ -1,0 +1,2046 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.19.2 by Michael Rose
+  Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Vue3前传：创建工程时必须要做的事 - 让我留在你身边</title>
+<meta name="description" content="前言  ">
+
+
+  <meta name="author" content="Ricardo">
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="让我留在你身边">
+<meta property="og:title" content="Vue3前传：创建工程时必须要做的事">
+<meta property="og:url" content="/vue/Vue3%E5%89%8D%E4%BC%A0-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%E6%97%B6%E5%BF%85%E9%A1%BB%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/">
+
+
+  <meta property="og:description" content="前言  ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2021-04-24T00:00:00+00:00">
+
+
+
+  <meta property="article:modified_time" content="2021-04-24T14:51:17+00:00">
+
+
+
+
+<link rel="canonical" href="/vue/Vue3%E5%89%8D%E4%BC%A0-%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%E6%97%B6%E5%BF%85%E9%A1%BB%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B/">
+
+
+
+
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    
+      "@type": "Person",
+      "name": null,
+      "url": "/"
+    
+  }
+</script>
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="让我留在你身边 Feed">
+
+<!-- https://t.co/dKP3o1e -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+<!--[if IE]>
+  <style>
+    /* old IE unsupported flexbox fixes */
+    .greedy-nav .site-title {
+      padding-right: 3em;
+    }
+    .greedy-nav button {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+    }
+  </style>
+<![endif]-->
+
+
+
+    <!-- start custom head snippets -->
+
+<!-- insert favicons. use https://realfavicongenerator.net/ -->
+
+<!-- end custom head snippets -->
+
+  </head>
+
+  <body class="layout--single wide">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    <!--[if lt IE 9]>
+<div class="notice--danger align-center" style="margin: 0;">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
+<![endif]-->
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          让我留在你身边
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a href="/posts/">年度</a>
+            </li><li class="masthead__menu-item">
+              <a href="/categories/">类别</a>
+            </li><li class="masthead__menu-item">
+              <a href="/tags/">标签</a>
+            </li><li class="masthead__menu-item">
+              <a href="/about/">关于</a>
+            </li></ul>
+        
+        <button class="search__toggle" type="button">
+          <span class="visually-hidden">Toggle search</span>
+          <svg class="icon" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15.99 16">
+            <path d="M15.5,13.12L13.19,10.8a1.69,1.69,0,0,0-1.28-.55l-0.06-.06A6.5,6.5,0,0,0,5.77,0,6.5,6.5,0,0,0,2.46,11.59a6.47,6.47,0,0,0,7.74.26l0.05,0.05a1.65,1.65,0,0,0,.5,1.24l2.38,2.38A1.68,1.68,0,0,0,15.5,13.12ZM6.4,2A4.41,4.41,0,1,1,2,6.4,4.43,4.43,0,0,1,6.4,2Z" transform="translate(-.01)"></path>
+          </svg>
+        </button>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Toggle menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+<div id="main" role="main">
+  
+  <div class="sidebar sticky">
+  
+
+
+<div itemscope itemtype="https://schema.org/Person">
+
+  
+    <div class="author__avatar">
+      
+        <img src="/assets/images/bio-photo.jpg" alt="Ricardo" itemprop="image">
+      
+    </div>
+  
+
+  <div class="author__content">
+    
+      <h3 class="author__name" itemprop="name">Ricardo</h3>
+    
+    
+      <div class="author__bio" itemprop="description">
+        <p>吾十有五，而志于学</p>
+
+      </div>
+    
+  </div>
+
+  <div class="author__urls-wrapper">
+    <button class="btn btn--inverse">Follow</button>
+    <ul class="author__urls social-icons">
+      
+
+      
+        
+          
+            <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i><span class="label">Twitter</span></a></li>
+          
+        
+          
+            <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i><span class="label">GitHub</span></a></li>
+          
+        
+          
+            <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i><span class="label">Instagram</span></a></li>
+          
+        
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      <!--
+  <li>
+    <a href="http://link-to-whatever-social-network.com/user/" itemprop="sameAs" rel="nofollow noopener noreferrer">
+      <i class="fas fa-fw" aria-hidden="true"></i> Custom Social Profile Link
+    </a>
+  </li>
+-->
+    </ul>
+  </div>
+</div>
+
+  
+  </div>
+
+
+
+  <article class="page" itemscope itemtype="https://schema.org/CreativeWork">
+    <meta itemprop="headline" content="Vue3前传：创建工程时必须要做的事">
+    <meta itemprop="description" content="前言">
+    <meta itemprop="datePublished" content="2021-04-24T00:00:00+00:00">
+    <meta itemprop="dateModified" content="2021-04-24T14:51:17+00:00">
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title" itemprop="headline">Vue3前传：创建工程时必须要做的事
+</h1>
+          
+            <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  10 minute read
+
+</p>
+          
+        </header>
+      
+
+      <section class="page__content" itemprop="text">
+        
+        <h2 id="前言">前言</h2>
+
+<p>Vue3 跟 Vite 正式版发布有很长一段时间了，可我到现在Vue2都还没整明白，学不动了呀，Angular和React也都快忘完了。但该学还是要学，今天再开个专栏，记录下学习Vue3的过程。</p>
+
+<p>言归正传，这篇主要讲怎么搭建一套规范的前端工程，这篇内容不限于Vue3，同样也适用Vue2等其他前端工程。篇幅较长，先列一下目录：</p>
+
+<ul>
+  <li><a href="#title1">项目搭建</a></li>
+  <li><a href="#title2">代码规范</a></li>
+  <li><a href="#title3">提交规范</a></li>
+  <li><a href="#title4">单元测试</a></li>
+  <li>番外：自动部署（Github Actions）</li>
+</ul>
+
+<h2 id="项目地址">项目地址</h2>
+
+<p>github：<a href="https://github.com/RicardoLSW/vue-basic">https://github.com/RicardoLSW/vue-basic</a></p>
+
+<h2 id="技术栈">技术栈</h2>
+
+<ul>
+  <li>前端框架：<a href="https://v3.cn.vuejs.org/guide/introduction.html">Vue 3</a></li>
+  <li>构建工具：<a href="https://cn.vitejs.dev/guide/">Vite 2</a></li>
+  <li>路由：<a href="https://next.router.vuejs.org/zh/introduction.html">Vue Router 4</a></li>
+  <li>状态管理：<a href="https://next.vuex.vuejs.org/">Vuex 4</a></li>
+  <li>HTTP：<a href="https://github.com/axios/axios">Axios</a></li>
+  <li>UI框架：<a href="https://2x.antdv.com/docs/vue/introduce-cn">Ant Design Vue 2</a></li>
+  <li>CSS预编译：<a href="http://lesscss.cn/">Less</a>/<a href="https://sass.bootcss.com/documentation">Sass</a></li>
+  <li>代码规范：<a href="https://editorconfig.org/">EditorConfig</a> + <a href="https://eslint.org/">Eslint</a> + <a href="https://prettier.io/">Prettier</a> + <a href="https://github.com/airbnb/javascript">Airbnb JavaScript Style Guide</a></li>
+  <li>Git Hook：<a href="https://typicode.github.io/husky/#/">huksy</a> + <a href="https://github.com/okonet/lint-staged">lint-staged</a></li>
+  <li>提交规范：<a href="http://commitizen.github.io/cz-cli/">Commitizen</a> + <a href="https://commitlint.js.org/#/">Commitlint</a></li>
+  <li>单元测试：<a href="https://next.vue-test-utils.vuejs.org/">vue-test-utils</a> + <a href="https://jestjs.io/">jest</a> + <a href="https://github.com/vuejs/vue-jest">vue-jest</a> + <a href="https://kulshekhar.github.io/ts-jest/">ts-jest</a></li>
+  <li>自动部署：<a href="https://docs.github.com/cn/actions/learn-github-actions">GitHub Actions</a></li>
+</ul>
+
+<h2 id="环境信息">环境信息</h2>
+
+<ul>
+  <li>
+    <p>Node版本：v16.0.0</p>
+
+    <p>关于Node版本管理我使用的是<a href="https://github.com/nvm-sh/nvm#install--update-script">nvm</a>，我直接安装最新稳定版Node，安装最新稳定版Node命令：</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nvm <span class="nb">install </span>stable
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>pnpm版本: 6.0.2</p>
+
+    <p><a href="https://pnpm.io/zh/">pnpm</a>是一款很火的包管理工具，比yarn/npm更快、更省空间，且目录结构清晰。</p>
+  </li>
+</ul>
+
+<h2 id="项目搭建"><a id="title1" style="color: black;">项目搭建</a></h2>
+
+<p>确认电脑Node版本，这里我使用Vite搭建项目而不是Vue CLI，<strong>需要Node版本 &gt;= 12.0.0</strong>。</p>
+
+<p>查看Node版本：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>node <span class="nt">-v</span>
+</code></pre></div></div>
+
+<h3 id="使用vite快速初始化项目">使用Vite快速初始化项目</h3>
+
+<ol>
+  <li>
+    <p>初始化项目</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm init @vitejs/app vue3-demo <span class="nt">--</span> <span class="nt">--template</span> vue
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>进入目录</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">cd </span>vue3-demo
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装依赖</p>
+
+    <p>在根目录新增<code class="language-plaintext highlighter-rouge">.npmrc</code>配置文件，为项目配置pnpm镜像源，可以配置为国内镜像用来加速，或者是不能访问外网的公司内部镜像仓库。</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>registry=https://registry.npmjs.org/
+</code></pre></div>    </div>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>启动项目</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm run dev
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210424213553260.png" alt="image-20210424213553260" style="zoom: 50%;" /></p>
+
+<p>如上图所示，一个简单的Vue3项目框架就搭建完毕，下面需要接着集成Vue Router、Vuex等其他工具。</p>
+
+<h3 id="修改vite配置文件">修改Vite配置文件</h3>
+
+<p>Vite配置文件<code class="language-plaintext highlighter-rouge">vite.config.js</code>位于项目根目录下面，类似于Vue CLI的<code class="language-plaintext highlighter-rouge">vue.config.js</code>，在启动项目的时候自动加载。</p>
+
+<p>这里只做一些简单的配置，如端口、路径、代理等。详细配置可以看Vite的官网：<a href="https://cn.vitejs.dev/config/">https://cn.vitejs.dev/config/</a></p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">defineConfig</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vite</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">vue</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@vitejs/plugin-vue</span><span class="dl">'</span>
+
+<span class="c1">// https://vitejs.dev/config/</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span><span class="nx">vue</span><span class="p">()],</span>
+  <span class="na">base</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./</span><span class="dl">'</span><span class="p">,</span> <span class="c1">// 设置打包路径</span>
+  <span class="na">server</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">port</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="c1">// 设置服务启动端口号</span>
+    <span class="na">open</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="c1">// 设置服务启动时是否自动打开浏览器</span>
+    <span class="na">cors</span><span class="p">:</span> <span class="kc">true</span> <span class="c1">// 允许跨域</span>
+    <span class="c1">// 设置代理，根据我们项目实际情况配置</span>
+    <span class="c1">// proxy: {</span>
+    <span class="c1">//   '/api': {</span>
+    <span class="c1">//     target: 'http://xxx:8000',</span>
+    <span class="c1">//     changeOrigin: true,</span>
+    <span class="c1">//     secure: false,</span>
+    <span class="c1">//     rewrite: (path) =&gt; path.replace('/api/', '/')</span>
+    <span class="c1">//   }</span>
+    <span class="c1">// }</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h3 id="目录结构">目录结构</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>├── public/
+└── src/
+    ├── api/                       // api地址目录
+    ├── assets/                    // 静态资源目录
+    ├── icons/                     // svg图标目录
+    ├── config/                    // 配置文件目录
+    ├── core/                      // 核心配置目录
+    ├── components/                // 公共组件目录
+    ├── router/                    // 路由配置目录
+    ├── store/                     // 状态管理目录
+    ├── utils/                     // 工具函数目录
+    ├── views/                     // 页面组件目录
+    ├── App.vue
+    ├── main.js
+├── tests/                         // 单元测试目录
+├── index.html
+├── vite.config.ts                 // Vite 配置文件
+└── package.json
+</code></pre></div></div>
+
+<h3 id="新增环境配置文件">新增环境配置文件</h3>
+
+<p>在根目录下分别新建<code class="language-plaintext highlighter-rouge">.env</code>、<code class="language-plaintext highlighter-rouge">.env.development</code>、<code class="language-plaintext highlighter-rouge">.env.preview</code>三个文件。</p>
+
+<ul>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">.env</code>生产环境配置文件</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NODE_ENV=production
+VUE_APP_PREVIEW=false
+VUE_APP_API_BASE_URL=/api
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">.env.development</code>开发环境配置文件</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NODE_ENV=development
+VUE_APP_PREVIEW=true
+VUE_APP_API_BASE_URL=/api
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">.env.preview</code>测试环境配置文件</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>NODE_ENV=production
+VUE_APP_PREVIEW=true
+VUE_APP_API_BASE_URL=/api
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="集成vue-router">集成Vue Router</h3>
+
+<ol>
+  <li>
+    <p>安装Vue Router 4</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pnpm i vue-router@4
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>创建<code class="language-plaintext highlighter-rouge">src/confit/router.config.js</code>文件</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> └── src/
+     ├── config/
+         ├── router.config.js  // 路由表配置文件
+</code></pre></div>    </div>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+ * 动态路由表
+ */</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">asyncRouterMap</span> <span class="o">=</span> <span class="p">[]</span>
+   
+<span class="cm">/**
+ * 基础路由表
+ */</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">constantRouterMap</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">redirect</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/home</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/home</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Home</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">../views/Home.vue</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">/test</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Test</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">import</span><span class="p">(</span><span class="dl">'</span><span class="s1">../views/Test.vue</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>    </div>
+
+    <p>动态路由表：当需要后端生成菜单路由时（例如角色权限管理，每个角色看到的菜单路由都不一样），根据后端接口返回的菜单路由，把数据动态添加到动态路由表里，然后再把动态路由表合并到基础路由表里，具体我后面再讲。</p>
+  </li>
+  <li>
+    <p>创建<code class="language-plaintext highlighter-rouge">src/router/index.js</code>文件</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> └── src/
+     ├── router/
+         ├── index.js  // 路由配置文件
+</code></pre></div>    </div>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createRouter</span><span class="p">,</span> <span class="nx">createWebHashHistory</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">vue-router</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">constantRouterMap</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../config/router.config</span><span class="dl">"</span><span class="p">;</span>
+   
+<span class="k">export</span> <span class="k">default</span> <span class="nx">createRouter</span><span class="p">({</span>
+    <span class="na">history</span><span class="p">:</span> <span class="nx">createWebHashHistory</span><span class="p">(),</span>
+    <span class="na">routes</span><span class="p">:</span> <span class="nx">constantRouterMap</span>
+<span class="p">})</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在<code class="language-plaintext highlighter-rouge">src/views/</code>目录下创建<code class="language-plaintext highlighter-rouge">Home.vue</code>、<code class="language-plaintext highlighter-rouge">Test.vue</code>，这里我就不详细写了，再更改下<code class="language-plaintext highlighter-rouge">src/App.vue</code></p>
+
+    <div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">template</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;router-view</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/</span><span class="k">template</span><span class="nt">&gt;</span>
+   
+<span class="nt">&lt;</span><span class="k">script</span> <span class="na">setup</span><span class="nt">&gt;&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+   
+<span class="nt">&lt;</span><span class="k">style</span><span class="nt">&gt;&lt;/</span><span class="k">style</span><span class="nt">&gt;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在<code class="language-plaintext highlighter-rouge">src/main.js</code>引入router</p>
+
+    <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createApp</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">App</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./App.vue</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">router</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./router/index</span><span class="dl">'</span>
+   
+<span class="nx">createApp</span><span class="p">(</span><span class="nx">App</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">).</span><span class="nx">mount</span><span class="p">(</span><span class="dl">'</span><span class="s1">#app</span><span class="dl">'</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="集成vuex">集成Vuex</h3>
+
+<ol>
+  <li>
+    <p>安装Vuex 4</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i vuex@next
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">src/store/</code>目录下创建结构</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>└── src/
+    ├── store/
+    		├── modules/   	// 模块目录
+        ├── index.js  	// store 配置文件
+        ├── getters.js  // getter配置文件
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">getters.js</code></p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">getters</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">export</span> <span class="k">default</span> <span class="nx">getters</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">index.js</code></p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createStore</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vuex</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">getters</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./getters</span><span class="dl">'</span>
+   
+<span class="k">export</span> <span class="k">default</span> <span class="nx">createStore</span><span class="p">({</span>
+    <span class="na">modules</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">state</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">mutations</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="na">actions</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="nx">getters</span>
+<span class="p">})</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在<code class="language-plaintext highlighter-rouge">src/main.js</code>引入Vuex</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createApp</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">App</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./App.vue</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">router</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./router/index</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">store</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./store/index</span><span class="dl">'</span>
+   
+<span class="nx">createApp</span><span class="p">(</span><span class="nx">App</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">router</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">store</span><span class="p">).</span><span class="nx">mount</span><span class="p">(</span><span class="dl">'</span><span class="s1">#app</span><span class="dl">'</span><span class="p">)</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="集成http工具axios">集成HTTP工具Axios</h3>
+
+<ol>
+  <li>
+    <p>安装Axios</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i axios
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>创建<code class="language-plaintext highlighter-rouge">src/utils/request.js</code>axios配置文件</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>└── src/
+    ├── utils/
+    		├── request.js   	// axios配置文件
+</code></pre></div>    </div>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">axios</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">axios</span><span class="dl">'</span>
+   
+<span class="c1">// 创建 axios 实例</span>
+<span class="kd">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">axios</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+    <span class="na">baseURL</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">VUE_APP_API_BASE_URL</span><span class="p">,</span> <span class="c1">// api base_url</span>
+    <span class="na">timeout</span><span class="p">:</span> <span class="mi">60000</span> <span class="c1">// 请求超时时间</span>
+<span class="p">})</span>
+   
+<span class="cm">/**
+ * axios 全局错误状态码处理
+ * @param error
+ * @returns {Promise&lt;never&gt;}
+ */</span>
+<span class="kd">const</span> <span class="nx">errorHandler</span> <span class="o">=</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// const { data } = error.response</span>
+        <span class="k">switch</span> <span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">status</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="mi">403</span><span class="p">:</span>
+                <span class="c1">// 拒绝访问</span>
+                <span class="k">break</span>
+            <span class="k">case</span> <span class="mi">500</span><span class="p">:</span>
+                <span class="c1">// 服务器异常</span>
+                <span class="k">break</span>
+            <span class="k">case</span> <span class="mi">404</span><span class="p">:</span>
+                <span class="c1">// 很抱歉，资源未找到!</span>
+                <span class="k">break</span>
+            <span class="k">case</span> <span class="mi">504</span><span class="p">:</span>
+                <span class="c1">// 网络超时</span>
+                <span class="k">break</span>
+            <span class="k">case</span> <span class="mi">401</span><span class="p">:</span>
+                <span class="c1">// 未授权，请重新登录</span>
+                <span class="k">break</span>
+            <span class="na">default</span><span class="p">:</span>
+                <span class="k">break</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span>
+<span class="p">}</span>
+   
+<span class="cm">/**
+ * axios 配置全局请求参数
+ */</span>
+<span class="nx">request</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">request</span><span class="p">.</span><span class="nx">use</span><span class="p">((</span><span class="nx">config</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">config</span>
+<span class="p">},</span> <span class="nx">errorHandler</span><span class="p">)</span>
+   
+<span class="cm">/**
+ * axios 配置全局响应参数
+ */</span>
+<span class="nx">request</span><span class="p">.</span><span class="nx">interceptors</span><span class="p">.</span><span class="nx">response</span><span class="p">.</span><span class="nx">use</span><span class="p">((</span><span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">config</span><span class="p">.</span><span class="nx">responseType</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">blob</span><span class="dl">'</span><span class="p">)</span> <span class="k">return</span> <span class="nx">response</span>
+    <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span>
+<span class="p">},</span> <span class="nx">errorHandler</span><span class="p">)</span>
+   
+<span class="k">export</span> <span class="k">default</span> <span class="nx">request</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>封装网络请求<code class="language-plaintext highlighter-rouge">src/api/methods.js</code></p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>└── src/
+    ├── api/
+    		├── methods.js   	// 封装网络请求
+</code></pre></div>    </div>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">request</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../utils/request</span><span class="dl">'</span>
+   
+<span class="c1">// post</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">postAction</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">request</span><span class="p">({</span>
+    <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">post</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+   
+<span class="c1">// post method= {post | put}</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">httpAction</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">,</span> <span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">request</span><span class="p">({</span>
+    <span class="nx">url</span><span class="p">,</span>
+    <span class="nx">method</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+   
+<span class="c1">// put</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">putAction</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">request</span><span class="p">({</span>
+    <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">put</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+   
+<span class="c1">// get</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">getAction</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">request</span><span class="p">({</span>
+    <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">params</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+   
+<span class="c1">// deleteAction</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">deleteAction</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">request</span><span class="p">({</span>
+    <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">delete</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">params</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+   
+<span class="c1">// patchAction</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">patchAction</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">request</span><span class="p">({</span>
+    <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">patch</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">data</span><span class="p">:</span> <span class="nx">parameter</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+   
+<span class="c1">// exportAction</span>
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">exportAction</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="nx">parameter</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">request</span><span class="p">({</span>
+    <span class="nx">url</span><span class="p">,</span>
+    <span class="na">method</span><span class="p">:</span> <span class="dl">'</span><span class="s1">get</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">params</span><span class="p">:</span> <span class="nx">parameter</span><span class="p">,</span>
+    <span class="na">responseType</span><span class="p">:</span> <span class="dl">'</span><span class="s1">blob</span><span class="dl">'</span>
+  <span class="p">}).</span><span class="nx">then</span><span class="p">((</span><span class="nx">res</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">data</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">res</span>
+    <span class="kd">const</span> <span class="nx">blob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Blob</span><span class="p">([</span><span class="nx">data</span><span class="p">],</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">application/vnd.ms-excel;charset=utf-8</span><span class="dl">'</span> <span class="p">})</span>
+    <span class="kd">const</span> <span class="nx">downloadElement</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">a</span><span class="dl">'</span><span class="p">)</span>
+    <span class="kd">const</span> <span class="nx">href</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">createObjectURL</span><span class="p">(</span><span class="nx">blob</span><span class="p">)</span> <span class="c1">// 创建下载的链接</span>
+    <span class="nx">downloadElement</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="nx">href</span>
+    <span class="nx">downloadElement</span><span class="p">.</span><span class="nx">download</span> <span class="o">=</span> <span class="nb">decodeURI</span><span class="p">(</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">headers</span><span class="p">[</span><span class="dl">'</span><span class="s1">content-disposition</span><span class="dl">'</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">;</span><span class="dl">'</span><span class="p">)[</span><span class="mi">1</span><span class="p">].</span><span class="nx">split</span><span class="p">(</span><span class="dl">'</span><span class="s1">=</span><span class="dl">'</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span> <span class="c1">// 下载后文件名</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">downloadElement</span><span class="p">)</span>
+    <span class="nx">downloadElement</span><span class="p">.</span><span class="nx">click</span><span class="p">()</span> <span class="c1">// 点击下载</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">removeChild</span><span class="p">(</span><span class="nx">downloadElement</span><span class="p">)</span> <span class="c1">// 下载完成移除元素</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">URL</span><span class="p">.</span><span class="nx">revokeObjectURL</span><span class="p">(</span><span class="nx">href</span><span class="p">)</span> <span class="c1">// 释放掉blob对象</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="集成css预编译器">集成CSS预编译器</h3>
+
+<p>Vite 内部已帮我们集成了相关的 loader，不需要额外配置。直接安装到开发依赖就可以用了。</p>
+
+<ol>
+  <li>
+    <p>安装</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># less</span>
+<span class="nv">$ </span>pnpm i less <span class="nt">-D</span>
+<span class="c"># sass</span>
+<span class="nv">$ </span>pnpm i sass <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>使用</p>
+
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;style </span><span class="na">lang=</span><span class="s">"less"</span><span class="nt">&gt;</span>
+  <span class="o">...</span>
+<span class="nt">&lt;/style&gt;</span>
+or
+<span class="nt">&lt;style </span><span class="na">lang=</span><span class="s">"scss"</span><span class="nt">&gt;</span>
+  <span class="o">...</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="代码规范"><a id="title2" style="color: black;">代码规范</a></h2>
+
+<p>随着前端应用逐渐变得大型化和复杂化，在同一个项目中有多个人员参与时，每个人的前端能力程度不等，他们往往会用不同的编码风格和习惯在项目中写代码，长此下去，势必会让项目的健壮性越来越差。解决这些问题，理论上讲，口头约定和代码审查都可以，但是这种方式无法实时反馈，而且沟通成本过高，不够灵活，更关键的是无法把控。不以规矩，不能成方圆，我们不得不在项目使用一些工具来约束代码规范</p>
+
+<p>这里讲解如何使用 <strong>EditorConfig  + ESLint + Prettier</strong> 组合来实现代码规范化。</p>
+
+<p>这样做带来好处：</p>
+
+<ul>
+  <li>解决团队之间代码不规范导致的可读性差和可维护性差的问题。</li>
+  <li>解决团队成员不同编辑器导致的编码规范不统一问题。</li>
+  <li>提前发现代码风格问题，给出对应规范提示，及时修复。</li>
+  <li>减少代码审查过程中反反复复的修改过程，节约时间。</li>
+  <li>自动格式化，统一编码风格，从此和脏乱差的代码说再见。</li>
+</ul>
+
+<h3 id="集成editorconfig">集成EditorConfig</h3>
+
+<p>EditorConfig 有助于为不同 IDE 编辑器上处理同一项目的多个开发人员维护一致的编码风格。</p>
+
+<p>在根目录下新增<code class="language-plaintext highlighter-rouge">.editorconfig</code>文件：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Editor configuration, see http://editorconfig.org
+
+# 表示是最顶层的 EditorConfig 配置文件
+root = true
+
+[*] # 表示所有文件适用
+charset = utf-8 # 设置文件字符集为 utf-8
+indent_style = space # 缩进风格（tab | space）
+indent_size = 2 # 缩进大小
+end_of_line = lf # 控制换行类型(lf | cr | crlf)
+trim_trailing_whitespace = true # 去除行首的任意空白字符
+insert_final_newline = true # 始终在文件末尾插入一个新行
+
+[*.md] # 表示仅 md 文件适用以下规则
+max_line_length = off
+trim_trailing_whitespace = false
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>注意：</strong></p>
+
+  <ul>
+    <li>VSCode使用EditorConfig需要安装插件：<strong>EditorConfig for VS Code</strong></li>
+    <li>WebStorm则不需要安装插件，可直接使用EditorConfig配置</li>
+  </ul>
+</blockquote>
+
+<h3 id="集成eslint">集成Eslint</h3>
+
+<p><a href="https://github.com/eslint/eslint">ESLint</a> 是一款用于查找并报告代码中问题的工具，并且支持部分问题自动修复。其核心是通过对代码解析得到的 AST（Abstract Syntax Tree 抽象语法树）进行模式匹配，来分析代码达到检查代码质量和风格问题的能力。</p>
+
+<p>正如前面我们提到的因团队成员之间编程能力和编码习惯不同所造成的代码质量问题，我们使用 ESLint 来解决，一边写代码一边查找问题，如果发现错误，就给出规则提示，并且自动修复，长期下去，可以促使团队成员往同一种编码风格靠拢。</p>
+
+<ol>
+  <li>
+    <p>安装Eslint</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pnpm i eslint <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>配置eslint，在终端输入<code class="language-plaintext highlighter-rouge">pnpx eslint --init</code>，然后按照终端提示完成一系列设置来创建配置文件。</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pnpx eslint <span class="nt">--init</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>
+        <p>How would you like to use ESLint?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424232428780.png" alt="image-20210424232428780" /></p>
+
+        <p>选择<strong>To check syntax, find problems, and enforce code style</strong></p>
+      </li>
+      <li>
+        <p>What type of modules does your project use?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424232556626.png" alt="image-20210424232556626" /></p>
+
+        <p>选择<strong>JavaScript modules (import/export)</strong></p>
+      </li>
+      <li>
+        <p>Which framework does your project use?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424232651740.png" alt="image-20210424232651740" /></p>
+
+        <p>选择<strong>Vue.js</strong></p>
+      </li>
+      <li>
+        <p>Does your project use TypeScript?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424232737023.png" alt="image-20210424232737023" /></p>
+
+        <p>选择<strong>No</strong></p>
+      </li>
+      <li>
+        <p>Where does your code run?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424232805378.png" alt="image-20210424232805378" /></p>
+
+        <p>选择Browse和Node（按空格选择，回车确认）</p>
+      </li>
+      <li>
+        <p>How would you like to define a style for your project?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424232858162.png" alt="image-20210424232858162" /></p>
+
+        <p>选择<strong>Use a popular style guide</strong></p>
+      </li>
+      <li>
+        <p>Which style guide do you want to follow?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424232942630.png" alt="image-20210424232942630" /></p>
+
+        <p>选择<strong>Airbnb: https://github.com/airbnb/javascript</strong></p>
+
+        <p>ESLint 为我们列出了三种社区流行的 JavaScript 风格指南，分别是 Airbnb、Standard、Google。</p>
+
+        <p>这三份风格指南都是由众多大佬根据多年开发经验编写，足够优秀，全球很多大小公司都在使用。这里选用 <strong>GitHub 上 star 最多的 Airbnb</strong>，免去繁琐的配置 ESLint 规则时间，然后让团队成员去学习 Airbnb JavaScript 风格指南即可。</p>
+
+        <p>此时，我们在 ESLint 配置了 Airbnb JavaScript 规则，在编码时，所有不符合 Airbnb 风格的代码，编辑器都会给出提示，并且可以自动修复。</p>
+      </li>
+      <li>
+        <p>What format do you want your config file to be in?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424233129299.png" alt="image-20210424233129299" /></p>
+
+        <p>选择<strong>JavaScript</strong></p>
+      </li>
+      <li>
+        <p>Would you like to install them now with npm?</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210424233219307.png" alt="image-20210424233219307" /></p>
+
+        <p>根据上面的选择，ESLint 会自动去查找缺失的依赖，我们这里选择 <strong>No</strong>，我们使用 pnpm 手动下载安装这些依赖包。</p>
+
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i eslint-plugin-vue eslint-config-airbnb-base eslint@^7.2.0 eslint-plugin-import@^2.22.1 <span class="nt">-D</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Eslint配置文件<code class="language-plaintext highlighter-rouge">.eslintrc.js</code></p>
+
+    <p>在上一步操作完成后，会在根目录下自动生成<code class="language-plaintext highlighter-rouge">.eslintrc.js</code>配置文件：</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">env</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">browser</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">es2021</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">node</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="na">extends</span><span class="p">:</span> <span class="p">[</span>
+    <span class="dl">"</span><span class="s2">plugin:vue/essential</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">airbnb-base</span><span class="dl">"</span>
+  <span class="p">],</span>
+  <span class="na">parserOptions</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">ecmaVersion</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="na">sourceType</span><span class="p">:</span> <span class="dl">"</span><span class="s2">module</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">vue</span><span class="dl">"</span><span class="p">],</span>
+  <span class="na">rules</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">import/no-unresolved</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">import/extensions</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">import/no-absolute-path</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">import/no-extraneous-dependencies</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">vue/no-multiple-template-root</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">no-param-reassign</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span>
+      <span class="p">{</span>
+        <span class="na">props</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">ignorePropertyModificationsFor</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">state</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">config</span><span class="dl">"</span><span class="p">],</span>
+      <span class="p">},</span>
+    <span class="p">],</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+</code></pre></div>    </div>
+
+    <p>如果需要额外的规则，可以在这里添加。</p>
+
+    <blockquote>
+      <p><strong>注意</strong>：VSCode需要安装<strong>ESLint</strong>插件，WebStorm则不需额外安装插件，可以直接使用。</p>
+    </blockquote>
+  </li>
+</ol>
+
+<h3 id="集成prettier">集成Prettier</h3>
+
+<p>Prettier 是一款强大的代码格式化工具，支持 JavaScript、TypeScript、CSS、SCSS、Less、JSX、Angular、Vue、GraphQL、JSON、Markdown 等语言，基本上前端能用到的文件格式它都可以搞定，是当下最流行的代码格式化工具。</p>
+
+<ol>
+  <li>
+    <p>安装Prettier</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i prettier <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在根目录创建prettier配置文件<code class="language-plaintext highlighter-rouge">.prettierrc</code></p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "useTabs": false,
+  "tabWidth": 2,
+  "printWidth": 100,
+  "singleQuote": true,
+  "trailingComma": "none",
+  "bracketSpacing": true,
+  "semi": false
+}
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装好后，可使用一下命令格式化代码</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpx prettier <span class="nt">--write</span> <span class="nb">.</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<blockquote>
+  <p><strong>注意</strong>：VSCode和WebStorm都需要安装Prettier插件。</p>
+</blockquote>
+
+<h3 id="解决eslint--prettier冲突">解决ESLint + Prettier冲突</h3>
+
+<p>通常大家会在项目中根据实际情况添加一些额外的 ESLint 和 Prettier 配置规则，难免会存在规则冲突情况。</p>
+
+<p>本项目中的 ESLint 配置中使用了 Airbnb JavaScript 风格指南校验，其规则之一是<em>代码结束后面要加分号</em>，而我们在 Prettier 配置文件中加了<em>代码结束后面不加分号</em>的配置项，这样就有冲突了，会出现用 Prettier 格式化后的代码，ESLint 检测到格式有问题的，从而抛出错误提示。</p>
+
+<p>解决两者冲突问题，需要用到 <strong>eslint-plugin-prettier</strong> 和 <strong>eslint-config-prettier</strong>。</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">eslint-plugin-prettier</code> 将 Prettier 的规则设置到 ESLint 的规则中。</li>
+  <li><code class="language-plaintext highlighter-rouge">eslint-config-prettier</code> 关闭 ESLint 中与 Prettier 中会发生冲突的规则。</li>
+</ul>
+
+<p>最后形成优先级：<code class="language-plaintext highlighter-rouge">Prettier 配置规则</code> &gt; <code class="language-plaintext highlighter-rouge">ESLint 配置规则</code>。</p>
+
+<ol>
+  <li>
+    <p>安装插件</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i eslint-plugin-prettier eslint-config-prettier <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在<code class="language-plaintext highlighter-rouge">.eslintrc.js</code>添加prettier插件</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">env</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">browser</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">es2021</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="na">node</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="na">extends</span><span class="p">:</span> <span class="p">[</span>
+    <span class="dl">"</span><span class="s2">plugin:vue/essential</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">airbnb-base</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">plugin:prettier/recommended</span><span class="dl">"</span><span class="p">,</span> <span class="c1">// 添加 prettier 插件</span>
+  <span class="p">],</span>
+  <span class="na">parserOptions</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">ecmaVersion</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="na">sourceType</span><span class="p">:</span> <span class="dl">"</span><span class="s2">module</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">vue</span><span class="dl">"</span><span class="p">],</span>
+  <span class="na">rules</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">import/no-unresolved</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">import/extensions</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">import/no-absolute-path</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">import/no-extraneous-dependencies</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">vue/no-multiple-template-root</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">off</span><span class="dl">"</span><span class="p">,</span>
+    <span class="dl">"</span><span class="s2">no-param-reassign</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="dl">"</span><span class="s2">error</span><span class="dl">"</span><span class="p">,</span>
+      <span class="p">{</span>
+        <span class="na">props</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">ignorePropertyModificationsFor</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">state</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">config</span><span class="dl">"</span><span class="p">],</span>
+      <span class="p">},</span>
+    <span class="p">],</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>这样，我们在执行 <code class="language-plaintext highlighter-rouge">eslint --fix</code> 命令时，ESLint 就会按照 Prettier 的配置规则来格式化代码，轻松解决二者冲突问题。</p>
+
+<h3 id="集成git-hook工具husky-和-lint-staged">集成Git Hook工具：husky 和 lint-staged</h3>
+
+<p>我们在项目中已集成 ESLint 和 Prettier，在编码时，这些工具可以对我们写的代码进行实时校验，在一定程度上能有效规范我们写的代码，但团队可能会有些人觉得这些条条框框的限制很麻烦，选择视“提示”而不见，依旧按自己的一套风格来写代码，或者干脆禁用掉这些工具，开发完成就直接把代码提交到了仓库，日积月累，ESLint 也就形同虚设。</p>
+
+<p>所以，我们还需要做一些限制，让没通过 ESLint 检测和修复的代码禁止提交，从而保证仓库代码都是符合规范的。</p>
+
+<p>为了解决这个问题，我们需要用到 Git Hook，在本地执行 <code class="language-plaintext highlighter-rouge">git commit</code> 的时候，就对所提交的代码进行 ESLint 检测和修复（即执行 <code class="language-plaintext highlighter-rouge">eslint --fix</code>），如果这些代码没通过 ESLint 规则校验，则禁止提交。</p>
+
+<p>实现这一功能，我们借助 <a href="https://github.com/typicode/husky">husky</a> + <a href="https://github.com/okonet/lint-staged">lint-staged</a> 。</p>
+
+<h4 id="配置husky">配置husky</h4>
+
+<p>使用<code class="language-plaintext highlighter-rouge">husky-init</code>命令快速初始化一个husky配置</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpx husky-init <span class="o">&amp;&amp;</span> pnpm i
+</code></pre></div></div>
+
+<blockquote>
+  <p><strong>注意</strong>：配置husky之前要建立git仓库，使用<code class="language-plaintext highlighter-rouge">git init</code>创建本地仓库。</p>
+</blockquote>
+
+<p>该命令做了一下四件事：</p>
+
+<ol>
+  <li>
+    <p>安装husky到开发依赖：</p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425084142819.png" alt="image-20210425084142819" /></p>
+  </li>
+  <li>
+    <p>在根目录下创建<code class="language-plaintext highlighter-rouge">.husky</code>目录</p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425084416827.png" alt="image-20210425084416827" /></p>
+  </li>
+  <li>
+    <p>在 <code class="language-plaintext highlighter-rouge">.husky</code> 目录创建 <code class="language-plaintext highlighter-rouge">pre-commit</code> hook，并初始化 <code class="language-plaintext highlighter-rouge">pre-commit</code> 命令为 <code class="language-plaintext highlighter-rouge">npm test</code></p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425084517705.png" alt="image-20210425084517705" /></p>
+  </li>
+  <li>
+    <p>修改 <code class="language-plaintext highlighter-rouge">package.json</code> 的 <code class="language-plaintext highlighter-rouge">scripts</code>，增加 <code class="language-plaintext highlighter-rouge">"prepare": "husky install"</code></p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425084545824.png" alt="image-20210425084545824" /></p>
+  </li>
+</ol>
+
+<h4 id="使用husky">使用husky</h4>
+
+<p>修改 <code class="language-plaintext highlighter-rouge">.husky/pre-commit</code> hook 文件的触发命令：</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<span class="nb">.</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$0</span><span class="s2">"</span><span class="si">)</span><span class="s2">/_/husky.sh"</span>
+
+eslint <span class="nt">--fix</span> ./src <span class="nt">--ext</span> .vue,.js,.jsx
+</code></pre></div></div>
+
+<p>上面这个 <code class="language-plaintext highlighter-rouge">pre-commit</code> hook 文件的作用是：当我们执行 <code class="language-plaintext highlighter-rouge">git commit -m "xxx"</code> 时，会先对 <code class="language-plaintext highlighter-rouge">src</code> 目录下所有的 <code class="language-plaintext highlighter-rouge">.vue</code>、<code class="language-plaintext highlighter-rouge">.js</code>、<code class="language-plaintext highlighter-rouge">.ts </code> 文件执行 <code class="language-plaintext highlighter-rouge">eslint --fix</code> 命令，如果 ESLint 通过，成功 <code class="language-plaintext highlighter-rouge">commit</code>，否则终止 <code class="language-plaintext highlighter-rouge">commit</code>。</p>
+
+<p>但是又存在一个问题：有时候我们明明只改动了一两个文件，却要对所有的文件执行 <code class="language-plaintext highlighter-rouge">eslint --fix</code>。假如这是一个历史项目，我们在中途配置了 ESLint 规则，那么在提交代码时，也会对其他未修改的“历史”文件都进行检查，可能会造成大量文件出现 ESLint 错误，显然不是我们想要的结果。</p>
+
+<p>我们要做到只用 ESLint 修复自己此次写的代码，而不去影响其他的代码。所以我们还需借助一个神奇的工具 <strong>lint-staged</strong> 。</p>
+
+<h4 id="配置lint-staged">配置lint-staged</h4>
+
+<p>lint-staged 这个工具一般结合 husky 来使用，它可以让 husky 的 <code class="language-plaintext highlighter-rouge">hook</code> 触发的命令只作用于 <code class="language-plaintext highlighter-rouge">git add</code>那些文件（即 git 暂存区的文件），而不会影响到其他文件。</p>
+
+<ol>
+  <li>
+    <p>安装lint-staged</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i lint-staged <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在<code class="language-plaintext highlighter-rouge">package.json</code>里增加配置项</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"lint-staged"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"*.{vue,js,jsx}"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"eslint --fix"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"git add"</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="err">,</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>修改 <code class="language-plaintext highlighter-rouge">.husky/pre-commit</code> hook 的触发命令为：<code class="language-plaintext highlighter-rouge">npx lint-staged</code></p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<span class="nb">.</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$0</span><span class="s2">"</span><span class="si">)</span><span class="s2">/_/husky.sh"</span>
+   
+npx lint-staged
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>至此，husky 和 lint-staged 配置完成。</p>
+
+<p>当我们修改了代码后，在commit的时候就会触发<code class="language-plaintext highlighter-rouge">pre-commit</code>这个hook，在<code class="language-plaintext highlighter-rouge">pre-commit</code>里又会触发<code class="language-plaintext highlighter-rouge">lint-staged</code>里的eslint去检查语法错误。如下图：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210425085738205.png" alt="image-20210425085738205" /></p>
+
+<p>当eslint检查不通过是就会拒绝提交，如下图：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210425090215833.png" alt="image-20210425090215833" /></p>
+
+<p>修改后再次提交，提交成功：</p>
+
+<p><img src="https://figure-b.ricardolsw.com/image/image-20210425090407500.png" alt="image-20210425090407500" /></p>
+
+<h2 id="提交规范"><a id="title3" style="color: black;">提交规范</a></h2>
+
+<p>前面我们已经统一代码规范，并且在提交代码时进行强约束来保证仓库代码质量。多人协作的项目中，在提交代码这个环节，也存在一种情况：不能保证每个人对提交信息的准确描述，因此会出现提交信息紊乱、风格不一致的情况。</p>
+
+<p>如果 <code class="language-plaintext highlighter-rouge">git commit</code> 的描述信息精准，在后期维护和 Bug 处理时会变得有据可查，项目开发周期内还可以根据规范的提交信息快速生成开发日志，从而方便我们追踪项目和把控进度。</p>
+
+<p>这里，我们使用社区最流行、最知名、最受认可的 Angular 团队提交规范。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;Header&gt;
+
+&lt;Body&gt;
+
+&lt;Footer&gt;
+</code></pre></div></div>
+
+<h3 id="header规范">Header规范</h3>
+
+<p>Header 部分包括三个字段 type（必需）、scope（可选）和 subject（必需）。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt;
+</code></pre></div></div>
+
+<h4 id="type说明">type说明</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>值</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>feat</td>
+      <td>新增一个功能</td>
+    </tr>
+    <tr>
+      <td>fix</td>
+      <td>修复一个bug</td>
+    </tr>
+    <tr>
+      <td>docs</td>
+      <td>文档变更</td>
+    </tr>
+    <tr>
+      <td>style</td>
+      <td>代码格式（不影响功能，例如空格、分号等格式修正）</td>
+    </tr>
+    <tr>
+      <td>refactor</td>
+      <td>代码重构</td>
+    </tr>
+    <tr>
+      <td>perf</td>
+      <td>改善性能</td>
+    </tr>
+    <tr>
+      <td>test</td>
+      <td>测试</td>
+    </tr>
+    <tr>
+      <td>build</td>
+      <td>变更项目构建或外部依赖（例如scopes: webpack、gulp、npm等）</td>
+    </tr>
+    <tr>
+      <td>ci</td>
+      <td>更改持续集成软件的配置文件和package中的script命令，例如scopes: Travis、Circle等</td>
+    </tr>
+    <tr>
+      <td>chore</td>
+      <td>变更构建流程或辅助工具</td>
+    </tr>
+    <tr>
+      <td>revert</td>
+      <td>代码回退</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="scope说明">scope说明</h4>
+
+<p>scope 用于指定本次 commit 影响的范围。scope 依据项目而定，例如在业务项目中可以依据菜单或者功能模块划分，如果是组件库开发，则可以依据组件划分。（scope 可省略）</p>
+
+<h4 id="subject说明">subject说明</h4>
+
+<p>subject 是本次 commit 的简洁描述，长度约定在 50 个字符以内，通常遵循以下几个规范：</p>
+
+<ul>
+  <li>用动词开头，第一人称现在时表述，例如：change 代替 changed 或 changes</li>
+  <li>第一个字母小写</li>
+  <li>结尾不加句号（.）</li>
+</ul>
+
+<h3 id="body">Body</h3>
+
+<p>body 是对本次 commit 的详细描述，可以分成多行。（body 可省略）</p>
+
+<p>跟 subject 类似，用动词开头，body 应该说明修改的原因和更改前后的行为对比。</p>
+
+<h3 id="footer">Footer</h3>
+
+<p>如果本次提交的代码是突破性的变更或关闭缺陷，则 Footer 必需，否则可以省略。</p>
+
+<ul>
+  <li>
+    <p>突破性的变更</p>
+
+    <p>当前代码与上一个版本有突破性改变，则 Footer 以 BREAKING CHANGE 开头，后面是对变动的描述、以及变动的理由。</p>
+  </li>
+  <li>
+    <p>关闭缺陷</p>
+
+    <p>如果当前提交是针对特定的 issue，那么可以在 Footer 部分填写需要关闭的单个 issue 或一系列 issues。</p>
+  </li>
+</ul>
+
+<h3 id="规范-commit-message-的好处">规范 commit message 的好处</h3>
+
+<ul>
+  <li>
+    <p>首行就是简洁实用的关键信息，方便在 git history 中快速浏览。</p>
+  </li>
+  <li>
+    <p>具有更加详细的 body 和 footer，可以清晰的看出某次提交的目的和影响。</p>
+  </li>
+  <li>
+    <p>可以通过 type 过滤出想要查找的信息，也可以通过关键字快速查找相关提交。</p>
+  </li>
+  <li>
+    <p>可以直接从 commit 生成 change log。</p>
+  </li>
+</ul>
+
+<h3 id="集成-commitizen">集成 Commitizen</h3>
+
+<p>Commitizen 是一个帮助撰写规范 commit message 的工具。它有一个命令行工具 cz-cli。</p>
+
+<ol>
+  <li>
+    <p>安装Commitizen</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i commitizen <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>使用<code class="language-plaintext highlighter-rouge">commitizen init cz-conventional-changelog</code>命令初始化配置</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpx commitizen init cz-conventional-changelog <span class="nt">--save-dev</span> <span class="nt">--save-exact</span>
+</code></pre></div>    </div>
+
+    <p>该命令做了两件事</p>
+
+    <ul>
+      <li>
+        <p>安装<code class="language-plaintext highlighter-rouge">cz-conventional-changelog</code>到开发依赖</p>
+      </li>
+      <li>
+        <p>在 <code class="language-plaintext highlighter-rouge">package.json</code> 中增加了 <code class="language-plaintext highlighter-rouge">config.commitizen</code></p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210425094216285.png" alt="image-20210425094216285" /></p>
+
+        <blockquote>
+          <p>如果使用命令太慢或者报错，可以手动安装配置：</p>
+
+          <ul>
+            <li>
+              <p>安装依赖</p>
+
+              <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i cz-conventional-changelog <span class="nt">-D</span>
+</code></pre></div>              </div>
+            </li>
+            <li>
+              <p><code class="language-plaintext highlighter-rouge">package.json</code>增加配置</p>
+
+              <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"config"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"commitizen"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./node_modules/cz-conventional-changelog"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>              </div>
+            </li>
+          </ul>
+        </blockquote>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>使用Commitizen</p>
+
+    <p>以前我们使用的是<code class="language-plaintext highlighter-rouge">git commit -m "msg"</code>，现在改为<code class="language-plaintext highlighter-rouge">git cz</code>，然后按照终端提示，逐步输入信息，就能自动生成规范的commit message</p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425094755418.png" alt="image-20210425094755418" /></p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425094856961.png" alt="image-20210425094856961" /></p>
+
+    <h3 id="自定义配置提交说明">自定义配置提交说明</h3>
+
+    <p>从上面的截图可以看到，<code class="language-plaintext highlighter-rouge">git cz</code> 终端操作提示都是英文的，如果想改成中文的或者自定义这些配置选项，我们使用 <strong>cz-customizable</strong> 适配器。</p>
+
+    <ol>
+      <li>
+        <p>安装cz-customizable</p>
+
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i cz-customizable <span class="nt">-D</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>修改 <code class="language-plaintext highlighter-rouge">package.json</code> 中的 <code class="language-plaintext highlighter-rouge">config.commitizen</code> 字段</p>
+
+        <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"config"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"commitizen"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./node_modules/cz-customizable"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>        </div>
+      </li>
+      <li>
+        <p>在根目录下新建<code class="language-plaintext highlighter-rouge">.cz-config.js</code>文件，配置中文</p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="c1">// type 类型（定义之后，可通过上下键选择）</span>
+  <span class="na">types</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">feat</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">feat:     新增功能</span><span class="dl">'</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">fix</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">fix:      修复 bug</span><span class="dl">'</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">docs</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">docs:     文档变更</span><span class="dl">'</span> <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">style</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">style:    代码格式（不影响功能，例如空格、分号等格式修正）</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">refactor</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">refactor: 代码重构（不包括 bug 修复、功能新增）</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">perf</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">perf:     性能优化</span><span class="dl">'</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">test</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">test:     添加、修改测试用例</span><span class="dl">'</span> <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">build</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">build:    构建流程、外部依赖变更（如升级 npm 包、修改 webpack 配置等）</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">ci</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">ci:       修改 CI 配置、脚本</span><span class="dl">'</span> <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">chore</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">chore:    对构建过程或辅助工具和库的更改（不影响源文件、测试用例）</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="dl">'</span><span class="s1">revert</span><span class="dl">'</span><span class="p">,</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">revert:   回滚 commit</span><span class="dl">'</span> <span class="p">}</span>
+  <span class="p">],</span>
+      
+  <span class="c1">// scope 类型（定义之后，可通过上下键选择）</span>
+  <span class="na">scopes</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">components</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">组件相关</span><span class="dl">'</span><span class="p">],</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">hooks</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">hook 相关</span><span class="dl">'</span><span class="p">],</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">utils</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">utils 相关</span><span class="dl">'</span><span class="p">],</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">element-ui</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">对 element-ui 的调整</span><span class="dl">'</span><span class="p">],</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">styles</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">样式相关</span><span class="dl">'</span><span class="p">],</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">deps</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">项目依赖</span><span class="dl">'</span><span class="p">],</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">auth</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">对 auth 修改</span><span class="dl">'</span><span class="p">],</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">other</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">其他修改</span><span class="dl">'</span><span class="p">],</span>
+    <span class="c1">// 如果选择 custom，后面会让你再输入一个自定义的 scope。也可以不设置此项，把后面的 allowCustomScopes 设置为 true</span>
+    <span class="p">[</span><span class="dl">'</span><span class="s1">custom</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">以上都不是？我要自定义</span><span class="dl">'</span><span class="p">]</span>
+  <span class="p">].</span><span class="nx">map</span><span class="p">(([</span><span class="nx">value</span><span class="p">,</span> <span class="nx">description</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="nx">value</span><span class="p">,</span>
+      <span class="na">name</span><span class="p">:</span> <span class="s2">`</span><span class="p">${</span><span class="nx">value</span><span class="p">.</span><span class="nx">padEnd</span><span class="p">(</span><span class="mi">30</span><span class="p">)}</span><span class="s2"> (</span><span class="p">${</span><span class="nx">description</span><span class="p">}</span><span class="s2">)`</span>
+    <span class="p">}</span>
+  <span class="p">}),</span>
+      
+  <span class="c1">// 是否允许自定义填写 scope，在 scope 选择的时候，会有 empty 和 custom 可以选择。</span>
+  <span class="c1">// allowCustomScopes: true,</span>
+      
+  <span class="c1">// allowTicketNumber: false,</span>
+  <span class="c1">// isTicketNumberRequired: false,</span>
+  <span class="c1">// ticketNumberPrefix: 'TICKET-',</span>
+  <span class="c1">// ticketNumberRegExp: '\\d{1,5}',</span>
+      
+  <span class="c1">// 针对每一个 type 去定义对应的 scopes，例如 fix</span>
+  <span class="cm">/*
+  scopeOverrides: {
+    fix: [
+      { name: 'merge' },
+      { name: 'style' },
+      { name: 'e2eTest' },
+      { name: 'unitTest' }
+    ]
+  },
+  */</span>
+      
+  <span class="c1">// 交互提示信息</span>
+  <span class="na">messages</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">确保本次提交遵循 Angular 规范！</span><span class="se">\n</span><span class="s1">选择你要提交的类型：</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">scope</span><span class="p">:</span> <span class="dl">'</span><span class="se">\n</span><span class="s1">选择一个 scope（可选）：</span><span class="dl">'</span><span class="p">,</span>
+    <span class="c1">// 选择 scope: custom 时会出下面的提示</span>
+    <span class="na">customScope</span><span class="p">:</span> <span class="dl">'</span><span class="s1">请输入自定义的 scope：</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">subject</span><span class="p">:</span> <span class="dl">'</span><span class="s1">填写简短精炼的变更描述：</span><span class="se">\n</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">body</span><span class="p">:</span> <span class="dl">'</span><span class="s1">填写更加详细的变更描述（可选）。使用 "|" 换行：</span><span class="se">\n</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">breaking</span><span class="p">:</span> <span class="dl">'</span><span class="s1">列举非兼容性重大的变更（可选）：</span><span class="se">\n</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">footer</span><span class="p">:</span> <span class="dl">'</span><span class="s1">列举出所有变更的 ISSUES CLOSED（可选）。 例如: #31, #34：</span><span class="se">\n</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">confirmCommit</span><span class="p">:</span> <span class="dl">'</span><span class="s1">确认提交？</span><span class="dl">'</span>
+  <span class="p">},</span>
+      
+  <span class="c1">// 设置只有 type 选择了 feat 或 fix，才询问 breaking message</span>
+  <span class="na">allowBreakingChanges</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">feat</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">fix</span><span class="dl">'</span><span class="p">],</span>
+      
+  <span class="c1">// 跳过要询问的步骤</span>
+  <span class="na">skipQuestions</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">body</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">footer</span><span class="dl">'</span><span class="p">],</span>
+      
+  <span class="na">subjectLimit</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="c1">// subject 限制长度</span>
+  <span class="na">breaklineChar</span><span class="p">:</span> <span class="dl">'</span><span class="s1">|</span><span class="dl">'</span> <span class="c1">// 换行符，支持 body 和 footer</span>
+  <span class="c1">// footerPrefix : 'ISSUES CLOSED:'</span>
+  <span class="c1">// askForBreakingChangeFirst : true,</span>
+<span class="p">}</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>再次使用<code class="language-plaintext highlighter-rouge">git cz</code>，提示信息变为中文</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210425095536894.png" alt="image-20210425095536894" /></p>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<h3 id="集成commitlint验证提交规范">集成commitlint验证提交规范</h3>
+
+<p>在<a href="#title2">代码规范</a>章节，我们已经讲到过，尽管制定了规范，但在多人协作的项目中，总有些人依旧我行我素，因此提交代码这个环节，我们也增加一个限制，并且也要加到Git Hook中。</p>
+
+<ol>
+  <li>
+    <p>安装<code class="language-plaintext highlighter-rouge">@commitlint/config-conventional</code> 和 <code class="language-plaintext highlighter-rouge">@commitlint/cli</code></p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i @commitlint/config-conventional @commitlint/cli <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在根目录下新建<code class="language-plaintext highlighter-rouge">commitlint.config.js</code>文件</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span> <span class="na">extends</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">@commitlint/config-conventional</span><span class="dl">'</span><span class="p">]</span> <span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>新建<code class="language-plaintext highlighter-rouge">.husky/commit-msg</code>文件</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<span class="nb">.</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$0</span><span class="s2">"</span><span class="si">)</span><span class="s2">/_/husky.sh"</span>
+   
+npx <span class="nt">--no-install</span> commitlint <span class="nt">--edit</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h4 id="使用commitlint验证">使用commitlint验证</h4>
+
+<ul>
+  <li>
+    <p>不规范的提交信息</p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425100506296.png" alt="image-20210425100506296" /></p>
+  </li>
+  <li>
+    <p>正确的提交信息</p>
+
+    <p><img src="https://figure-b.ricardolsw.com/image/image-20210425100553721.png" alt="image-20210425100553721" /></p>
+  </li>
+</ul>
+
+<p>因为已在项目中集成 commitizen，建议大家用 <code class="language-plaintext highlighter-rouge">git cz</code> 来代替 <code class="language-plaintext highlighter-rouge">git commit</code> 提交代码，可以保证提交信息规范。</p>
+
+<h2 id="单元测试"><a id="title4" style="color: black;">单元测试</a></h2>
+
+<p>单元测试是项目开发中一个非常重要的环节，完整的测试能为代码和业务提供质量保证，减少 Bug 的出现。</p>
+
+<h3 id="集成jest">集成Jest</h3>
+
+<ol>
+  <li>
+    <p>安装jest相关依赖</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i @vue/test-utils@next jest vue-jest@next ts-jest babel-jest typescript @types/jest <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在根目录下创建<code class="language-plaintext highlighter-rouge">jest.config.js</code>配置文件，这里配置的同时支持js和ts</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">moduleFileExtensions</span><span class="p">:</span> <span class="p">[</span>
+    <span class="dl">'</span><span class="s1">js</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">json</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">vue</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">ts</span><span class="dl">'</span>
+  <span class="p">],</span>
+  <span class="na">transform</span><span class="p">:</span> <span class="p">{</span>
+    <span class="dl">'</span><span class="s1">^.+</span><span class="se">\\</span><span class="s1">.js$</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">babel-jest</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">^.+</span><span class="se">\\</span><span class="s1">.vue$</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">vue-jest</span><span class="dl">'</span><span class="p">,</span>
+    <span class="dl">'</span><span class="s1">^.+</span><span class="se">\\</span><span class="s1">.ts$</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">ts-jest</span><span class="dl">'</span>
+  <span class="p">},</span>
+  <span class="na">testRegex</span><span class="p">:</span> <span class="dl">'</span><span class="s1">(/__tests__/.*|(</span><span class="se">\\</span><span class="s1">.|/)(test|spec))</span><span class="se">\\</span><span class="s1">.(js|ts)$</span><span class="dl">'</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>安装babel支持</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i @babel/preset-env babel-plugin-transform-import-meta <span class="nt">-D</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在根目录创建<code class="language-plaintext highlighter-rouge">babel.config.js</code>配置文件</p>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">presets</span><span class="p">:</span> <span class="p">[[</span><span class="dl">'</span><span class="s1">@babel/preset-env</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">targets</span><span class="p">:</span> <span class="p">{</span> <span class="na">node</span><span class="p">:</span> <span class="dl">'</span><span class="s1">current</span><span class="dl">'</span> <span class="p">}</span> <span class="p">}]],</span>
+  <span class="na">env</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">test</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">plugins</span><span class="p">:</span> <span class="p">[</span>
+        <span class="dl">'</span><span class="s1">babel-plugin-transform-import-meta</span><span class="dl">'</span><span class="p">,</span>
+      <span class="p">],</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>配置eslint规则</p>
+
+    <ul>
+      <li>
+        <p>安装依赖</p>
+
+        <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm i eslint-plugin-jest <span class="nt">-D</span>
+</code></pre></div>        </div>
+      </li>
+      <li>
+        <p>修改<code class="language-plaintext highlighter-rouge">.eslintrc.js</code>文件里的<code class="language-plaintext highlighter-rouge">extends</code></p>
+
+        <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">extends</span><span class="p">:</span> <span class="p">[</span>
+  <span class="dl">"</span><span class="s2">plugin:vue/essential</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">airbnb-base</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">plugin:prettier/recommended</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">plugin:jest/recommended</span><span class="dl">'</span>				 <span class="c1">// 添加 jest 插件</span>
+<span class="p">]</span>
+</code></pre></div>        </div>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>在<code class="language-plaintext highlighter-rouge">package.json</code>里的<code class="language-plaintext highlighter-rouge">scripts</code>新增属性</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"dev"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vite"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"build"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vite build"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"serve"</span><span class="p">:</span><span class="w"> </span><span class="s2">"vite preview"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"lint"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint ./src --ext .vue,.js,.jsx"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"lint-fix"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eslint --fix ./src --ext .vue,.js,.jsx"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"prepare"</span><span class="p">:</span><span class="w"> </span><span class="s2">"husky install"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"test"</span><span class="p">:</span><span class="w"> </span><span class="s2">"jest"</span><span class="w">			</span><span class="err">//</span><span class="w"> </span><span class="err">测试命令</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="创建单元测试文件">创建单元测试文件</h3>
+
+<ol>
+  <li>
+    <p>先修改下<code class="language-plaintext highlighter-rouge">src/views/Test.vue</code>文件</p>
+
+    <div class="language-vue highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;</span><span class="k">template</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"test-container page-container"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"page-title"</span><span class="nt">&gt;</span>Unit Test Page<span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;p&gt;</span>count is: 8<span class="nt">&lt;/p&gt;</span>
+    <span class="nt">&lt;button</span> <span class="err">@</span><span class="na">click=</span><span class="s">"increment"</span><span class="nt">&gt;</span>increment<span class="nt">&lt;/button&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/</span><span class="k">template</span><span class="nt">&gt;</span>
+   
+<span class="nt">&lt;</span><span class="k">script</span><span class="nt">&gt;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">ref</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">vue</span><span class="dl">'</span>
+   
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Test</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">setup</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">count</span> <span class="o">=</span> <span class="nx">ref</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+      <span class="kd">const</span> <span class="nx">increment</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">count</span><span class="p">.</span><span class="nx">value</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="p">{</span> <span class="nx">count</span><span class="p">,</span> <span class="nx">increment</span> <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nt">&lt;/</span><span class="k">script</span><span class="nt">&gt;</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>创建<code class="language-plaintext highlighter-rouge">test/Test.spec.js</code>测试文件</p>
+
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>├── src/
+└── tests/                           // 单元测试目录
+    ├── Test.spec.js                 // Test 组件测试
+</code></pre></div>    </div>
+
+    <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">mount</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@vue/test-utils</span><span class="dl">'</span>
+<span class="k">import</span> <span class="nx">Test</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">../src/views/Test.vue</span><span class="dl">'</span>
+   
+<span class="nx">test</span><span class="p">(</span><span class="dl">'</span><span class="s1">Test.vue</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">wrapper</span> <span class="o">=</span> <span class="nx">mount</span><span class="p">(</span><span class="nx">Test</span><span class="p">)</span>
+  <span class="nx">expect</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">html</span><span class="p">()).</span><span class="nx">toContain</span><span class="p">(</span><span class="dl">'</span><span class="s1">Unit Test Page</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">expect</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">html</span><span class="p">()).</span><span class="nx">toContain</span><span class="p">(</span><span class="dl">'</span><span class="s1">count is: 0</span><span class="dl">'</span><span class="p">)</span>
+  <span class="k">await</span> <span class="nx">wrapper</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="dl">'</span><span class="s1">button</span><span class="dl">'</span><span class="p">).</span><span class="nx">trigger</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">expect</span><span class="p">(</span><span class="nx">wrapper</span><span class="p">.</span><span class="nx">html</span><span class="p">()).</span><span class="nx">toContain</span><span class="p">(</span><span class="dl">'</span><span class="s1">count is: 1</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">})</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>执行单元测试</p>
+
+    <div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>pnpm run <span class="nb">test</span>
+</code></pre></div>    </div>
+
+    <ul>
+      <li>
+        <p>成功示例</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210425113752268.png" alt="image-20210425113752268" /></p>
+      </li>
+      <li>
+        <p>失败示例</p>
+
+        <p><img src="https://figure-b.ricardolsw.com/image/image-20210425113848214.png" alt="image-20210425113848214" /></p>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="集成至git-hook">集成至Git Hook</h3>
+
+<p>同样单元测试也需要添加到Git Hook里面，只有单元测试全部通过才能推送到远程代码仓库中，否者就终止<code class="language-plaintext highlighter-rouge">push</code>。</p>
+
+<p>在<code class="language-plaintext highlighter-rouge">.husky/</code>目录下新增<code class="language-plaintext highlighter-rouge">pre-push</code>文件</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<span class="nb">.</span> <span class="s2">"</span><span class="si">$(</span><span class="nb">dirname</span> <span class="s2">"</span><span class="nv">$0</span><span class="s2">"</span><span class="si">)</span><span class="s2">/_/husky.sh"</span>
+
+npm run <span class="nb">test</span>
+</code></pre></div></div>
+
+<p>现在，我们在 <code class="language-plaintext highlighter-rouge">git push</code> 时就能先进行单元测试了，只有单元测试全部通过，才能成功 <code class="language-plaintext highlighter-rouge">push</code>。</p>
+
+<h2 id="写在最后">写在最后</h2>
+
+<p>到这里一个基本的前端工程就完成了，自动部署这里就先不写了，后面我单独再写一篇讲讲这部分内容。</p>
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Tags: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/tags/#vue3" class="page__taxonomy-item" rel="tag">Vue3</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+  
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Categories: </strong>
+    <span itemprop="keywords">
+    
+      
+      
+      <a href="/categories/#vue" class="page__taxonomy-item" rel="tag">Vue</a>
+    
+    </span>
+  </p>
+
+
+        
+          <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Updated:</strong> <time datetime="2021-04-24">April 24, 2021</time></p>
+        
+      </footer>
+
+      <section class="page__share">
+  
+
+  <a href="https://twitter.com/intent/tweet?text=Vue3%E5%89%8D%E4%BC%A0%EF%BC%9A%E5%88%9B%E5%BB%BA%E5%B7%A5%E7%A8%8B%E6%97%B6%E5%BF%85%E9%A1%BB%E8%A6%81%E5%81%9A%E7%9A%84%E4%BA%8B%20%2Fvue%2FVue3%25E5%2589%258D%25E4%25BC%25A0-%25E5%2588%259B%25E5%25BB%25BA%25E5%25B7%25A5%25E7%25A8%258B%25E6%2597%25B6%25E5%25BF%2585%25E9%25A1%25BB%25E8%25A6%2581%25E5%2581%259A%25E7%259A%2584%25E4%25BA%258B%2F" class="btn btn--twitter" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i><span> Twitter</span></a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=%2Fvue%2FVue3%25E5%2589%258D%25E4%25BC%25A0-%25E5%2588%259B%25E5%25BB%25BA%25E5%25B7%25A5%25E7%25A8%258B%25E6%2597%25B6%25E5%25BF%2585%25E9%25A1%25BB%25E8%25A6%2581%25E5%2581%259A%25E7%259A%2584%25E4%25BA%258B%2F" class="btn btn--facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span></a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=%2Fvue%2FVue3%25E5%2589%258D%25E4%25BC%25A0-%25E5%2588%259B%25E5%25BB%25BA%25E5%25B7%25A5%25E7%25A8%258B%25E6%2597%25B6%25E5%25BF%2585%25E9%25A1%25BB%25E8%25A6%2581%25E5%2581%259A%25E7%259A%2584%25E4%25BA%258B%2F" class="btn btn--linkedin" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span></a>
+</section>
+
+
+      
+  <nav class="pagination">
+    
+      <a href="/%E6%9C%8D%E5%8A%A1%E5%99%A8/Nginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" class="pagination--pager" title="Nginx负载均衡
+">Previous</a>
+    
+    
+      <a href="/%E5%B7%A5%E5%85%B7/%E7%95%AA%E5%A4%96%E7%AF%87-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-GitHub-Actions/" class="pagination--pager" title="番外篇：自动部署（GitHub Actions）
+">Next</a>
+    
+  </nav>
+
+    </div>
+
+    
+  </article>
+
+  
+  
+    <div class="page__related">
+      <h4 class="page__related-title">You May Also Enjoy</h4>
+      <div class="grid__wrapper">
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E6%97%85%E6%B8%B8/%E9%87%8D%E5%BA%86/" rel="permalink">清明假期重庆游
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+
+
+
+
+
+
+
+
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/gitflow%E6%B5%81%E7%A8%8B%E7%A4%BA%E4%BE%8B/" rel="permalink">gitflow流程示例
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  5 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">分支管理
+
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E5%B7%A5%E5%85%B7/%E7%95%AA%E5%A4%96%E7%AF%87-%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2-GitHub-Actions/" rel="permalink">番外篇：自动部署（GitHub Actions）
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+        
+          
+
+
+
+<div class="grid__item">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
+    
+    <h2 class="archive__item-title" itemprop="headline">
+      
+        <a href="/%E6%9C%8D%E5%8A%A1%E5%99%A8/Nginx%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" rel="permalink">Nginx负载均衡
+</a>
+      
+    </h2>
+    
+      <p class="page__meta"><i class="far fa-clock" aria-hidden="true"></i> 
+
+
+
+
+  less than 1 minute read
+
+</p>
+    
+    <p class="archive__item-excerpt" itemprop="description">
+</p>
+  </article>
+</div>
+
+        
+      </div>
+    </div>
+  
+  
+</div>
+
+    </div>
+
+    
+      <div class="search-content">
+        <div class="search-content__inner-wrap"><form class="search-content__form" onkeydown="return event.key != 'Enter';">
+    <label class="sr-only" for="search">
+      Enter your search term...
+    </label>
+    <input type="search" id="search" class="search-input" tabindex="-1" placeholder="Enter your search term..." />
+  </form>
+  <div id="results" class="results"></div></div>
+
+      </div>
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+
+    
+      
+        
+          <li><a href="https://twitter.com/LswRicardo" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        
+      
+        
+          <li><a href="https://github.com/RicardoLSW" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-github" aria-hidden="true"></i> GitHub</a></li>
+        
+      
+        
+          <li><a href="https://instagram.com/_ricardolsw" rel="nofollow noopener noreferrer"><i class="fab fa-fw fa-instagram" aria-hidden="true"></i> Instagram</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">&copy; 2024 让我留在你身边. Powered by <a href="https://jekyllrb.com" rel="nofollow">Jekyll</a> &amp; <a href="https://mademistakes.com/work/minimal-mistakes-jekyll-theme/" rel="nofollow">Minimal Mistakes</a>.</div>
+
+      </footer>
+    </div>
+
+    
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://kit.fontawesome.com/4eee35f757.js"></script>
+
+
+
+
+<script src="/assets/js/lunr/lunr.min.js"></script>
+<script src="/assets/js/lunr/lunr-store.js"></script>
+<script src="/assets/js/lunr/lunr-en.js"></script>
+
+
+
+
+
+
+
+    <canvas id="cas" width="1680" height="567" style="position: fixed; z-index: -1;"></canvas>
+    <script src="/assets/js/canvas.js" type="text/javascript"></script>
+  </body>
+</html>
