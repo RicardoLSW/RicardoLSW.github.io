@@ -1,0 +1,75 @@
+---
+import { Picture } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import TravelCard from '../components/TravelCard.astro';
+import TripMap from '../components/TripMap.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDate } from '../lib/site';
+
+const travels = (await getCollection('travel', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const legacy = (await getCollection('legacy')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 5);
+const featured = travels[0];
+if (!featured) throw new Error('At least one published travel entry is required.');
+const frames = [featured.data.gallery?.[1]?.src, featured.data.gallery?.[4]?.src, featured.data.gallery?.[9]?.src].filter(Boolean);
+const markers = travels.map((entry) => ({
+  title: entry.data.title,
+  location: entry.data.location,
+  lat: entry.data.coordinates.lat,
+  lng: entry.data.coordinates.lng,
+  href: `/travel/${entry.id}/`,
+}));
+---
+
+<BaseLayout>
+  <section class="home-hero">
+    <div class="home-hero-copy">
+      <p class="section-kicker" lang="en">A photographic travel journal</p>
+      <h1>从一张照片，抵达一座城。</h1>
+      <p>这里收集旅途中看见的建筑、街巷、夜色与移动的风景。照片在前，文字随后。</p>
+      <div class="home-hero-actions">
+        <a class="button button-primary" href={`/travel/${featured.id}/`}>打开重庆相册</a>
+        <a class="button" href="/travel/map/">查看旅行地图</a>
+      </div>
+    </div>
+    <div class="home-hero-frames" aria-label="重庆旅行照片预览">
+      {frames.map((image, index) => image && (
+        <Picture
+          src={image}
+          widths={[420, 720, 1080]}
+          sizes="(max-width: 820px) 60vw, 28vw"
+          formats={['avif', 'webp']}
+          alt={featured.data.gallery?.[index === 0 ? 1 : index === 1 ? 4 : 9]?.alt ?? '重庆旅行照片'}
+          loading={index === 0 ? 'eager' : 'lazy'}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="home-feature" aria-labelledby="featured-title">
+    <div class="section-heading">
+      <div><p class="section-kicker" lang="en">Latest journey</p><h2 id="featured-title">最近抵达</h2></div>
+      <p>第一篇完整相册从重庆开始：十张原有照片被整理为可缩放、可键盘浏览的影像叙事。</p>
+    </div>
+    <TravelCard entry={featured} priority />
+  </section>
+
+  <section class="home-map" aria-labelledby="home-map-title">
+    <div class="section-heading">
+      <div><p class="section-kicker" lang="en">Footprints</p><h2 id="home-map-title">旅行足迹</h2></div>
+      <p>每篇旅行内容会自动出现在地图上。点击标记即可进入对应游记。</p>
+    </div>
+    <TripMap markers={markers} label="全部旅行地点" />
+  </section>
+
+  <section class="home-legacy" aria-labelledby="notes-title">
+    <div class="section-heading">
+      <div><p class="section-kicker" lang="en">From the archive</p><h2 id="notes-title">旧日笔记</h2></div>
+      <p>原博客中的技术文章继续保留在原有 URL，迁移后仍可阅读。</p>
+    </div>
+    <ul class="archive-list">
+      {legacy.map((entry) => (
+        <li><time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time><a href={entry.data.legacyPath}>{entry.data.title}</a></li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

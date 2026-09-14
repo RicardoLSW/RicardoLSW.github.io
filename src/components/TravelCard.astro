@@ -1,0 +1,34 @@
+---
+import { Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { formatDate } from '../lib/site';
+
+interface Props {
+  entry: CollectionEntry<'travel'>;
+  priority?: boolean;
+}
+
+const { entry, priority = false } = Astro.props;
+---
+
+<article class="travel-card" data-location={entry.data.location} data-year={entry.data.date.getFullYear()} data-tags={entry.data.tags.join(',')}>
+  <a class="travel-card-image" href={`/travel/${entry.id}/`} aria-label={`阅读《${entry.data.title}》`}>
+    <Picture
+      src={entry.data.cover}
+      widths={[480, 720, 1080]}
+      sizes="(max-width: 720px) 100vw, 50vw"
+      formats={['avif', 'webp']}
+      alt={`《${entry.data.title}》封面`}
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : 'auto'}
+    />
+  </a>
+  <div class="travel-card-body">
+    <p class="eyebrow"><span>{entry.data.location}</span><time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time></p>
+    <h2><a href={`/travel/${entry.id}/`}>{entry.data.title}</a></h2>
+    <p>{entry.data.description}</p>
+    <ul class="tag-list" aria-label="标签">
+      {entry.data.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+  </div>
+</article>

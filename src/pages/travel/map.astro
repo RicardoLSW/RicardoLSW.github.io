@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import TripMap from '../../components/TripMap.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const travels = (await getCollection('travel', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const markers = travels.map((entry) => ({
+  title: entry.data.title,
+  location: entry.data.location,
+  lat: entry.data.coordinates.lat,
+  lng: entry.data.coordinates.lng,
+  href: `/travel/${entry.id}/`,
+}));
+---
+
+<BaseLayout title="旅行地图" description="在地图上浏览 Ricardo 的旅行足迹。">
+  <div class="page-shell">
+    <header class="page-header">
+      <div><p class="section-kicker" lang="en">Travel map</p><h1>旅行地图</h1></div>
+      <p>坐标来自每篇游记的 Front Matter，并保持在城市级精度。点击地图标记进入对应相册。</p>
+    </header>
+    <TripMap markers={markers} height="65vh" label="旅行地点总览" />
+  </div>
+</BaseLayout>

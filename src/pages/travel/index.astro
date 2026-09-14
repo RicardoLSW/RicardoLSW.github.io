@@ -1,0 +1,63 @@
+---
+import { getCollection } from 'astro:content';
+import TravelCard from '../../components/TravelCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const travels = (await getCollection('travel', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const locations = [...new Set(travels.map((entry) => entry.data.location))].sort();
+const years = [...new Set(travels.map((entry) => entry.data.date.getFullYear()))].sort((a, b) => b - a);
+const tags = [...new Set(travels.flatMap((entry) => entry.data.tags))].sort();
+---
+
+<BaseLayout title="旅行归档" description="按地点、年份和标签浏览 Ricardo 的旅行相册。">
+  <div class="page-shell">
+    <header class="page-header">
+      <div><p class="section-kicker" lang="en">Travel archive</p><h1>旅行归档</h1></div>
+      <p>从地点、年份或标签进入一段旅程。每次新增旅行内容都会自动出现在这里。</p>
+    </header>
+
+    <form class="filters" data-travel-filters aria-label="筛选旅行">
+      <label>地点
+        <select name="location"><option value="">全部地点</option>{locations.map((location) => <option value={location}>{location}</option>)}</select>
+      </label>
+      <label>年份
+        <select name="year"><option value="">全部年份</option>{years.map((year) => <option value={year}>{year}</option>)}</select>
+      </label>
+      <label>标签
+        <select name="tag"><option value="">全部标签</option>{tags.map((tag) => <option value={tag}>{tag}</option>)}</select>
+      </label>
+    </form>
+
+    <p class="visually-hidden" aria-live="polite" data-filter-status></p>
+    <div class="card-stack" data-travel-list>
+      {travels.map((entry) => <TravelCard entry={entry} />)}
+    </div>
+    <p class="empty-state" data-empty-state>没有符合当前条件的旅行，试试清除筛选。</p>
+  </div>
+</BaseLayout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-travel-filters]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-travel-list] .travel-card')];
+  const empty = document.querySelector<HTMLElement>('[data-empty-state]');
+  const status = document.querySelector<HTMLElement>('[data-filter-status]');
+
+  form?.addEventListener('change', () => {
+    const data = new FormData(form);
+    const location = String(data.get('location') ?? '');
+    const year = String(data.get('year') ?? '');
+    const tag = String(data.get('tag') ?? '');
+    let visible = 0;
+
+    cards.forEach((card) => {
+      const matches = (!location || card.dataset.location === location)
+        && (!year || card.dataset.year === year)
+        && (!tag || card.dataset.tags?.split(',').includes(tag));
+      card.hidden = !matches;
+      if (matches) visible += 1;
+    });
+
+    if (empty) empty.style.display = visible ? 'none' : 'block';
+    if (status) status.textContent = `显示 ${visible} 篇旅行内容`;
+  });
+</script>

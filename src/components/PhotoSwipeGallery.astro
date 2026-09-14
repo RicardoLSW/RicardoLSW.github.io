@@ -1,0 +1,89 @@
+---
+import { getImage, Picture } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import 'photoswipe/style.css';
+
+interface Props {
+  images: NonNullable<CollectionEntry<'travel'>['data']['gallery']>;
+  label?: string;
+}
+
+const { images, label = '旅行照片' } = Astro.props;
+const prepared = await Promise.all(
+  images.map(async (item) => ({
+    ...item,
+    large: await getImage({ src: item.src, width: Math.min(item.width, 2200), format: 'webp', quality: 86 }),
+  })),
+);
+---
+
+<div class="photo-gallery" data-pswp-gallery aria-label={label}>
+  {prepared.map((item, index) => (
+    <figure class:list={['gallery-item', index === 0 && 'gallery-item-featured', item.height > item.width && 'gallery-item-portrait']}>
+      <a
+        href={item.large.src}
+        data-pswp-width={item.large.attributes.width}
+        data-pswp-height={item.large.attributes.height}
+        target="_blank"
+        aria-label={`打开大图：${item.alt}`}
+      >
+        <Picture
+          src={item.src}
+          widths={[360, 640, 960]}
+          sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+          formats={['avif', 'webp']}
+          alt={item.alt}
+          loading={index < 2 ? 'eager' : 'lazy'}
+        />
+      </a>
+      {item.caption && <figcaption><span>{String(index + 1).padStart(2, '0')}</span>{item.caption}</figcaption>}
+    </figure>
+  ))}
+</div>
+
+<script>
+  import PhotoSwipeLightbox from 'photoswipe/lightbox';
+
+  document.querySelectorAll<HTMLElement>('[data-pswp-gallery]').forEach((gallery) => {
+    let status: HTMLElement | null = null;
+    const pageSurfaces = [...document.querySelectorAll<HTMLElement>('body > header, body > main, body > footer, body > .skip-link')];
+    const lightbox = new PhotoSwipeLightbox({
+      gallery,
+      children: 'a',
+      pswpModule: () => import('photoswipe'),
+      bgOpacity: 0.96,
+      showHideAnimationType: 'zoom',
+      closeTitle: '关闭',
+      zoomTitle: '缩放',
+      arrowPrevTitle: '上一张',
+      arrowNextTitle: '下一张',
+    });
+
+    lightbox.on('beforeOpen', () => pageSurfaces.forEach((surface) => { surface.inert = true; }));
+    lightbox.on('afterInit', () => {
+      const dialog = lightbox.pswp?.element;
+      dialog?.setAttribute('aria-modal', 'true');
+      dialog?.setAttribute('aria-label', `${gallery.getAttribute('aria-label') ?? '旅行照片'}大图浏览`);
+      if (dialog) {
+        status = document.createElement('p');
+        status.className = 'visually-hidden';
+        status.setAttribute('aria-live', 'polite');
+        dialog.append(status);
+      }
+    });
+    lightbox.on('change', () => {
+      const index = lightbox.pswp?.currIndex ?? 0;
+      const current = gallery.querySelectorAll<HTMLAnchorElement>('a')[index];
+      if (status) status.textContent = `图片 ${index + 1} / ${gallery.querySelectorAll('a').length}：${current?.getAttribute('aria-label')?.replace('打开大图：', '') ?? ''}`;
+    });
+    lightbox.on('close', () => pageSurfaces.forEach((surface) => { surface.inert = false; }));
+    lightbox.init();
+  });
+</script>
+
+<style is:global>
+  .pswp[role="dialog"]:focus-visible {
+    outline: 3px solid #fff !important;
+    outline-offset: -7px !important;
+  }
+</style>

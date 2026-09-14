@@ -1,0 +1,89 @@
+---
+import 'leaflet/dist/leaflet.css';
+
+export interface MapMarker {
+  title: string;
+  location: string;
+  lat: number;
+  lng: number;
+  href: string;
+}
+
+interface Props {
+  markers: MapMarker[];
+  height?: string;
+  label?: string;
+}
+
+const { markers, height = '28rem', label = '旅行足迹地图' } = Astro.props;
+---
+
+<div class="trip-map-shell">
+  <div
+    class="trip-map"
+    data-trip-map
+    data-markers={JSON.stringify(markers)}
+    style={`--map-height: ${height}`}
+    role="region"
+    aria-label={label}
+  ></div>
+  <noscript>
+    <p>启用 JavaScript 后可浏览互动地图。</p>
+  </noscript>
+  <ul class="map-fallback" aria-label="地图地点列表">
+    {markers.map((marker) => <li><a href={marker.href}>{marker.location} · {marker.title}</a></li>)}
+  </ul>
+</div>
+
+<script>
+  import L from 'leaflet';
+
+  document.querySelectorAll<HTMLElement>('[data-trip-map]').forEach((element) => {
+    const markers = JSON.parse(element.dataset.markers ?? '[]') as Array<{
+      title: string;
+      location: string;
+      lat: number;
+      lng: number;
+      href: string;
+    }>;
+    if (markers.length === 0) return;
+
+    const map = L.map(element, { scrollWheelZoom: false });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 18,
+    }).addTo(map);
+
+    const bounds = L.latLngBounds([]);
+    markers.forEach((marker) => {
+      bounds.extend([marker.lat, marker.lng]);
+      const point = L.circleMarker([marker.lat, marker.lng], {
+        radius: 12,
+        weight: 3,
+        color: '#f6f3ed',
+        fillColor: '#b83224',
+        fillOpacity: 1,
+      }).addTo(map);
+      const tooltip = document.createElement('span');
+      const place = document.createElement('strong');
+      place.textContent = marker.location;
+      tooltip.append(place, document.createElement('br'), document.createTextNode(marker.title));
+      point.bindTooltip(tooltip, { direction: 'top' });
+      point.on('click', () => window.location.assign(marker.href));
+      const target = point.getElement();
+      target?.setAttribute('tabindex', '0');
+      target?.setAttribute('role', 'link');
+      target?.setAttribute('aria-label', `${marker.location}：${marker.title}`);
+      target?.addEventListener('keydown', (event) => {
+        if (!(event instanceof KeyboardEvent)) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.assign(marker.href);
+        }
+      });
+    });
+
+    if (markers.length === 1) map.setView(bounds.getCenter(), 11);
+    else map.fitBounds(bounds.pad(0.35), { maxZoom: 7 });
+  });
+</script>
