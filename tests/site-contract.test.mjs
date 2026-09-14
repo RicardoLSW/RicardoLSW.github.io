@@ -87,6 +87,14 @@ test('provides the required travel pages and interactive components', () => {
   assert.match(read('src', 'components', 'TripMap.astro'), /leaflet/);
 });
 
+test('constrains gallery rows and captions without hover transforms', () => {
+  const css = read('src', 'styles', 'global.css');
+
+  assert.match(css, /\.photo-gallery\s*\{[^}]*grid-auto-rows:/s);
+  assert.match(css, /\.gallery-item\s*\{[^}]*display:\s*grid/s);
+  assert.doesNotMatch(css, /\.gallery-item a:hover img\s*\{[^}]*transform:/s);
+});
+
 test('uses the official GitHub Pages deployment flow without Jekyll', () => {
   const workflow = read('.github', 'workflows', 'actions.yml');
 
