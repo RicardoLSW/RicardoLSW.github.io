@@ -48,6 +48,23 @@ test('keeps every non-travel legacy post available', () => {
   assert.equal(readdirSync(legacyDirectory).filter((file) => file.endsWith('.md')).length, 19);
 });
 
+test('preserves the normalized Jekyll routes from the production sitemap', () => {
+  const expectedRoutes = [
+    '/vue从零开始/Vue从零开始-1-前端环境搭建/',
+    '/工具/玩转GitHub-1-GitHub-Gist/',
+    '/前端/关于Object.entries()-你还知道Object.fromEntries()吗/',
+    '/blog/Flutter-WebSocket封装-实现心跳-重连机制/',
+    '/vue/Vue3前传-创建工程时必须要做的事/',
+    '/工具/番外篇-自动部署-GitHub-Actions/',
+  ];
+  const content = readdirSync(path('src', 'content', 'legacy'))
+    .filter((file) => file.endsWith('.md'))
+    .map((file) => read('src', 'content', 'legacy', file))
+    .join('\n');
+
+  for (const route of expectedRoutes) assert.ok(content.includes(`legacyPath: "${route}"`), `${route} must be preserved`);
+});
+
 test('provides the required travel pages and interactive components', () => {
   const requiredFiles = [
     ['src', 'pages', 'index.astro'],
@@ -55,6 +72,9 @@ test('provides the required travel pages and interactive components', () => {
     ['src', 'pages', 'travel', 'map.astro'],
     ['src', 'pages', 'travel', '[...slug].astro'],
     ['src', 'pages', 'about.astro'],
+    ['src', 'pages', 'page2', 'index.astro'],
+    ['src', 'pages', 'page3', 'index.astro'],
+    ['src', 'pages', 'page4', 'index.astro'],
     ['src', 'components', 'PhotoSwipeGallery.astro'],
     ['src', 'components', 'TripMap.astro'],
   ];

@@ -1,0 +1,85 @@
+---
+import { Picture } from 'astro:assets';
+import { render, type CollectionEntry } from 'astro:content';
+import PhotoSwipeGallery from '../components/PhotoSwipeGallery.astro';
+import TripMap from '../components/TripMap.astro';
+import { formatDate } from '../lib/site';
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  entry: CollectionEntry<'travel'>;
+  canonicalPath?: string;
+}
+
+const { entry, canonicalPath = `/travel/${entry.id}/` } = Astro.props;
+const { Content } = await render(entry);
+const coverAlt = entry.data.gallery?.find((item) => item.src.src === entry.data.cover.src)?.alt ?? `${entry.data.location}旅行照片`;
+const marker = [{
+  title: entry.data.title,
+  location: entry.data.location,
+  lat: entry.data.coordinates.lat,
+  lng: entry.data.coordinates.lng,
+  href: `/travel/${entry.id}/`,
+}];
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  image={entry.data.cover.src}
+  canonicalPath={canonicalPath}
+  pageType="article"
+>
+  <article class="travel-article">
+    <header class="travel-hero">
+      <Picture
+        src={entry.data.cover}
+        widths={[720, 1200, 1800, 2400]}
+        sizes="100vw"
+        formats={['avif', 'webp']}
+        alt={coverAlt}
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="travel-hero-scrim"></div>
+      <div class="travel-hero-copy">
+        <p class="coordinate-line" aria-label={`坐标 ${entry.data.coordinates.lat}, ${entry.data.coordinates.lng}`}>
+          {entry.data.coordinates.lat.toFixed(2)}° N / {entry.data.coordinates.lng.toFixed(2)}° E
+        </p>
+        <p class="eyebrow"><span>{entry.data.location}</span><time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time></p>
+        <h1>{entry.data.title}</h1>
+        <p>{entry.data.description}</p>
+      </div>
+    </header>
+
+    <div class="travel-intro">
+      <div>
+        <p class="section-kicker" lang="en">Travel note</p>
+        <div class="prose"><Content /></div>
+      </div>
+      <aside>
+        <p>目的地</p><strong>{entry.data.location}</strong>
+        <p>影像</p><strong>{entry.data.gallery?.length ?? 0} 张</strong>
+        <ul class="tag-list" aria-label="标签">{entry.data.tags.map((tag) => <li>{tag}</li>)}</ul>
+      </aside>
+    </div>
+
+    {entry.data.gallery && entry.data.gallery.length > 0 && (
+      <section class="gallery-section" aria-labelledby="gallery-title">
+        <div class="section-heading">
+          <div><p class="section-kicker" lang="en">Photo essay</p><h2 id="gallery-title">沿途影像</h2></div>
+          <p>点击任意照片进入大图浏览，可缩放、切换或使用键盘操作。</p>
+        </div>
+        <PhotoSwipeGallery images={entry.data.gallery} label={`${entry.data.title}相册`} />
+      </section>
+    )}
+
+    <section class="article-map" aria-labelledby="article-map-title">
+      <div class="section-heading">
+        <div><p class="section-kicker" lang="en">Where</p><h2 id="article-map-title">抵达重庆</h2></div>
+        <p>仅使用城市级坐标标记目的地，不展示具体拍摄位置。</p>
+      </div>
+      <TripMap markers={marker} height="24rem" label={`${entry.data.location}位置地图`} />
+    </section>
+  </article>
+</BaseLayout>

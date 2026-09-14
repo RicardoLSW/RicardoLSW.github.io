@@ -1,0 +1,14 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import TravelPostLayout from '../../layouts/TravelPostLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('travel', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props { entry: CollectionEntry<'travel'>; }
+const { entry } = Astro.props;
+---
+
+<TravelPostLayout entry={entry} />
