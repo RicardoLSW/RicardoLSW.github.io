@@ -1,0 +1,92 @@
+---
+import { site } from '../lib/site';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalPath?: string;
+  pageType?: 'website' | 'article';
+}
+
+const {
+  title,
+  description = site.description,
+  image = '/assets/images/bio-photo.jpg',
+  canonicalPath = Astro.url.pathname,
+  pageType = 'website',
+} = Astro.props;
+const pageTitle = title ? `${title} · ${site.title}` : site.title;
+const canonical = new URL(canonicalPath, Astro.site);
+const socialImage = new URL(image, Astro.site);
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/', label: '首页' },
+  { href: '/travel/', label: '旅行' },
+  { href: '/travel/map/', label: '地图' },
+  { href: '/posts/', label: '旧文' },
+  { href: '/about/', label: '关于' },
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0b1f2a" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title={`${site.title} RSS`} href="/rss.xml" />
+    <meta property="og:type" content={pageType} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:locale" content="zh_CN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到正文</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label={`${site.title}首页`}>
+        <span class="wordmark-mark" aria-hidden="true">旅</span>
+        <span>
+          <strong>{site.title}</strong>
+          <small lang="en">Ricardo's travel journal</small>
+        </span>
+      </a>
+      <nav aria-label="主导航">
+        <ul>
+          {nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={item.href === '/' ? (path === '/' ? 'page' : undefined) : path.startsWith(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+    <main id="main-content">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div>
+        <p class="footer-title">沿着光线，继续走。</p>
+        <p>{site.description}</p>
+      </div>
+      <div class="footer-links">
+        {site.social.map((item) => <a href={item.href} rel="me noopener" target="_blank">{item.label}</a>)}
+        <a href="/rss.xml">RSS</a>
+      </div>
+      <p class="copyright">© {new Date().getFullYear()} {site.author}</p>
+    </footer>
+  </body>
+</html>

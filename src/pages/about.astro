@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../lib/site';
+---
+
+<BaseLayout title="关于" description={`关于 ${site.author} 和这本旅行影像日志。`}>
+  <div class="page-shell">
+    <header class="page-header">
+      <div><p class="section-kicker" lang="en">About</p><h1>关于这里</h1></div>
+      <p>从技术博客到旅行影像日志，内容仍由 Ricardo 持续记录与维护。</p>
+    </header>
+    <div class="about-grid">
+      <div class="prose">
+        <h2>照片在前，文字随后</h2>
+        <p>这个站点从原有个人博客迁移而来。新的首页、归档与地图以旅行照片为主，同时完整保留过去发布的主要技术文章。</p>
+        <p>每次旅行是一篇独立的 Markdown 或 MDX 内容：地点、日期、城市级坐标、封面、标签和相册都写在同一份内容文件中。</p>
+        <h2>位置与图片</h2>
+        <p>地图只使用城市级坐标，不公开具体拍摄位置。旅行图片在构建时生成适合网页浏览的 AVIF/WebP 版本，原始照片不会被页面默认全部下载。</p>
+      </div>
+      <aside class="about-profile">
+        <img src="/assets/images/bio-photo.jpg" alt="Ricardo 的头像" width="180" height="180" />
+        <p class="section-kicker" lang="en">The author</p>
+        <h2>{site.author}</h2>
+        <p>{site.bio}</p>
+        <ul class="tag-list" aria-label="社交链接">{site.social.map((item) => <li><a href={item.href} target="_blank" rel="me noopener">{item.label}</a></li>)}</ul>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
