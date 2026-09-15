@@ -1,10 +1,10 @@
 ## 旅行照片流水线
 
-`tools/travel_photo_pipeline.py` 是可复用的本地优先流水线。它只接受 JPEG（v1 明确拒绝 RAW），对图像做方向校正、删除全部 EXIF/GPS/XMP/ICC/注释元数据并压缩为 JPEG。本次接入验收未执行真实 OSS 请求、上传或生成真实游记；没有真实批次名时绝不把示例当作输入。
+`tools/travel_photo_pipeline.py` 是可复用的本地优先流水线。它只接受 JPEG（v1 明确拒绝 RAW），对图像做方向校正、删除全部 EXIF/GPS/XMP/ICC/注释元数据并压缩为 JPEG。每次真实 OSS 处理、模型查看和草稿验收结果均在对应私有 issue 留档；离线测试不代表真实批次完成，没有真实批次名时绝不把示例当作输入。
 
-所有原图下载、预览图、清单、观察记录和草稿都在 Git 忽略的 `var/travel-photo-pipeline/<workspace-id>/`。不要把它放到 `src/` 或 `public/`，不要提交原图、密钥、签名 URL 或草稿。`<workspace-id>` 必须在本机文件系统中唯一；对于包含大写字母的源批次，使用下文的派生存储映射作为目录名，不能仅以大小写区分目录。流水线最多处理 100 张、单张输入/派生图最多 128 MiB、整批最多 512 MiB、最多 40,000,000 像素和一页；拒绝路径穿越和符号链接。源端只读，不写入或删除 `travel/<batch>/` 中的原图。
+所有原图下载、预览图、清单、观察记录和草稿都在 Git 忽略的 `var/travel-photo-pipeline/<workspace-id>/`。不要把它放到 `src/` 或 `public/`，不要提交原图、密钥、签名 URL 或草稿。`<workspace-id>` 必须在本机文件系统中唯一；对于包含大写字母的源批次，使用下文的派生存储映射作为目录名，不能仅以大小写区分目录。流水线最多处理 100 张、单张输入/派生图最多 128 MiB、最多 40,000,000 像素和一页；默认 `prepare` 的整批原始字节上限为 512 MiB，拒绝路径穿越和符号链接。源端只读，不写入或删除 `travel/<batch>/` 中的原图。
 
-展示图长边上限 2400 px，模型预览长边上限 768 px，不放大小图；宽高按 EXIF 旋转和缩放后的实际结果记录。源图仅解码和本地处理，不经过 OSS 在线图片处理。整批原始字节快照最多 512 MiB，加上解码缓冲，建议 Runtime 为本任务保留至少 2 GiB 可用内存。
+展示图长边上限 2400 px，模型预览长边上限 768 px，不放大小图；宽高按 EXIF 旋转和缩放后的实际结果记录。源图仅解码和本地处理，不经过 OSS 在线图片处理。默认模式会保留整批原始快照，仍受 512 MiB 总量限制；下文的增量模式不保存原始文件，但仍会保留**全部**轮次的派生图、预览和清单。每轮原始字节最多 512 MiB，不等于总本地磁盘或图像解码内存；40,000,000 像素上限也不是操作系统级内存使用保证。请按全批派生图/预览的实际总量预留空间（理论输入上限下可接近 25 GiB），并为单张 128 MiB JPEG 的解码、旋转和编码保留至少 2 GiB 可用内存。
 
 ### 安装和本地准备
 
@@ -16,6 +16,20 @@ python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo
 ```
 
 `<batch>` 是区分大小写的 ASCII slug（字母、数字、连字符），源端前缀始终按原样推导为精确的 `travel/<batch>/`，绝不转换为小写。例如 `SuZhou` 只会列举/读取 `travel/SuZhou/`，不会读取 `travel/suzhou/`。为兼容已有小写批次，小写 `<batch>` 的派生前缀仍是 `blog-images/<batch>/`；含大写字母时，派生存储映射为 `<batch 的小写形式>~<原始 ASCII 字节的十六进制>`，例如 `SuZhou` 映射为 `suzhou~53755a686f75`。因此大小写不同的源批次在 OSS、文章内容和 Windows 的私有工作目录都不会碰撞。输出对象名固定为 `blog-images/<storage-batch>/v1-<原图SHA-256>.jpg`；完全相同的清单、派生图和草稿重复运行是幂等成功，任何不同字节都会安全拒绝覆盖。工作区会绑定原始大小写的 batch 和原图快照；输入新增、替换或改批次时请新建工作区，避免混入未经重新观察的版本。文章 `article_id` 独立于 batch，但仍必须是小写 slug；若另一批次指定已存在的文章 ID，内容字节不同时会拒绝覆盖，保护人工编辑和跨批次隔离。
+
+### 超过默认总量时的显式增量准备
+
+默认 `prepare --source oss` 保持原行为：它要求整批不超过 512 MiB。不要用它处理已知超限的批次。增量模式只适用于 OSS，并且必须同时明确选择模式和确认授权；以下命令只列举/读取精确的 `travel/SuZhou/`，不扫描 `travel/` 根或其他批次：
+
+```bash
+python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo-pipeline/suzhou-incremental prepare --source oss --batch SuZhou --incremental --approve-incremental --approve-remote-read
+```
+
+`--incremental` 不是默认模式，缺少 `--approve-incremental` 会在下载前拒绝。它仍需要独立的 `--approve-remote-read` 和正常的最小权限凭据；不授予上传、公开照片、模型查看或文章发布权限。每个源对象仍限 JPEG、128 MiB、40,000,000 像素和一页，批次仍最多 100 对象；RAW/HEIC 等不支持。计划中的每轮原始字节总和不超过 512 MiB，按源 key 的确定性顺序划分，且不会把整批原始数据同时读入内存或保存在工作区。
+
+首次执行会在私有工作区一次性创建不可覆盖的 `incremental-plan.json`：其中固定精确前缀、按 key 排序的每个 `key`、`size`、`etag`，以及确定性的轮次和字节总量。ETag 是大小写敏感的不透明值；计划仅会去除合法的最外层双引号，不会转换大小写。每完成一轮才不可覆盖地写入 `incremental-rounds/0001-manifest.json`（及对应 `incremental-progress/` 记录）；其中保存完整源 key/size/ETag、源 SHA-256、派生图和预览图 SHA-256、路径及尺寸。下载将计划 ETag 包装为带双引号的 RFC 强实体标签，再作为 `If-Match` 条件请求；缺失/无效 ETag、条件失败或实际下载字节数与计划 size 不同都会拒绝，绝不混用改版原图。
+
+中断后用**同一条完整命令和同一工作区**恢复。恢复会先重新分页列举同一精确前缀，并严格比较对象数量以及每个 `key`、`size`、`etag`；任何新增、删除、改名、大小或版本变化都会拒绝，必须选新工作区重新观察。不可变文件先在同目录写完、刷新并同步到唯一临时文件，关闭后才以不覆盖方式发布；写入或同步失败不会留下该次调用的目标文件，可直接重跑。此机制不能保证任意断电或磁盘损坏后自动恢复；已存在且内容不同的人工文件或损坏文件仍会停止处理，绝不覆盖。已验证的轮次会校验所有派生图和预览哈希后复用，不重复下载。只有所有轮次成功后才写根 `manifest.json`。因此 `observation-template`、`draft`、`upload` 和 `stage-article` 只能使用这个完整根清单；轮次清单不是完整批次，绝不能用于部分观察、草稿、上传或发布。
 
 ### 明确授权门槛
 
@@ -85,7 +99,7 @@ python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo
 
 生成的 `cover` 和 `gallery.src` 是无查询参数的稳定 URL：`https://figure-b.ricardolsw.com/blog-images/<storage-batch>/v1-<sha256>.jpg`，绝不使用签名 URL。Astro 内容 schema 只接受本地 Astro 资产或该精确的 HTTPS 域名/路径格式；组件为远程 JPEG 保留尺寸、懒加载和图库行为。
 
-私有草稿默认是 `draft: true`，不会触及站点内容。审阅并确认后才可执行 `stage-article --metadata <private-metadata.json> --observations <private-observations.json> --approve-publish-article`。它按批次保存 `article_id` 和文章 SHA-256；目标文章已存在但字节不同时拒绝覆盖，保护人工编辑。只有提供所有真实元数据和单独 `--approve-publish-article` 才会写入 `src/content/travel/`。本次没有真实批次，因此没有运行此命令、没有写入真实文章，也没有上传照片。
+私有草稿默认是 `draft: true`，不会触及站点内容。审阅并确认后才可执行 `stage-article --metadata <private-metadata.json> --observations <private-observations.json> --approve-publish-article`。它按批次保存 `article_id` 和文章 SHA-256；目标文章已存在但字节不同时拒绝覆盖，保护人工编辑。只有提供所有真实元数据和单独 `--approve-publish-article` 才会写入 `src/content/travel/`。缺少可靠的日期、地点或公开坐标时，只在私有工作区写正文及待确认字段，不填假值来通过 schema；这类正文不能称为可构建文章。真实照片、原始清单和预览不默认作为 issue 附件分享，且上传派生图与发布文章始终需要另外授权。
 
 ### 最小 RAM 权限策略（占位模板）
 

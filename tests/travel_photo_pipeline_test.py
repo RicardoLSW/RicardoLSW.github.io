@@ -56,8 +56,14 @@ class FakeBucket:
             },
         )()
 
-    def get_object(self, key: str):
+    def get_object(self, key: str, headers: dict[str, str] | None = None):
         self.get_calls.append(key)
+        if headers is not None and "If-Match" in headers:
+            expected = f'"{str(self.objects[key].etag).strip(chr(34))}"'
+            if headers["If-Match"] != expected:
+                error = RuntimeError("precondition failed")
+                error.status = 412
+                raise error
         return BytesIO(self.objects[key].data)
 
     def get_object_meta(self, key: str):
@@ -149,6 +155,45 @@ class TravelPhotoPipelineTests(unittest.TestCase):
         repeated = pipeline.prepare_local(self.input, self.workspace, self.batch)
         self.assertEqual(first, repeated)
         self.assertEqual(digest, hashlib.sha256(output.read_bytes()).hexdigest())
+
+    def test_write_immutable_failure_leaves_no_target_and_reruns_safely(self):
+        payload = b"complete immutable data"
+        real_fdopen = os.fdopen
+
+        class PartiallyFailingOutput:
+            def __init__(self, output):
+                self.output = output
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *unused):
+                self.output.close()
+
+            def write(self, data):
+                self.output.write(data[:1])
+                raise OSError("injected write failure")
+
+        for failure in ("write", "fsync"):
+            with self.subTest(failure=failure):
+                target = self.workspace / f"{failure}.json"
+                if failure == "write":
+                    def failing_fdopen(descriptor, mode):
+                        return PartiallyFailingOutput(real_fdopen(descriptor, mode))
+                    fault = patch.object(pipeline.os, "fdopen", side_effect=failing_fdopen)
+                else:
+                    fault = patch.object(pipeline.os, "fsync", side_effect=OSError("injected fsync failure"))
+                with fault, self.assertRaisesRegex(pipeline.PipelineError, "immutably write"):
+                    pipeline._write_immutable(target, payload)
+                self.assertFalse(target.exists())
+                self.assertTrue(pipeline._write_immutable(target, payload))
+                self.assertEqual(target.read_bytes(), payload)
+
+        existing = self.workspace / "human.json"
+        existing.write_bytes(b"human-owned content")
+        with self.assertRaisesRegex(pipeline.PipelineError, "refusing to overwrite"):
+            pipeline._write_immutable(existing, payload)
+        self.assertEqual(existing.read_bytes(), b"human-owned content")
 
     def test_prepare_recovers_matching_partial_artifacts_and_binds_batch(self):
         self.write_jpeg("camera.jpg")
@@ -531,6 +576,169 @@ class TravelPhotoPipelineTests(unittest.TestCase):
         article.write_text(article.read_text(encoding="utf-8") + "人工编辑\n", encoding="utf-8")
         with self.assertRaisesRegex(pipeline.PipelineError, "human edits"):
             pipeline.stage_article(repo, self.workspace, manifest, observations, metadata, approve_publish_article=True)
+
+    def test_incremental_oss_splits_deterministically_and_legacy_still_rejects_total(self):
+        sources = {
+            "travel/test-batch/a.jpg": jpeg_bytes() + b"a",
+            "travel/test-batch/b.jpg": jpeg_bytes() + b"b",
+            "travel/test-batch/c.jpg": jpeg_bytes() + b"c",
+        }
+        batch_limit = max(len(value) for value in sources.values())
+        with patch.object(pipeline, "MAX_BATCH_BYTES", batch_limit):
+            with self.assertRaisesRegex(pipeline.PipelineError, "batch"):
+                pipeline.prepare_oss(FakeBucket(sources), self.tmp / "legacy", self.batch, approve_remote_read=True)
+            workspace = self.tmp / "incremental"
+            manifest = pipeline.prepare_oss_incremental(
+                FakeBucket(sources), workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+
+        plan = json.loads((workspace / "incremental-plan.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(plan["rounds"]), 3)
+        self.assertEqual(len(manifest["photos"]), 3)
+        self.assertTrue((workspace / "manifest.json").is_file())
+        self.assertTrue(all(round_["total_bytes"] <= batch_limit for round_ in plan["rounds"]))
+        self.assertEqual(
+            [photo["source_key"] for photo in manifest["photos"]],
+            sorted(sources),
+        )
+
+    def test_incremental_resume_skips_completed_round_downloads(self):
+        sources = {
+            "travel/test-batch/a.jpg": jpeg_bytes() + b"a",
+            "travel/test-batch/b.jpg": jpeg_bytes() + b"b",
+            "travel/test-batch/c.jpg": jpeg_bytes() + b"c",
+        }
+        bucket = FakeBucket(sources)
+        batch_limit = max(len(value) for value in sources.values())
+        original_get = bucket.get_object
+
+        def interrupt_second_round(key: str, headers=None):
+            if key.endswith("b.jpg"):
+                raise OSError("interrupted fixture")
+            return original_get(key, headers=headers)
+
+        with patch.object(pipeline, "MAX_BATCH_BYTES", batch_limit):
+            bucket.get_object = interrupt_second_round
+            with self.assertRaisesRegex(pipeline.PipelineError, "source download"):
+                pipeline.prepare_oss_incremental(
+                    bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+                )
+            self.assertTrue((self.workspace / "incremental-rounds" / "0001-manifest.json").is_file())
+            self.assertFalse((self.workspace / "manifest.json").exists())
+            first_run_calls = list(bucket.get_calls)
+            bucket.get_object = original_get
+            manifest = pipeline.prepare_oss_incremental(
+                bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+
+        self.assertEqual(len(manifest["photos"]), 3)
+        self.assertEqual(bucket.get_calls[len(first_run_calls):], ["travel/test-batch/b.jpg", "travel/test-batch/c.jpg"])
+
+    def test_incremental_rejects_source_snapshot_changes_before_get(self):
+        base = {
+            "travel/test-batch/a.jpg": jpeg_bytes() + b"a",
+            "travel/test-batch/b.jpg": jpeg_bytes() + b"b",
+        }
+        changes = {
+            "key": lambda bucket: (bucket.objects.pop("travel/test-batch/b.jpg"), bucket.objects.__setitem__("travel/test-batch/c.jpg", FakeObject("travel/test-batch/c.jpg", base["travel/test-batch/b.jpg"]))),
+            "size": lambda bucket: setattr(bucket.objects["travel/test-batch/a.jpg"], "size", len(base["travel/test-batch/a.jpg"]) + 1),
+            "etag": lambda bucket: setattr(bucket.objects["travel/test-batch/a.jpg"], "etag", "0" * 32),
+            "count": lambda bucket: bucket.objects.__setitem__("travel/test-batch/c.jpg", FakeObject("travel/test-batch/c.jpg", jpeg_bytes() + b"c")),
+        }
+        for name, change in changes.items():
+            with self.subTest(name=name):
+                workspace = self.tmp / f"snapshot-{name}"
+                bucket = FakeBucket(base)
+                pipeline.prepare_oss_incremental(bucket, workspace, self.batch, approve_remote_read=True, approve_incremental=True)
+                change(bucket)
+                bucket.get_calls.clear()
+                with self.assertRaisesRegex(pipeline.PipelineError, "snapshot"):
+                    pipeline.prepare_oss_incremental(bucket, workspace, self.batch, approve_remote_read=True, approve_incremental=True)
+                self.assertEqual(bucket.get_calls, [])
+
+    def test_incremental_rejects_a_tampered_plan_key_outside_its_exact_prefix(self):
+        sources = {"travel/test-batch/a.jpg": jpeg_bytes()}
+        pipeline.prepare_oss_incremental(
+            FakeBucket(sources), self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+        )
+        plan_path = self.workspace / "incremental-plan.json"
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        plan["sources"][0]["key"] = "travel/other/a.jpg"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        bucket = FakeBucket(sources)
+        with self.assertRaisesRegex(pipeline.PipelineError, "source key"):
+            pipeline.prepare_oss_incremental(
+                bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+        self.assertEqual(bucket.get_calls, [])
+
+    def test_incremental_plan_preserves_uppercase_etags_and_rejects_header_injection(self):
+        key = "travel/test-batch/a.jpg"
+        uppercase_etag = "A" * 32
+        source = {"key": key, "size": 1, "etag": f'"{uppercase_etag}"'}
+        plan = {
+            "incremental_plan_version": 1,
+            "batch": self.batch,
+            "source_prefix": pipeline.source_prefix(self.batch),
+            "sources": [source],
+            "rounds": pipeline._partition_incremental_sources([{"key": key, "size": 1, "etag": uppercase_etag}]),
+        }
+
+        pipeline._validate_incremental_plan(plan, self.batch)
+
+        self.assertEqual(plan["sources"][0]["etag"], uppercase_etag)
+        with self.assertRaisesRegex(pipeline.PipelineError, "valid ETag"):
+            pipeline._source_etag(types.SimpleNamespace(etag=f'"{uppercase_etag}\\r\\nIf-Match: injected"'))
+
+    def test_incremental_uses_quoted_case_sensitive_if_match_and_rejects_mismatch(self):
+        key = "travel/test-batch/a.jpg"
+        data = jpeg_bytes()
+        uppercase_etag = "A" * 32
+        bucket = FakeBucket({key: data})
+        bucket.objects[key].etag = uppercase_etag
+        bucket.objects[key].size = len(data) + 1
+        bucket.get_headers = []
+        original_get = bucket.get_object
+
+        def record_get(key: str, headers=None):
+            bucket.get_headers.append(headers)
+            return original_get(key, headers=headers)
+
+        bucket.get_object = record_get
+        with self.assertRaisesRegex(pipeline.PipelineError, "size"):
+            pipeline.prepare_oss_incremental(
+                bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+        self.assertEqual(bucket.get_headers, [{"If-Match": f'"{uppercase_etag}"'}])
+        self.assertFalse((self.workspace / "manifest.json").exists())
+        with self.assertRaises(RuntimeError) as caught:
+            bucket.get_object(key, headers={"If-Match": f'"{"B" * 32}"'})
+        self.assertEqual(caught.exception.status, 412)
+
+    def test_incremental_refuses_corrupt_or_manual_derivatives(self):
+        source = jpeg_bytes() + b"source"
+        digest = hashlib.sha256(source).hexdigest()
+        manual_workspace = self.tmp / "manual"
+        manual_path = manual_workspace / "derivatives" / pipeline.derivative_key(self.batch, digest)
+        manual_path.parent.mkdir(parents=True)
+        manual_path.write_bytes(b"human file")
+        with self.assertRaisesRegex(pipeline.PipelineError, "overwrite"):
+            pipeline.prepare_oss_incremental(
+                FakeBucket({"travel/test-batch/a.jpg": source}),
+                manual_workspace,
+                self.batch,
+                approve_remote_read=True,
+                approve_incremental=True,
+            )
+
+        manifest = pipeline.prepare_oss_incremental(
+            FakeBucket({"travel/test-batch/a.jpg": source}), self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+        )
+        (self.workspace / manifest["photos"][0]["local_derivative"]).write_bytes(b"corrupt")
+        with self.assertRaisesRegex(pipeline.PipelineError, "local derivative"):
+            pipeline.prepare_oss_incremental(
+                FakeBucket({"travel/test-batch/a.jpg": source}), self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
 
 
 if __name__ == "__main__":
