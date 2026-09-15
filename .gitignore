@@ -4,3 +4,5 @@ dist/
 screenshots/
 .idea/
 .DS_Store
+__pycache__/
+var/travel-photo-pipeline/

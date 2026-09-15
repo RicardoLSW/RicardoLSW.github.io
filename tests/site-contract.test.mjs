@@ -85,6 +85,26 @@ test('removes every technical legacy source, navigation item, and archive-only r
   }
 });
 
+test('accepts only canonical hosted travel JPEG URLs while preserving local Astro assets', () => {
+  const config = read('src', 'content.config.ts');
+  const gallery = read('src', 'components', 'PhotoSwipeGallery.astro');
+  const css = read('src', 'styles', 'global.css');
+  const card = read('src', 'components', 'TravelCard.astro');
+  const layout = read('src', 'layouts', 'TravelPostLayout.astro');
+  const home = read('src', 'pages', 'index.astro');
+
+  assert.ok(config.includes('figure-b\\.ricardolsw\\.com\\/blog-images'));
+  assert.ok(config.includes('v1-[a-f0-9]{64}\\.jpg'));
+  assert.match(config, /z\.union\(\[image\(\), hostedTravelImage\]\)/);
+  assert.match(config, /Hosted cover must match a gallery image with declared dimensions/);
+  assert.match(gallery, /typeof item\.src === 'string'/);
+  assert.match(gallery, /<img src=\{item\.src\}/);
+  assert.equal((css.match(/\.travel-hero > img/g) ?? []).length, 2);
+  assert.match(card, /width=\{hostedCover\?\.width\} height=\{hostedCover\?\.height\}/);
+  assert.match(layout, /width=\{coverGalleryImage\?\.width\} height=\{coverGalleryImage\?\.height\}/);
+  assert.match(home, /<img src=\{image\.src\} width=\{image\.width\} height=\{image\.height\}/);
+});
+
 test('keeps travel-only RSS and tag pages reusable for future travel entries', () => {
   const rss = read('src', 'pages', 'rss.xml.ts');
   const tags = read('src', 'pages', 'tags', 'index.astro');

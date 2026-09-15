@@ -12,7 +12,9 @@ const { images, label = '旅行照片' } = Astro.props;
 const prepared = await Promise.all(
   images.map(async (item) => ({
     ...item,
-    large: await getImage({ src: item.src, width: Math.min(item.width, 2200), format: 'webp', quality: 86 }),
+    large: typeof item.src === 'string'
+      ? { src: item.src, attributes: { width: item.width, height: item.height } }
+      : await getImage({ src: item.src, width: Math.min(item.width, 2200), format: 'webp', quality: 86 }),
   })),
 );
 ---
@@ -27,14 +29,18 @@ const prepared = await Promise.all(
         target="_blank"
         aria-label={`打开大图：${item.alt}`}
       >
-        <Picture
-          src={item.src}
-          widths={[360, 640, 960]}
-          sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
-          formats={['avif', 'webp']}
-          alt={item.alt}
-          loading={index < 2 ? 'eager' : 'lazy'}
-        />
+        {typeof item.src === 'string' ? (
+          <img src={item.src} width={item.width} height={item.height} alt={item.alt} loading={index < 2 ? 'eager' : 'lazy'} />
+        ) : (
+          <Picture
+            src={item.src}
+            widths={[360, 640, 960]}
+            sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 33vw"
+            formats={['avif', 'webp']}
+            alt={item.alt}
+            loading={index < 2 ? 'eager' : 'lazy'}
+          />
+        )}
       </a>
       {item.caption && <figcaption><span>{String(index + 1).padStart(2, '0')}</span>{item.caption}</figcaption>}
     </figure>
