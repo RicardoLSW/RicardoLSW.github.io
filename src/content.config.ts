@@ -12,11 +12,12 @@ const travel = defineCollection({
     z.object({
       title: z.string(),
       date: z.coerce.date(),
+      publishedDate: z.coerce.date().optional(),
       location: z.string(),
       coordinates: z.object({
         lat: z.number(),
         lng: z.number(),
-      }),
+      }).optional(),
       cover: z.union([image(), hostedTravelImage]),
       description: z.string(),
       tags: z.array(z.string()).default([]),

@@ -47,9 +47,6 @@ npm run preview
 title: "旅行标题"
 date: 2026-09-14
 location: "城市名"
-coordinates:
-  lat: 00.0000
-  lng: 00.0000
 cover: ../../assets/travel/example/cover.jpg
 description: "用于列表和搜索分享的简短说明。"
 tags:
@@ -67,7 +64,11 @@ draft: false
 游记正文写在这里。
 ```
 
-`coordinates` 应采用城市级公共坐标，不要提交住所、酒店或其他私人精确位置。`width` 和 `height` 必须与图片纵横比一致，PhotoSwipe 会用它们预留空间并避免布局跳动。
+`date` 是拍摄/旅行日期，使用 `YYYY-MM-DD`，用于页面日期、年份及旅行排序，不代表发布或部署日期。可选 `publishedDate` 仅在实际发布日期已确认后填写同样格式；RSS 只用它生成 `pubDate`，未提供时省略，不拿拍摄日期代替。
+
+`coordinates` 整体可选；未知或未获准公开时省略，不填零坐标、不读取 GPS。无坐标文章仍出现在归档、RSS 和站点地图中，但不显示文章地图或进入地图标记。提供时必须同时填写数值 `lat` / `lng`，使用已确认的城市级公共坐标，不要提交住所、酒店或其他私人精确位置。现有 Python 流水线的 `draft` / `stage-article` 仍要求完整坐标元数据；本批经审核的人工正文直接走正式内容集合及 PR，不改变流水线授权或防覆盖规则。
+
+`width` 和 `height` 必须与图片纵横比一致，PhotoSwipe 会用它们预留空间并避免布局跳动。
 
 ## 图片策略
 

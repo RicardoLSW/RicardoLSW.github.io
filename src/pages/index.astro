@@ -8,13 +8,16 @@ const travels = (await getCollection('travel', ({ data }) => !data.draft)).sort(
 const featured = travels[0];
 if (!featured) throw new Error('At least one published travel entry is required.');
 const frames = [featured.data.gallery?.[1], featured.data.gallery?.[4], featured.data.gallery?.[9]].filter(Boolean);
-const markers = travels.map((entry) => ({
-  title: entry.data.title,
-  location: entry.data.location,
-  lat: entry.data.coordinates.lat,
-  lng: entry.data.coordinates.lng,
-  href: `/travel/${entry.id}/`,
-}));
+const markers = travels.flatMap((entry) => {
+  const coordinates = entry.data.coordinates;
+  return coordinates ? [{
+    title: entry.data.title,
+    location: entry.data.location,
+    lat: coordinates.lat,
+    lng: coordinates.lng,
+    href: `/travel/${entry.id}/`,
+  }] : [];
+});
 ---
 
 <BaseLayout>
@@ -59,6 +62,6 @@ const markers = travels.map((entry) => ({
       <div><p class="section-kicker" lang="en">Footprints</p><h2 id="home-map-title">旅行足迹</h2></div>
       <p>只标记城市级目的地，不公开具体拍摄位置。</p>
     </div>
-    <TripMap markers={markers} height="30rem" />
+    {markers.length > 0 ? <TripMap markers={markers} height="30rem" /> : <p>暂无已确认坐标的旅行地点。</p>}
   </section>
 </BaseLayout>

@@ -160,6 +160,43 @@ test('generates travel-only output while preserving Chongqing and its legacy URL
   assert.doesNotMatch(tags, /JavaScript|Vue3|Flutter/);
 });
 
+test('publishes the complete Suzhou essay without inventing a map or publication date', () => {
+  const post = read('src', 'content', 'travel', 'suzhou.md');
+  const page = read('dist', 'travel', 'suzhou', 'index.html');
+  assert.match(post, /date: 2021-05-08/);
+  assert.doesNotMatch(post, /coordinates:|publishedDate:|编辑信息与待确认项|私有编排索引|source_key|localhost|OSSAccessKeyId|Signature=/);
+  assert.equal((post.match(/  - src:/g) ?? []).length, 44);
+  assert.equal((page.match(/data-pswp-width=/g) ?? []).length, 44);
+  assert.match(page, /树影、桥洞与水上的灯/);
+  assert.match(page, /拍摄日期/);
+  assert.doesNotMatch(page, /class="coordinate-line"|class="article-map"|data-trip-map|坐标待确认/);
+  for (const route of [['travel', 'index.html'], ['tags', 'index.html']]) {
+    assert.match(read('dist', ...route), /\/travel\/suzhou\//);
+  }
+  assert.match(read('dist', 'sitemap-0.xml'), /\/travel\/suzhou\//);
+  const items = read('dist', 'rss.xml').match(/<item>[^]*?<\/item>/g) ?? [];
+  const item = items.find((item) => item.includes('<title>树影、桥洞与水上的灯</title>'));
+  assert.ok(item);
+  assert.doesNotMatch(item, /<pubDate>/);
+});
+
+test('keeps coordinate-free entries out of maps while preserving Chongqing markers', () => {
+  for (const route of [['index.html'], ['travel', 'map', 'index.html']]) {
+    const page = read('dist', ...route);
+    const payload = page.match(/data-markers="([^"]*)"/)?.[1];
+    assert.ok(payload);
+    const markers = JSON.parse(payload.replaceAll('&#34;', '"').replaceAll('&quot;', '"').replaceAll('&amp;', '&'));
+    assert.equal(markers.length, 1);
+    assert.equal(markers[0].href, '/travel/chongqing/');
+    assert.equal(markers[0].lat, 29.56301);
+    assert.equal(markers[0].lng, 106.55156);
+  }
+  const chongqing = read('dist', 'travel', 'chongqing', 'index.html');
+  assert.match(chongqing, /class="coordinate-line"/);
+  assert.match(chongqing, /class="article-map"/);
+  assert.equal((chongqing.match(/data-pswp-width=/g) ?? []).length, 10);
+});
+
 test('uses the official GitHub Pages deployment flow without Jekyll', () => {
   const workflow = read('.github', 'workflows', 'actions.yml');
 
