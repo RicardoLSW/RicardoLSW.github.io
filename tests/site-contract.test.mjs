@@ -160,16 +160,19 @@ test('generates travel-only output while preserving Chongqing and its legacy URL
   assert.doesNotMatch(tags, /JavaScript|Vue3|Flutter/);
 });
 
-test('publishes the complete Suzhou essay without inventing a map or publication date', () => {
+test('publishes the complete Suzhou essay with an authorized city marker and no invented publication date', () => {
   const post = read('src', 'content', 'travel', 'suzhou.md');
   const page = read('dist', 'travel', 'suzhou', 'index.html');
   assert.match(post, /date: 2021-05-08/);
-  assert.doesNotMatch(post, /coordinates:|publishedDate:|编辑信息与待确认项|私有编排索引|source_key|localhost|OSSAccessKeyId|Signature=/);
+  assert.doesNotMatch(post, /publishedDate:|编辑信息与待确认项|私有编排索引|source_key|localhost|OSSAccessKeyId|Signature=/);
+  assert.match(post, /coordinates:\s*\n\s+lat: 31\.3\s*\n\s+lng: 120\.62/);
   assert.equal((post.match(/  - src:/g) ?? []).length, 44);
   assert.equal((page.match(/data-pswp-width=/g) ?? []).length, 44);
   assert.match(page, /树影、桥洞与水上的灯/);
   assert.match(page, /拍摄日期/);
-  assert.doesNotMatch(page, /class="coordinate-line"|class="article-map"|data-trip-map|坐标待确认/);
+  assert.match(page, /class="article-map"/);
+  assert.match(page, /抵达苏州市/);
+  assert.doesNotMatch(page, /坐标待确认/);
   for (const route of [['travel', 'index.html'], ['tags', 'index.html']]) {
     assert.match(read('dist', ...route), /\/travel\/suzhou\//);
   }
@@ -180,21 +183,40 @@ test('publishes the complete Suzhou essay without inventing a map or publication
   assert.doesNotMatch(item, /<pubDate>/);
 });
 
-test('keeps coordinate-free entries out of maps while preserving Chongqing markers', () => {
+test('shows the authorized Suzhou marker while preserving Chongqing markers', () => {
   for (const route of [['index.html'], ['travel', 'map', 'index.html']]) {
     const page = read('dist', ...route);
     const payload = page.match(/data-markers="([^"]*)"/)?.[1];
     assert.ok(payload);
     const markers = JSON.parse(payload.replaceAll('&#34;', '"').replaceAll('&quot;', '"').replaceAll('&amp;', '&'));
-    assert.equal(markers.length, 1);
-    assert.equal(markers[0].href, '/travel/chongqing/');
-    assert.equal(markers[0].lat, 29.56301);
-    assert.equal(markers[0].lng, 106.55156);
+    assert.equal(markers.length, 2);
+    const chongqing = markers.find((marker) => marker.href === '/travel/chongqing/');
+    const suzhou = markers.find((marker) => marker.href === '/travel/suzhou/');
+    assert.equal(chongqing.lat, 29.56301);
+    assert.equal(chongqing.lng, 106.55156);
+    assert.equal(suzhou.lat, 31.3);
+    assert.equal(suzhou.lng, 120.62);
   }
   const chongqing = read('dist', 'travel', 'chongqing', 'index.html');
   assert.match(chongqing, /class="coordinate-line"/);
   assert.match(chongqing, /class="article-map"/);
   assert.equal((chongqing.match(/data-pswp-width=/g) ?? []).length, 10);
+});
+
+test('serves all ten Chongqing gallery images and the original cover through immutable OSS URLs', () => {
+  const post = read('src', 'content', 'travel', 'chongqing.md');
+  const urls = [...post.matchAll(/- src: (https:\/\/figure-b\.ricardolsw\.com\/blog-images\/chongqing\/v1-[a-f0-9]{64}\.jpg)/g)].map((match) => match[1]);
+  assert.equal(urls.length, 10);
+  assert.equal(new Set(urls).size, 10);
+  assert.ok(post.includes(`cover: ${urls[4]}\n`));
+  assert.doesNotMatch(post, /\.\.\/\.\.\/assets\/travel\/chongqing|Signature=|OSSAccessKeyId|localhost/);
+  assert.equal((post.match(/width: 2400\n\s+height: 1600/g) ?? []).length, 9);
+  assert.equal((post.match(/width: 1600\n\s+height: 2400/g) ?? []).length, 1);
+  for (const route of [['travel', 'chongqing', 'index.html'], ['旅游', '重庆', 'index.html']]) {
+    const page = read('dist', ...route);
+    assert.equal((page.match(/data-pswp-width=/g) ?? []).length, 10);
+    for (const url of urls) assert.ok(page.includes(url));
+  }
 });
 
 test('uses the official GitHub Pages deployment flow without Jekyll', () => {
