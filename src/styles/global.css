@@ -109,8 +109,6 @@
   .home-map { background: var(--ink); color: var(--paper); }
   .home-map .section-heading > p { color: #b5c3c7; }
   .home-map .map-fallback { color: #dce5e7; }
-  .home-legacy { width: var(--content); margin: clamp(4rem, 8vw, 8rem) auto; }
-  .home-legacy .section-heading { width: auto; }
 
   .travel-hero { position: relative; height: min(82vh, 58rem); min-height: 38rem; overflow: hidden; background: var(--night); color: #fff; }
   .travel-hero > picture, .travel-hero > picture img { width: 100%; height: 100%; }

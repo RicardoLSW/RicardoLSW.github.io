@@ -2,17 +2,15 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const legacy = await getCollection('legacy');
 const travel = await getCollection('travel', ({ data }) => !data.draft);
 type TaggedEntry = { title: string; href: string; year: number };
 const tags = new Map<string, TaggedEntry[]>();
-for (const entry of legacy) for (const tag of entry.data.tags) tags.set(tag, [...(tags.get(tag) ?? []), { title: entry.data.title, href: entry.data.legacyPath, year: entry.data.date.getFullYear() }]);
 for (const entry of travel) for (const tag of entry.data.tags) tags.set(tag, [...(tags.get(tag) ?? []), { title: entry.data.title, href: `/travel/${entry.id}/`, year: entry.data.date.getFullYear() }]);
 ---
 
-<BaseLayout title="标签" description="按标签浏览旅行与旧博客文章。">
+<BaseLayout title="标签" description="按标签浏览旅行内容。">
   <div class="page-shell">
-    <header class="page-header"><div><p class="section-kicker" lang="en">Tags</p><h1>内容标签</h1></div><p>标签连接旅行相册和迁移后的技术文章。</p></header>
+    <header class="page-header"><div><p class="section-kicker" lang="en">Tags</p><h1>旅行标签</h1></div><p>用标签探索每一段旅行。</p></header>
     {[...tags.entries()].sort(([a], [b]) => a.localeCompare(b, 'zh-CN')).map(([tag, entries]) => (
       <section class="archive-year" id={tag} aria-labelledby={`tag-${tag}`}>
         <h2 id={`tag-${tag}`}>{tag}</h2>
