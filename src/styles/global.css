@@ -111,8 +111,8 @@
   .home-map .map-fallback { color: #dce5e7; }
 
   .travel-hero { position: relative; height: min(82vh, 58rem); min-height: 38rem; overflow: hidden; background: var(--night); color: #fff; }
-  .travel-hero > picture, .travel-hero > picture img { width: 100%; height: 100%; }
-  .travel-hero > picture img { object-fit: cover; }
+  .travel-hero > picture, .travel-hero > picture img, .travel-hero > img { width: 100%; height: 100%; }
+  .travel-hero > picture img, .travel-hero > img { object-fit: cover; }
   .travel-hero-scrim { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4,12,17,.88) 0%, rgba(4,12,17,.4) 52%, rgba(4,12,17,.08) 100%), linear-gradient(0deg, rgba(4,12,17,.65), transparent 55%); }
   .travel-hero-copy { position: absolute; left: max(1.25rem, calc((100vw - 1180px) / 2)); bottom: clamp(2.5rem, 8vw, 7rem); width: min(47rem, calc(100vw - 2.5rem)); }
   .travel-hero-copy h1 { margin: 1rem 0 1.2rem; }

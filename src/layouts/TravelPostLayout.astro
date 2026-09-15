@@ -13,7 +13,9 @@ interface Props {
 
 const { entry, canonicalPath = `/travel/${entry.id}/` } = Astro.props;
 const { Content } = await render(entry);
-const coverAlt = entry.data.gallery?.find((item) => item.src.src === entry.data.cover.src)?.alt ?? `${entry.data.location}旅行照片`;
+const coverUrl = typeof entry.data.cover === 'string' ? entry.data.cover : entry.data.cover.src;
+const coverGalleryImage = entry.data.gallery?.find((item) => (typeof item.src === 'string' ? item.src : item.src.src) === coverUrl);
+const coverAlt = coverGalleryImage?.alt ?? `${entry.data.location}旅行照片`;
 const marker = [{
   title: entry.data.title,
   location: entry.data.location,
@@ -26,21 +28,25 @@ const marker = [{
 <BaseLayout
   title={entry.data.title}
   description={entry.data.description}
-  image={entry.data.cover.src}
+  image={coverUrl}
   canonicalPath={canonicalPath}
   pageType="article"
 >
   <article class="travel-article">
     <header class="travel-hero">
-      <Picture
-        src={entry.data.cover}
-        widths={[720, 1200, 1800, 2400]}
-        sizes="100vw"
-        formats={['avif', 'webp']}
-        alt={coverAlt}
-        loading="eager"
-        fetchpriority="high"
-      />
+      {typeof entry.data.cover === 'string' ? (
+        <img src={entry.data.cover} width={coverGalleryImage?.width} height={coverGalleryImage?.height} alt={coverAlt} loading="eager" fetchpriority="high" />
+      ) : (
+        <Picture
+          src={entry.data.cover}
+          widths={[720, 1200, 1800, 2400]}
+          sizes="100vw"
+          formats={['avif', 'webp']}
+          alt={coverAlt}
+          loading="eager"
+          fetchpriority="high"
+        />
+      )}
       <div class="travel-hero-scrim"></div>
       <div class="travel-hero-copy">
         <p class="coordinate-line" aria-label={`坐标 ${entry.data.coordinates.lat}, ${entry.data.coordinates.lng}`}>

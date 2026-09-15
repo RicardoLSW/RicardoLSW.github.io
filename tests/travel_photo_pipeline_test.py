@@ -1,0 +1,745 @@
+from __future__ import annotations
+
+import hashlib
+import importlib.util
+import json
+import os
+import shutil
+import sys
+import tempfile
+import types
+import unittest
+from io import BytesIO
+from pathlib import Path
+from unittest.mock import patch
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+MODULE_PATH = ROOT / "tools" / "travel_photo_pipeline.py"
+SPEC = importlib.util.spec_from_file_location("travel_photo_pipeline", MODULE_PATH)
+assert SPEC and SPEC.loader
+pipeline = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(pipeline)
+
+
+class FakeObject:
+    def __init__(self, key: str, data: bytes):
+        self.key = key
+        self.data = data
+        self.size = len(data)
+        self.etag = hashlib.md5(data).hexdigest()  # nosec B324 - OSS-style fixture ETag only
+
+
+class FakeBucket:
+    def __init__(self, objects: dict[str, bytes] | None = None):
+        self.objects = {key: FakeObject(key, value) for key, value in (objects or {}).items()}
+        self.puts: list[tuple[str, bytes, dict[str, str]]] = []
+        self.list_calls: list[str | None] = []
+        self.list_prefixes: list[str] = []
+        self.get_calls: list[str] = []
+
+    def list_objects(self, prefix: str, continuation_token: str | None = None):
+        self.list_prefixes.append(prefix)
+        self.list_calls.append(continuation_token)
+        keys = sorted(key for key in self.objects if key.startswith(prefix))
+        start = int(continuation_token or "0")
+        page = keys[start : start + 1]
+        next_token = str(start + 1) if start + 1 < len(keys) else None
+        return type(
+            "Result",
+            (),
+            {
+                "object_list": [self.objects[key] for key in page],
+                "next_continuation_token": next_token,
+                "is_truncated": next_token is not None,
+            },
+        )()
+
+    def get_object(self, key: str, headers: dict[str, str] | None = None):
+        self.get_calls.append(key)
+        if headers is not None and "If-Match" in headers:
+            expected = f'"{str(self.objects[key].etag).strip(chr(34))}"'
+            if headers["If-Match"] != expected:
+                error = RuntimeError("precondition failed")
+                error.status = 412
+                raise error
+        return BytesIO(self.objects[key].data)
+
+    def get_object_meta(self, key: str):
+        if key not in self.objects:
+            error = pipeline.ObjectNotFoundError("missing")
+            error.status = 404
+            raise error
+        return type("Meta", (), {"headers": {"Content-Length": str(self.objects[key].size)}})()
+
+    def put_object(self, key: str, stream, headers: dict[str, str]):
+        data = stream.read()
+        self.puts.append((key, data, headers))
+        if key in self.objects:
+            error = pipeline.ObjectAlreadyExistsError("exists")
+            error.status = 409
+            raise error
+        self.objects[key] = FakeObject(key, data)
+
+
+def jpeg_bytes(size: tuple[int, int] = (20, 10), orientation: int | None = None) -> bytes:
+    image = Image.new("RGB", size, (18, 90, 160))
+    exif = Image.Exif()
+    if orientation:
+        exif[274] = orientation
+    exif[34853] = {1: "N", 2: (30, 0, 0)}  # GPSInfo marker; output must emit no EXIF at all.
+    stream = BytesIO()
+    image.save(stream, format="JPEG", quality=95, exif=exif)
+    return stream.getvalue()
+
+
+class TravelPhotoPipelineTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp(prefix="travel-photo-pipeline-test-"))
+        self.input = self.tmp / "input"
+        self.input.mkdir()
+        self.workspace = self.tmp / "workspace"
+        self.batch = "test-batch"
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def write_jpeg(self, name: str, data: bytes | None = None):
+        (self.input / name).write_bytes(data or jpeg_bytes())
+
+    def test_oss_v2_first_page_uses_empty_string_token(self):
+        calls = []
+        next_token = "opaque-next+/="
+        prefix = pipeline.source_prefix("CaseBatch")
+
+        class V2Bucket:
+            def list_objects_v2(self, *, prefix, continuation_token):
+                calls.append((prefix, continuation_token))
+                first_page = len(calls) == 1
+                return types.SimpleNamespace(
+                    object_list=["first" if first_page else "second"],
+                    is_truncated=first_page,
+                    next_continuation_token=next_token if first_page else None,
+                )
+
+        self.assertEqual(list(pipeline._oss_list(V2Bucket(), prefix)), ["first", "second"])
+        self.assertEqual(calls, [(prefix, ""), (prefix, next_token)])
+
+    def test_prepare_transposes_and_strips_all_exif(self):
+        self.write_jpeg("camera.jpg", jpeg_bytes((20, 10), orientation=6))
+
+        manifest = pipeline.prepare_local(self.input, self.workspace, self.batch)
+
+        self.assertEqual(manifest["batch"], self.batch)
+        photo = manifest["photos"][0]
+        output = self.workspace / photo["local_derivative"]
+        self.assertTrue(output.is_file())
+        with Image.open(output) as image:
+            self.assertEqual(image.size, (10, 20))
+            self.assertEqual(image.getexif(), {})
+            self.assertNotIn("exif", image.info)
+        self.assertEqual(photo["derivative_key"], f"blog-images/{self.batch}/v1-{photo['source_sha256']}.jpg")
+        self.assertTrue((self.workspace / photo["local_preview"]).is_file())
+
+    def test_prepare_is_deterministic_and_refuses_local_overwrite(self):
+        self.write_jpeg("camera.jpg")
+        first = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        output = self.workspace / first["photos"][0]["local_derivative"]
+        digest = hashlib.sha256(output.read_bytes()).hexdigest()
+
+        second = pipeline.prepare_local(self.input, self.tmp / "second", self.batch)
+        second_output = self.tmp / "second" / second["photos"][0]["local_derivative"]
+        self.assertEqual(digest, hashlib.sha256(second_output.read_bytes()).hexdigest())
+
+        repeated = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        self.assertEqual(first, repeated)
+        self.assertEqual(digest, hashlib.sha256(output.read_bytes()).hexdigest())
+
+    def test_write_immutable_failure_leaves_no_target_and_reruns_safely(self):
+        payload = b"complete immutable data"
+        real_fdopen = os.fdopen
+
+        class PartiallyFailingOutput:
+            def __init__(self, output):
+                self.output = output
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *unused):
+                self.output.close()
+
+            def write(self, data):
+                self.output.write(data[:1])
+                raise OSError("injected write failure")
+
+        for failure in ("write", "fsync"):
+            with self.subTest(failure=failure):
+                target = self.workspace / f"{failure}.json"
+                if failure == "write":
+                    def failing_fdopen(descriptor, mode):
+                        return PartiallyFailingOutput(real_fdopen(descriptor, mode))
+                    fault = patch.object(pipeline.os, "fdopen", side_effect=failing_fdopen)
+                else:
+                    fault = patch.object(pipeline.os, "fsync", side_effect=OSError("injected fsync failure"))
+                with fault, self.assertRaisesRegex(pipeline.PipelineError, "immutably write"):
+                    pipeline._write_immutable(target, payload)
+                self.assertFalse(target.exists())
+                self.assertTrue(pipeline._write_immutable(target, payload))
+                self.assertEqual(target.read_bytes(), payload)
+
+        existing = self.workspace / "human.json"
+        existing.write_bytes(b"human-owned content")
+        with self.assertRaisesRegex(pipeline.PipelineError, "refusing to overwrite"):
+            pipeline._write_immutable(existing, payload)
+        self.assertEqual(existing.read_bytes(), b"human-owned content")
+
+    def test_prepare_recovers_matching_partial_artifacts_and_binds_batch(self):
+        self.write_jpeg("camera.jpg")
+        first = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        (self.workspace / "manifest.json").unlink()
+        self.assertEqual(first, pipeline.prepare_local(self.input, self.workspace, self.batch))
+        before = sorted(str(path) for path in self.workspace.rglob("*"))
+        with self.assertRaises(pipeline.PipelineError):
+            pipeline.prepare_local(self.input, self.workspace, "other-batch")
+        self.assertEqual(before, sorted(str(path) for path in self.workspace.rglob("*")))
+
+    def test_prepare_enforces_aggregate_and_directory_limits(self):
+        data = jpeg_bytes()
+        self.write_jpeg("camera.jpg", data)
+        with patch.object(pipeline, "MAX_BATCH_BYTES", len(data) - 1):
+            with self.assertRaisesRegex(pipeline.PipelineError, "batch"):
+                pipeline.prepare_local(self.input, self.workspace, self.batch)
+        for name in ("empty-a", "empty-b", "empty-c"):
+            (self.input / name).mkdir()
+        with patch.object(pipeline, "MAX_LOCAL_ENTRIES", 2):
+            with self.assertRaisesRegex(pipeline.PipelineError, "traversal"):
+                pipeline.prepare_local(self.input, self.workspace, self.batch)
+
+    def test_derivative_is_resized_and_dimensions_follow_orientation(self):
+        self.write_jpeg("portrait.jpg", jpeg_bytes((3000, 1500), orientation=6))
+        manifest = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        photo = manifest["photos"][0]
+        with Image.open(self.workspace / photo["local_derivative"]) as image:
+            self.assertLessEqual(max(image.size), 2400)
+            self.assertEqual((photo["width"], photo["height"]), image.size)
+            self.assertGreater(image.height, image.width)
+
+    def test_prepare_uses_one_bounded_snapshot_per_source(self):
+        self.write_jpeg("camera.jpg")
+        original_open = Path.open
+        reads = []
+        def tracked_open(path, *args, **kwargs):
+            if path.resolve() == (self.input / "camera.jpg").resolve() and (args[0] if args else kwargs.get("mode")) == "rb":
+                reads.append(path)
+            return original_open(path, *args, **kwargs)
+        with patch.object(Path, "open", tracked_open):
+            pipeline.prepare_local(self.input, self.workspace, self.batch)
+        self.assertEqual(len(reads), 1)
+
+    def test_oss_ignores_empty_folder_markers(self):
+        bucket = FakeBucket({"travel/test-batch/": b"", "travel/test-batch/nested/": b"", "travel/test-batch/a.jpg": jpeg_bytes()})
+        manifest = pipeline.prepare_oss(bucket, self.workspace, self.batch, approve_remote_read=True)
+        self.assertEqual(len(manifest["photos"]), 1)
+        self.assertEqual(bucket.get_calls, ["travel/test-batch/a.jpg"])
+
+    def test_missing_credentials_fail_without_network(self):
+        with patch.dict(os.environ, {}, clear=True):
+            with self.assertRaisesRegex(pipeline.PipelineError, "missing OSS credentials"):
+                pipeline._oss_bucket_from_environment()
+
+    def test_oss_preserves_source_case_for_exact_list_and_get(self):
+        batch = "SuZhou"
+        bucket = FakeBucket(
+            {
+                "travel/SuZhou/a.jpg": jpeg_bytes(),
+                "travel/suzhou/not-this-batch.jpg": jpeg_bytes((12, 8)),
+            }
+        )
+
+        manifest = pipeline.prepare_oss(bucket, self.workspace, batch, approve_remote_read=True)
+
+        self.assertEqual(manifest["batch"], batch)
+        self.assertEqual(bucket.list_prefixes, ["travel/SuZhou/"])
+        self.assertEqual(bucket.get_calls, ["travel/SuZhou/a.jpg"])
+        self.assertEqual(manifest["photos"][0]["derivative_key"], f"blog-images/suzhou~{batch.encode().hex()}/v1-{manifest['photos'][0]['source_sha256']}.jpg")
+
+    def test_oss_wrong_case_never_reads_a_different_source_batch(self):
+        bucket = FakeBucket({"travel/suzhou/a.jpg": jpeg_bytes()})
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "exact batch prefix"):
+            pipeline.prepare_oss(bucket, self.workspace, "SuZhou", approve_remote_read=True)
+
+        self.assertEqual(bucket.list_prefixes, ["travel/SuZhou/"])
+        self.assertEqual(bucket.get_calls, [])
+
+    def test_case_sensitive_batch_mapping_is_windows_safe_and_article_staging_refuses_cross_batch_replacement(self):
+        self.write_jpeg("camera.jpg")
+        lower = pipeline.prepare_local(self.input, self.workspace, "suzhou")
+        upper_workspace = self.tmp / "upper-workspace"
+        upper = pipeline.prepare_local(self.input, upper_workspace, "SuZhou")
+        self.assertNotEqual(lower["photos"][0]["derivative_key"].casefold(), upper["photos"][0]["derivative_key"].casefold())
+
+        def observations(manifest):
+            photo = manifest["photos"][0]
+            return {"batch": manifest["batch"], "photos": [{
+                "source_sha256": photo["source_sha256"],
+                "derivative_sha256": photo["derivative_sha256"],
+                "alt": "可见的蓝色区域",
+                "caption": "蓝色区域",
+                "observation": "可见蓝色区域。",
+            }]}
+
+        metadata = {
+            "article_id": "suzhou-note",
+            "title": "测试旅行",
+            "date": "2026-09-15",
+            "location": "公开城市级地点",
+            "coordinates": {"lat": 30.0, "lng": 120.0},
+            "description": "基于已核验画面整理的测试记录。",
+            "tags": ["摄影"],
+        }
+        repo = self.tmp / "repo"
+        (repo / "src" / "content" / "travel").mkdir(parents=True)
+        pipeline.stage_article(repo, self.workspace, lower, observations(lower), metadata, approve_publish_article=True)
+        with self.assertRaisesRegex(pipeline.PipelineError, "refusing to replace"):
+            pipeline.stage_article(repo, upper_workspace, upper, observations(upper), metadata, approve_publish_article=True)
+
+    def test_oss_rejects_listed_keys_outside_the_exact_case_sensitive_prefix(self):
+        bucket = FakeBucket()
+        outside = FakeObject("travel/suzhou/a.jpg", jpeg_bytes())
+
+        def untrusted_list(prefix: str, continuation_token: str | None = None):
+            bucket.list_prefixes.append(prefix)
+            return type("Result", (), {"object_list": [outside], "next_continuation_token": None, "is_truncated": False})()
+
+        bucket.list_objects = untrusted_list
+        with self.assertRaisesRegex(pipeline.PipelineError, "outside the exact travel batch prefix"):
+            pipeline.prepare_oss(bucket, self.workspace, "SuZhou", approve_remote_read=True)
+        self.assertEqual(bucket.get_calls, [])
+
+    def test_oss_403_download_failure_is_redacted(self):
+        bucket = FakeBucket({"travel/test-batch/a.jpg": jpeg_bytes()})
+
+        class ForbiddenError(RuntimeError):
+            status = 403
+
+            def __str__(self):
+                return "private-object-name and signed-request-details"
+
+        def forbidden_get(key: str):
+            raise ForbiddenError()
+
+        bucket.get_object = forbidden_get
+        with self.assertRaises(pipeline.PipelineError) as caught:
+            pipeline.prepare_oss(bucket, self.workspace, self.batch, approve_remote_read=True)
+        self.assertIn("403", str(caught.exception))
+        self.assertNotIn("private-object-name", str(caught.exception))
+        self.assertNotIn("signed-request-details", str(caught.exception))
+
+    def test_oss_environment_accepts_paired_aliases_and_selects_ram_or_sts_auth(self):
+        auth_calls = []
+        fake_oss2 = types.SimpleNamespace(
+            Auth=lambda key_id, secret: auth_calls.append(("ram", key_id, secret)) or ("ram", key_id, secret),
+            StsAuth=lambda key_id, secret, token: auth_calls.append(("sts", key_id, secret, token)) or ("sts", key_id, secret, token),
+            Bucket=lambda auth, endpoint, bucket: (auth, endpoint, bucket),
+        )
+        with patch.dict(sys.modules, {"oss2": fake_oss2}):
+            with patch.dict(os.environ, {"OSS_ACCESS_KEY_ID": "LTAI-standard", "OSS_ACCESS_KEY_SECRET": "standard-secret"}, clear=True):
+                auth, endpoint, bucket = pipeline._oss_bucket_from_environment()
+            self.assertEqual((auth[0], endpoint, bucket), ("ram", pipeline.OSS_ENDPOINT, pipeline.OSS_BUCKET_NAME))
+            with patch.dict(os.environ, {"AccessKey_ID": "legacy-id", "AccessKey_Secret": "legacy-secret", "OSS_SECURITY_TOKEN": "temporary-token"}, clear=True):
+                auth, _, _ = pipeline._oss_bucket_from_environment()
+            self.assertEqual(auth[0], "sts")
+            with patch.dict(os.environ, {"OSS_ACCESS_KEY_ID": "standard-id", "AccessKey_Secret": "legacy-secret"}, clear=True):
+                with self.assertRaisesRegex(pipeline.PipelineError, "mixed or incomplete"):
+                    pipeline._oss_bucket_from_environment()
+            with patch.dict(os.environ, {"OSS_ACCESS_KEY_ID": "STS-identifiable", "OSS_ACCESS_KEY_SECRET": "secret"}, clear=True):
+                with self.assertRaisesRegex(pipeline.PipelineError, "STS credential requires"):
+                    pipeline._oss_bucket_from_environment()
+        self.assertEqual([call[0] for call in auth_calls], ["ram", "sts"])
+
+    def test_prepare_rejects_raw_and_leaves_no_partial_outputs(self):
+        self.write_jpeg("valid.jpg")
+        (self.input / "camera.CR2").write_bytes(b"not a raw fixture")
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "RAW"):
+            pipeline.prepare_local(self.input, self.workspace, self.batch)
+
+        self.assertFalse((self.workspace / "derivatives").exists())
+
+    def test_prepare_rejects_duplicate_content_before_writing_outputs(self):
+        data = jpeg_bytes()
+        self.write_jpeg("one.jpg", data)
+        self.write_jpeg("two.jpg", data)
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "duplicate source"):
+            pipeline.prepare_local(self.input, self.workspace, self.batch)
+
+        self.assertFalse((self.workspace / "derivatives").exists())
+
+    def test_prepare_accepts_a_valid_jpeg_larger_than_twenty_mebibytes(self):
+        source = self.input / "camera-original.jpg"
+        size = (5000, 4000)
+        image = Image.frombytes("RGB", size, os.urandom(size[0] * size[1] * 3))
+        image.save(source, format="JPEG", quality=95, subsampling=0)
+        self.assertGreater(source.stat().st_size, 20 * 1024 * 1024)
+        self.assertLessEqual(source.stat().st_size, pipeline.MAX_SOURCE_BYTES)
+
+        manifest = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        self.assertTrue((self.workspace / manifest["photos"][0]["local_derivative"]).is_file())
+
+    def test_prepare_rejects_over_per_file_limit_before_decoding(self):
+        source = self.input / "overlimit.jpg"
+        source.write_bytes(jpeg_bytes())
+        with source.open("r+b") as output:
+            output.truncate(pipeline.MAX_SOURCE_BYTES + 1)
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "maximum"):
+            pipeline.prepare_local(self.input, self.workspace, self.batch)
+
+    def test_prepare_enforces_count_bound(self):
+        for index in range(pipeline.MAX_PHOTO_COUNT + 1):
+            self.write_jpeg(f"{index:03d}.jpg")
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "count"):
+            pipeline.prepare_local(self.input, self.workspace, self.batch)
+
+    def test_prepare_rejects_symlink_and_traversal_batch(self):
+        self.write_jpeg("camera.jpg")
+        linked = self.input / "linked.jpg"
+        try:
+            os.symlink(self.input / "camera.jpg", linked)
+        except OSError:
+            self.skipTest("symlink creation unavailable in this environment")
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "symlink"):
+            pipeline.prepare_local(self.input, self.workspace, self.batch)
+        with self.assertRaisesRegex(pipeline.PipelineError, "batch"):
+            pipeline.validate_batch("../escape")
+
+    def test_prepare_rejects_excess_pixels_and_multiple_pages(self):
+        self.write_jpeg("camera.jpg")
+
+        class TooLargeImage:
+            format = "JPEG"
+            size = (pipeline.MAX_PIXELS + 1, 1)
+            n_frames = 1
+
+            def verify(self):
+                return None
+
+            def close(self):
+                return None
+
+        with patch.object(pipeline.Image, "open", return_value=TooLargeImage()):
+            with self.assertRaisesRegex(pipeline.PipelineError, "pixel"):
+                pipeline.inspect_jpeg(self.input / "camera.jpg")
+
+        class MultiPageImage(TooLargeImage):
+            size = (1, 1)
+            n_frames = pipeline.MAX_IMAGE_PAGES + 1
+
+        with patch.object(pipeline.Image, "open", return_value=MultiPageImage()):
+            with self.assertRaisesRegex(pipeline.PipelineError, "page"):
+                pipeline.inspect_jpeg(self.input / "camera.jpg")
+
+    def test_oss_download_paginates_and_only_reads_exact_travel_prefix(self):
+        bucket = FakeBucket(
+            {
+                "travel/test-batch/a.jpg": jpeg_bytes(),
+                "travel/test-batch/b.jpg": jpeg_bytes((12, 8)),
+                "travel/other/c.jpg": jpeg_bytes(),
+            }
+        )
+
+        with self.assertRaises(pipeline.AuthorizationError):
+            pipeline.prepare_oss(bucket, self.workspace, self.batch)
+        manifest = pipeline.prepare_oss(bucket, self.workspace, self.batch, approve_remote_read=True)
+
+        self.assertEqual(len(manifest["photos"]), 2)
+        self.assertEqual(bucket.list_calls, [None, "1"])
+        self.assertTrue(all(photo["source_key"].startswith("travel/test-batch/") for photo in manifest["photos"]))
+
+    def test_oss_stops_at_count_limit_before_downloading_the_batch(self):
+        bucket = FakeBucket({f"travel/test-batch/{index:03d}.jpg": jpeg_bytes() for index in range(pipeline.MAX_PHOTO_COUNT + 1)})
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "count"):
+            pipeline.prepare_oss(bucket, self.workspace, self.batch, approve_remote_read=True)
+
+        self.assertEqual(len(bucket.list_calls), pipeline.MAX_PHOTO_COUNT + 1)
+        self.assertEqual(bucket.get_calls, [])
+
+    def test_upload_is_approved_only_and_uses_non_overwrite_header(self):
+        self.write_jpeg("camera.jpg")
+        manifest = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        bucket = FakeBucket()
+
+        with self.assertRaisesRegex(pipeline.AuthorizationError, "approve-publish-photo"):
+            pipeline.upload_derivatives(bucket, self.workspace, manifest, approve_upload=True, approve_publish_photo=False)
+
+        pipeline.upload_derivatives(bucket, self.workspace, manifest, approve_remote_read=True, approve_upload=True, approve_publish_photo=True)
+        key, data, headers = bucket.puts[0]
+        self.assertEqual(key, manifest["photos"][0]["derivative_key"])
+        self.assertEqual(headers, {"x-oss-forbid-overwrite": "true"})
+        self.assertEqual(data, (self.workspace / manifest["photos"][0]["local_derivative"]).read_bytes())
+
+    def test_upload_recovers_idempotently_and_rejects_different_existing_object(self):
+        self.write_jpeg("camera.jpg")
+        manifest = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        photo = manifest["photos"][0]
+        derivative = (self.workspace / photo["local_derivative"]).read_bytes()
+        bucket = FakeBucket({photo["derivative_key"]: derivative})
+
+        result = pipeline.upload_derivatives(bucket, self.workspace, manifest, approve_remote_read=True, approve_upload=True, approve_publish_photo=True)
+        self.assertEqual(result["skipped_existing"], [photo["derivative_key"]])
+        self.assertEqual(bucket.puts, [])
+
+        bucket.objects[photo["derivative_key"]] = FakeObject(photo["derivative_key"], b"different")
+        with self.assertRaisesRegex(pipeline.PipelineError, "different content"):
+            pipeline.upload_derivatives(bucket, self.workspace, manifest, approve_remote_read=True, approve_upload=True, approve_publish_photo=True)
+
+    def test_draft_requires_observations_and_uses_stable_hosted_urls(self):
+        self.write_jpeg("camera.jpg")
+        manifest = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        observations = {
+            "batch": self.batch,
+            "photos": [
+                {
+                    "source_sha256": manifest["photos"][0]["source_sha256"],
+                    "derivative_sha256": manifest["photos"][0]["derivative_sha256"],
+                    "alt": "画面中可见的蓝色矩形区域",
+                    "caption": "蓝色区域",
+                    "observation": "可见蓝色矩形区域。",
+                }
+            ],
+        }
+        metadata = {
+            "article_id": "test-trip",
+            "title": "测试旅行",
+            "date": "2026-09-15",
+            "location": "公开城市级地点",
+            "coordinates": {"lat": 30.0, "lng": 120.0},
+            "description": "基于已核验画面整理的测试记录。",
+            "tags": ["摄影"],
+        }
+
+        draft = pipeline.render_draft(manifest, observations, metadata)
+        self.assertIn("https://figure-b.ricardolsw.com/blog-images/test-batch/", draft)
+        self.assertNotIn("?", draft)
+        self.assertIn("draft: true", draft)
+        self.assertNotIn("../../assets", draft)
+
+        observations["photos"][0]["caption"] = ""
+        with self.assertRaisesRegex(pipeline.PipelineError, "caption"):
+            pipeline.render_draft(manifest, observations, metadata)
+        observations["photos"][0]["caption"] = "蓝色区域"
+        tampered = json.loads(json.dumps(manifest))
+        tampered["photos"][0]["derivative_key"] = "blog-images/other-batch/v1-" + tampered["photos"][0]["source_sha256"] + ".jpg"
+        with self.assertRaisesRegex(pipeline.PipelineError, "derivative_key"):
+            pipeline.render_draft(tampered, observations, metadata)
+        metadata["date"] = "2026-09-15\ncover: injected"
+        with self.assertRaisesRegex(pipeline.PipelineError, "date"):
+            pipeline.render_draft(manifest, observations, metadata)
+
+    def test_private_draft_and_article_staging_are_idempotent_and_protect_human_edits(self):
+        self.write_jpeg("camera.jpg")
+        manifest = pipeline.prepare_local(self.input, self.workspace, self.batch)
+        observations = {"batch": self.batch, "photos": [{
+            "source_sha256": manifest["photos"][0]["source_sha256"],
+            "derivative_sha256": manifest["photos"][0]["derivative_sha256"],
+            "alt": "可见的蓝色区域",
+            "caption": "蓝色区域",
+            "observation": "可见蓝色区域。",
+        }]}
+        metadata = {
+            "article_id": "test-trip",
+            "title": "测试旅行",
+            "date": "2026-09-15",
+            "location": "公开城市级地点",
+            "coordinates": {"lat": 30.0, "lng": 120.0},
+            "description": "基于已核验画面整理的测试记录。",
+            "tags": ["摄影"],
+        }
+        draft_path = pipeline.write_draft(self.workspace, manifest, observations, metadata)
+        self.assertTrue(draft_path.is_file())
+        self.assertEqual(draft_path, pipeline.write_draft(self.workspace, manifest, observations, metadata))
+
+        repo = self.tmp / "repo"
+        (repo / "src" / "content" / "travel").mkdir(parents=True)
+        with self.assertRaises(pipeline.AuthorizationError):
+            pipeline.stage_article(repo, self.workspace, manifest, observations, metadata, approve_publish_article=False)
+        article = pipeline.stage_article(repo, self.workspace, manifest, observations, metadata, approve_publish_article=True)
+        self.assertTrue(article.is_file())
+        self.assertEqual(article, pipeline.stage_article(repo, self.workspace, manifest, observations, metadata, approve_publish_article=True))
+        article.write_text(article.read_text(encoding="utf-8") + "人工编辑\n", encoding="utf-8")
+        with self.assertRaisesRegex(pipeline.PipelineError, "human edits"):
+            pipeline.stage_article(repo, self.workspace, manifest, observations, metadata, approve_publish_article=True)
+
+    def test_incremental_oss_splits_deterministically_and_legacy_still_rejects_total(self):
+        sources = {
+            "travel/test-batch/a.jpg": jpeg_bytes() + b"a",
+            "travel/test-batch/b.jpg": jpeg_bytes() + b"b",
+            "travel/test-batch/c.jpg": jpeg_bytes() + b"c",
+        }
+        batch_limit = max(len(value) for value in sources.values())
+        with patch.object(pipeline, "MAX_BATCH_BYTES", batch_limit):
+            with self.assertRaisesRegex(pipeline.PipelineError, "batch"):
+                pipeline.prepare_oss(FakeBucket(sources), self.tmp / "legacy", self.batch, approve_remote_read=True)
+            workspace = self.tmp / "incremental"
+            manifest = pipeline.prepare_oss_incremental(
+                FakeBucket(sources), workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+
+        plan = json.loads((workspace / "incremental-plan.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(plan["rounds"]), 3)
+        self.assertEqual(len(manifest["photos"]), 3)
+        self.assertTrue((workspace / "manifest.json").is_file())
+        self.assertTrue(all(round_["total_bytes"] <= batch_limit for round_ in plan["rounds"]))
+        self.assertEqual(
+            [photo["source_key"] for photo in manifest["photos"]],
+            sorted(sources),
+        )
+
+    def test_incremental_resume_skips_completed_round_downloads(self):
+        sources = {
+            "travel/test-batch/a.jpg": jpeg_bytes() + b"a",
+            "travel/test-batch/b.jpg": jpeg_bytes() + b"b",
+            "travel/test-batch/c.jpg": jpeg_bytes() + b"c",
+        }
+        bucket = FakeBucket(sources)
+        batch_limit = max(len(value) for value in sources.values())
+        original_get = bucket.get_object
+
+        def interrupt_second_round(key: str, headers=None):
+            if key.endswith("b.jpg"):
+                raise OSError("interrupted fixture")
+            return original_get(key, headers=headers)
+
+        with patch.object(pipeline, "MAX_BATCH_BYTES", batch_limit):
+            bucket.get_object = interrupt_second_round
+            with self.assertRaisesRegex(pipeline.PipelineError, "source download"):
+                pipeline.prepare_oss_incremental(
+                    bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+                )
+            self.assertTrue((self.workspace / "incremental-rounds" / "0001-manifest.json").is_file())
+            self.assertFalse((self.workspace / "manifest.json").exists())
+            first_run_calls = list(bucket.get_calls)
+            bucket.get_object = original_get
+            manifest = pipeline.prepare_oss_incremental(
+                bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+
+        self.assertEqual(len(manifest["photos"]), 3)
+        self.assertEqual(bucket.get_calls[len(first_run_calls):], ["travel/test-batch/b.jpg", "travel/test-batch/c.jpg"])
+
+    def test_incremental_rejects_source_snapshot_changes_before_get(self):
+        base = {
+            "travel/test-batch/a.jpg": jpeg_bytes() + b"a",
+            "travel/test-batch/b.jpg": jpeg_bytes() + b"b",
+        }
+        changes = {
+            "key": lambda bucket: (bucket.objects.pop("travel/test-batch/b.jpg"), bucket.objects.__setitem__("travel/test-batch/c.jpg", FakeObject("travel/test-batch/c.jpg", base["travel/test-batch/b.jpg"]))),
+            "size": lambda bucket: setattr(bucket.objects["travel/test-batch/a.jpg"], "size", len(base["travel/test-batch/a.jpg"]) + 1),
+            "etag": lambda bucket: setattr(bucket.objects["travel/test-batch/a.jpg"], "etag", "0" * 32),
+            "count": lambda bucket: bucket.objects.__setitem__("travel/test-batch/c.jpg", FakeObject("travel/test-batch/c.jpg", jpeg_bytes() + b"c")),
+        }
+        for name, change in changes.items():
+            with self.subTest(name=name):
+                workspace = self.tmp / f"snapshot-{name}"
+                bucket = FakeBucket(base)
+                pipeline.prepare_oss_incremental(bucket, workspace, self.batch, approve_remote_read=True, approve_incremental=True)
+                change(bucket)
+                bucket.get_calls.clear()
+                with self.assertRaisesRegex(pipeline.PipelineError, "snapshot"):
+                    pipeline.prepare_oss_incremental(bucket, workspace, self.batch, approve_remote_read=True, approve_incremental=True)
+                self.assertEqual(bucket.get_calls, [])
+
+    def test_incremental_rejects_a_tampered_plan_key_outside_its_exact_prefix(self):
+        sources = {"travel/test-batch/a.jpg": jpeg_bytes()}
+        pipeline.prepare_oss_incremental(
+            FakeBucket(sources), self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+        )
+        plan_path = self.workspace / "incremental-plan.json"
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+        plan["sources"][0]["key"] = "travel/other/a.jpg"
+        plan_path.write_text(json.dumps(plan), encoding="utf-8")
+        bucket = FakeBucket(sources)
+        with self.assertRaisesRegex(pipeline.PipelineError, "source key"):
+            pipeline.prepare_oss_incremental(
+                bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+        self.assertEqual(bucket.get_calls, [])
+
+    def test_incremental_plan_preserves_uppercase_etags_and_rejects_header_injection(self):
+        key = "travel/test-batch/a.jpg"
+        uppercase_etag = "A" * 32
+        source = {"key": key, "size": 1, "etag": f'"{uppercase_etag}"'}
+        plan = {
+            "incremental_plan_version": 1,
+            "batch": self.batch,
+            "source_prefix": pipeline.source_prefix(self.batch),
+            "sources": [source],
+            "rounds": pipeline._partition_incremental_sources([{"key": key, "size": 1, "etag": uppercase_etag}]),
+        }
+
+        pipeline._validate_incremental_plan(plan, self.batch)
+
+        self.assertEqual(plan["sources"][0]["etag"], uppercase_etag)
+        with self.assertRaisesRegex(pipeline.PipelineError, "valid ETag"):
+            pipeline._source_etag(types.SimpleNamespace(etag=f'"{uppercase_etag}\\r\\nIf-Match: injected"'))
+
+    def test_incremental_uses_quoted_case_sensitive_if_match_and_rejects_mismatch(self):
+        key = "travel/test-batch/a.jpg"
+        data = jpeg_bytes()
+        uppercase_etag = "A" * 32
+        bucket = FakeBucket({key: data})
+        bucket.objects[key].etag = uppercase_etag
+        bucket.objects[key].size = len(data) + 1
+        bucket.get_headers = []
+        original_get = bucket.get_object
+
+        def record_get(key: str, headers=None):
+            bucket.get_headers.append(headers)
+            return original_get(key, headers=headers)
+
+        bucket.get_object = record_get
+        with self.assertRaisesRegex(pipeline.PipelineError, "size"):
+            pipeline.prepare_oss_incremental(
+                bucket, self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+        self.assertEqual(bucket.get_headers, [{"If-Match": f'"{uppercase_etag}"'}])
+        self.assertFalse((self.workspace / "manifest.json").exists())
+        with self.assertRaises(RuntimeError) as caught:
+            bucket.get_object(key, headers={"If-Match": f'"{"B" * 32}"'})
+        self.assertEqual(caught.exception.status, 412)
+
+    def test_incremental_refuses_corrupt_or_manual_derivatives(self):
+        source = jpeg_bytes() + b"source"
+        digest = hashlib.sha256(source).hexdigest()
+        manual_workspace = self.tmp / "manual"
+        manual_path = manual_workspace / "derivatives" / pipeline.derivative_key(self.batch, digest)
+        manual_path.parent.mkdir(parents=True)
+        manual_path.write_bytes(b"human file")
+        with self.assertRaisesRegex(pipeline.PipelineError, "overwrite"):
+            pipeline.prepare_oss_incremental(
+                FakeBucket({"travel/test-batch/a.jpg": source}),
+                manual_workspace,
+                self.batch,
+                approve_remote_read=True,
+                approve_incremental=True,
+            )
+
+        manifest = pipeline.prepare_oss_incremental(
+            FakeBucket({"travel/test-batch/a.jpg": source}), self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+        )
+        (self.workspace / manifest["photos"][0]["local_derivative"]).write_bytes(b"corrupt")
+        with self.assertRaisesRegex(pipeline.PipelineError, "local derivative"):
+            pipeline.prepare_oss_incremental(
+                FakeBucket({"travel/test-batch/a.jpg": source}), self.workspace, self.batch, approve_remote_read=True, approve_incremental=True
+            )
+
+
+if __name__ == "__main__":
+    unittest.main()
