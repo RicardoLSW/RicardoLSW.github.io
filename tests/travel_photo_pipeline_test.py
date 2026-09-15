@@ -5,7 +5,9 @@ import importlib.util
 import json
 import os
 import shutil
+import sys
 import tempfile
+import types
 import unittest
 from io import BytesIO
 from pathlib import Path
@@ -34,9 +36,11 @@ class FakeBucket:
         self.objects = {key: FakeObject(key, value) for key, value in (objects or {}).items()}
         self.puts: list[tuple[str, bytes, dict[str, str]]] = []
         self.list_calls: list[str | None] = []
+        self.list_prefixes: list[str] = []
         self.get_calls: list[str] = []
 
     def list_objects(self, prefix: str, continuation_token: str | None = None):
+        self.list_prefixes.append(prefix)
         self.list_calls.append(continuation_token)
         keys = sorted(key for key in self.objects if key.startswith(prefix))
         start = int(continuation_token or "0")
@@ -181,6 +185,117 @@ class TravelPhotoPipelineTests(unittest.TestCase):
         with patch.dict(os.environ, {}, clear=True):
             with self.assertRaisesRegex(pipeline.PipelineError, "missing OSS credentials"):
                 pipeline._oss_bucket_from_environment()
+
+    def test_oss_preserves_source_case_for_exact_list_and_get(self):
+        batch = "SuZhou"
+        bucket = FakeBucket(
+            {
+                "travel/SuZhou/a.jpg": jpeg_bytes(),
+                "travel/suzhou/not-this-batch.jpg": jpeg_bytes((12, 8)),
+            }
+        )
+
+        manifest = pipeline.prepare_oss(bucket, self.workspace, batch, approve_remote_read=True)
+
+        self.assertEqual(manifest["batch"], batch)
+        self.assertEqual(bucket.list_prefixes, ["travel/SuZhou/"])
+        self.assertEqual(bucket.get_calls, ["travel/SuZhou/a.jpg"])
+        self.assertEqual(manifest["photos"][0]["derivative_key"], f"blog-images/suzhou~{batch.encode().hex()}/v1-{manifest['photos'][0]['source_sha256']}.jpg")
+
+    def test_oss_wrong_case_never_reads_a_different_source_batch(self):
+        bucket = FakeBucket({"travel/suzhou/a.jpg": jpeg_bytes()})
+
+        with self.assertRaisesRegex(pipeline.PipelineError, "exact batch prefix"):
+            pipeline.prepare_oss(bucket, self.workspace, "SuZhou", approve_remote_read=True)
+
+        self.assertEqual(bucket.list_prefixes, ["travel/SuZhou/"])
+        self.assertEqual(bucket.get_calls, [])
+
+    def test_case_sensitive_batch_mapping_is_windows_safe_and_article_staging_refuses_cross_batch_replacement(self):
+        self.write_jpeg("camera.jpg")
+        lower = pipeline.prepare_local(self.input, self.workspace, "suzhou")
+        upper_workspace = self.tmp / "upper-workspace"
+        upper = pipeline.prepare_local(self.input, upper_workspace, "SuZhou")
+        self.assertNotEqual(lower["photos"][0]["derivative_key"].casefold(), upper["photos"][0]["derivative_key"].casefold())
+
+        def observations(manifest):
+            photo = manifest["photos"][0]
+            return {"batch": manifest["batch"], "photos": [{
+                "source_sha256": photo["source_sha256"],
+                "derivative_sha256": photo["derivative_sha256"],
+                "alt": "可见的蓝色区域",
+                "caption": "蓝色区域",
+                "observation": "可见蓝色区域。",
+            }]}
+
+        metadata = {
+            "article_id": "suzhou-note",
+            "title": "测试旅行",
+            "date": "2026-09-15",
+            "location": "公开城市级地点",
+            "coordinates": {"lat": 30.0, "lng": 120.0},
+            "description": "基于已核验画面整理的测试记录。",
+            "tags": ["摄影"],
+        }
+        repo = self.tmp / "repo"
+        (repo / "src" / "content" / "travel").mkdir(parents=True)
+        pipeline.stage_article(repo, self.workspace, lower, observations(lower), metadata, approve_publish_article=True)
+        with self.assertRaisesRegex(pipeline.PipelineError, "refusing to replace"):
+            pipeline.stage_article(repo, upper_workspace, upper, observations(upper), metadata, approve_publish_article=True)
+
+    def test_oss_rejects_listed_keys_outside_the_exact_case_sensitive_prefix(self):
+        bucket = FakeBucket()
+        outside = FakeObject("travel/suzhou/a.jpg", jpeg_bytes())
+
+        def untrusted_list(prefix: str, continuation_token: str | None = None):
+            bucket.list_prefixes.append(prefix)
+            return type("Result", (), {"object_list": [outside], "next_continuation_token": None, "is_truncated": False})()
+
+        bucket.list_objects = untrusted_list
+        with self.assertRaisesRegex(pipeline.PipelineError, "outside the exact travel batch prefix"):
+            pipeline.prepare_oss(bucket, self.workspace, "SuZhou", approve_remote_read=True)
+        self.assertEqual(bucket.get_calls, [])
+
+    def test_oss_403_download_failure_is_redacted(self):
+        bucket = FakeBucket({"travel/test-batch/a.jpg": jpeg_bytes()})
+
+        class ForbiddenError(RuntimeError):
+            status = 403
+
+            def __str__(self):
+                return "private-object-name and signed-request-details"
+
+        def forbidden_get(key: str):
+            raise ForbiddenError()
+
+        bucket.get_object = forbidden_get
+        with self.assertRaises(pipeline.PipelineError) as caught:
+            pipeline.prepare_oss(bucket, self.workspace, self.batch, approve_remote_read=True)
+        self.assertIn("403", str(caught.exception))
+        self.assertNotIn("private-object-name", str(caught.exception))
+        self.assertNotIn("signed-request-details", str(caught.exception))
+
+    def test_oss_environment_accepts_paired_aliases_and_selects_ram_or_sts_auth(self):
+        auth_calls = []
+        fake_oss2 = types.SimpleNamespace(
+            Auth=lambda key_id, secret: auth_calls.append(("ram", key_id, secret)) or ("ram", key_id, secret),
+            StsAuth=lambda key_id, secret, token: auth_calls.append(("sts", key_id, secret, token)) or ("sts", key_id, secret, token),
+            Bucket=lambda auth, endpoint, bucket: (auth, endpoint, bucket),
+        )
+        with patch.dict(sys.modules, {"oss2": fake_oss2}):
+            with patch.dict(os.environ, {"OSS_ACCESS_KEY_ID": "LTAI-standard", "OSS_ACCESS_KEY_SECRET": "standard-secret"}, clear=True):
+                auth, endpoint, bucket = pipeline._oss_bucket_from_environment()
+            self.assertEqual((auth[0], endpoint, bucket), ("ram", pipeline.OSS_ENDPOINT, pipeline.OSS_BUCKET_NAME))
+            with patch.dict(os.environ, {"AccessKey_ID": "legacy-id", "AccessKey_Secret": "legacy-secret", "OSS_SECURITY_TOKEN": "temporary-token"}, clear=True):
+                auth, _, _ = pipeline._oss_bucket_from_environment()
+            self.assertEqual(auth[0], "sts")
+            with patch.dict(os.environ, {"OSS_ACCESS_KEY_ID": "standard-id", "AccessKey_Secret": "legacy-secret"}, clear=True):
+                with self.assertRaisesRegex(pipeline.PipelineError, "mixed or incomplete"):
+                    pipeline._oss_bucket_from_environment()
+            with patch.dict(os.environ, {"OSS_ACCESS_KEY_ID": "STS-identifiable", "OSS_ACCESS_KEY_SECRET": "secret"}, clear=True):
+                with self.assertRaisesRegex(pipeline.PipelineError, "STS credential requires"):
+                    pipeline._oss_bucket_from_environment()
+        self.assertEqual([call[0] for call in auth_calls], ["ram", "sts"])
 
     def test_prepare_rejects_raw_and_leaves_no_partial_outputs(self):
         self.write_jpeg("valid.jpg")

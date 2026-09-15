@@ -37,7 +37,8 @@ MAX_IMAGE_PAGES = 1
 DERIVATIVE_LONG_EDGE = 2400
 PREVIEW_LONG_EDGE = 768
 JPEG_QUALITY = 86
-BATCH_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,79}$")
+SOURCE_BATCH_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{0,79}$")
+ARTICLE_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,79}$")
 RAW_EXTENSIONS = {".arw", ".cr2", ".cr3", ".dng", ".nef", ".orf", ".raf", ".rw2"}
 JPEG_EXTENSIONS = {".jpg", ".jpeg"}
 
@@ -59,9 +60,27 @@ class ObjectAlreadyExistsError(RuntimeError):
 
 
 def validate_batch(batch: str) -> str:
-    if not BATCH_PATTERN.fullmatch(batch):
-        raise PipelineError("batch must be a lowercase slug (letters, digits, hyphens) with no path separators")
+    """Validate a case-sensitive source batch without normalizing its spelling."""
+    if not SOURCE_BATCH_PATTERN.fullmatch(batch):
+        raise PipelineError("batch must be an ASCII slug (letters, digits, hyphens) with no path separators")
     return batch
+
+
+def validate_article_id(article_id: str) -> str:
+    """Keep article filenames lowercase so they remain safe on Windows filesystems."""
+    if not ARTICLE_ID_PATTERN.fullmatch(article_id):
+        raise PipelineError("article_id must be a lowercase slug (letters, digits, hyphens) with no path separators")
+    return article_id
+
+
+def storage_batch(batch: str) -> str:
+    """Map case-sensitive source batches to an injective Windows-safe public namespace."""
+    source_batch = validate_batch(batch)
+    if source_batch == source_batch.lower():
+        return source_batch
+    # `~` is not permitted in source batches, so the encoded namespace cannot
+    # collide with any existing all-lowercase batch. Hex preserves every byte.
+    return f"{source_batch.lower()}~{source_batch.encode('ascii').hex()}"
 
 
 def source_prefix(batch: str) -> str:
@@ -69,7 +88,7 @@ def source_prefix(batch: str) -> str:
 
 
 def derivative_prefix(batch: str) -> str:
-    return f"blog-images/{validate_batch(batch)}/"
+    return f"blog-images/{storage_batch(batch)}/"
 
 
 def derivative_key(batch: str, source_digest: str) -> str:
@@ -345,6 +364,13 @@ def prepare_local(input_directory: Path, workspace: Path, batch: str) -> dict[st
     return _prepare_sources(((photo.relative_to(input_directory.resolve()).as_posix(), photo) for photo in photos), workspace, batch)
 
 
+def _raise_redacted_oss_error(stage: str, error: Exception) -> None:
+    """Convert SDK failures to safe display errors without exposing request details."""
+    if getattr(error, "status", None) == 403:
+        raise PipelineError(f"OSS {stage} was forbidden (HTTP 403); request details are redacted") from None
+    raise PipelineError(f"OSS {stage} failed") from error
+
+
 def _oss_list(bucket: Any, prefix: str) -> Iterable[Any]:
     token: str | None = None
     pages = 0
@@ -352,10 +378,13 @@ def _oss_list(bucket: Any, prefix: str) -> Iterable[Any]:
         pages += 1
         if pages > MAX_OSS_PAGES:
             raise PipelineError("OSS pagination exceeds the page maximum")
-        if hasattr(bucket, "list_objects_v2"):
-            result = bucket.list_objects_v2(prefix=prefix, continuation_token=token)
-        else:  # Test doubles and older SDKs.
-            result = bucket.list_objects(prefix=prefix, continuation_token=token)
+        try:
+            if hasattr(bucket, "list_objects_v2"):
+                result = bucket.list_objects_v2(prefix=prefix, continuation_token=token)
+            else:  # Test doubles and older SDKs.
+                result = bucket.list_objects(prefix=prefix, continuation_token=token)
+        except Exception as error:
+            _raise_redacted_oss_error("list", error)
         for item in getattr(result, "object_list", []):
             yield item
         token = getattr(result, "next_continuation_token", None)
@@ -401,7 +430,12 @@ def prepare_oss(bucket: Any, workspace: Path, batch: str, *, approve_remote_read
                 raise PipelineError("RAW input is not supported in v1")
             if suffix not in JPEG_EXTENSIONS:
                 raise PipelineError("only JPEG input is supported in v1")
-            data = _read_limited(bucket.get_object(key), MAX_SOURCE_BYTES, "source photo")
+            try:
+                data = _read_limited(bucket.get_object(key), MAX_SOURCE_BYTES, "source photo")
+            except PipelineError:
+                raise
+            except Exception as error:
+                _raise_redacted_oss_error("source download", error)
             downloaded_total_bytes += len(data)
             if downloaded_total_bytes > MAX_BATCH_BYTES:
                 raise PipelineError(f"batch exceeds the {MAX_BATCH_BYTES} byte maximum")
@@ -454,11 +488,12 @@ def upload_derivatives(
         raise AuthorizationError("upload preflight requires --approve-remote-read")
     validate_manifest(manifest, workspace, verify_derivatives=True)
     batch = validate_batch(str(manifest.get("batch", "")))
+    mapped_batch = storage_batch(batch)
     uploaded: list[str] = []
     skipped_existing: list[str] = []
     for photo in manifest.get("photos", []):
         key = str(photo.get("derivative_key", ""))
-        if not key.startswith(derivative_prefix(batch)) or not re.fullmatch(rf"blog-images/{re.escape(batch)}/v1-[a-f0-9]{{64}}\.jpg", key):
+        if not key.startswith(derivative_prefix(batch)) or not re.fullmatch(rf"blog-images/{re.escape(mapped_batch)}/v1-[a-f0-9]{{64}}\.jpg", key):
             raise PipelineError("manifest contains an invalid derivative key")
         derivative = _workspace_file(workspace.resolve(), str(photo.get("local_derivative", "")))
         if derivative.is_symlink() or not derivative.is_file():
@@ -532,7 +567,7 @@ def _validate_observations(manifest: dict[str, Any], observations: dict[str, Any
 def render_draft(manifest: dict[str, Any], observations: dict[str, Any], metadata: dict[str, Any]) -> str:
     """Render a truthful, unpublished Astro entry from externally reviewed observations."""
     observation_map = _validate_observations(manifest, observations)
-    article_id = validate_batch(_require_nonempty(metadata.get("article_id"), "article_id"))
+    article_id = validate_article_id(_require_nonempty(metadata.get("article_id"), "article_id"))
     title = _require_nonempty(metadata.get("title"), "title")
     published_date = _require_nonempty(metadata.get("date"), "date")
     try:
@@ -636,7 +671,7 @@ def stage_article(
     """Explicitly promote an approved staged entry while refusing human-edited replacements."""
     if not approve_publish_article:
         raise AuthorizationError("article promotion requires --approve-publish-article")
-    article_id = validate_batch(_require_nonempty(metadata.get("article_id"), "article_id"))
+    article_id = validate_article_id(_require_nonempty(metadata.get("article_id"), "article_id"))
     draft = render_draft(manifest, observations, metadata).encode("utf-8")
     state_path = _workspace_file(workspace.resolve(), "publication-state.json")
     if state_path.exists():
@@ -683,12 +718,27 @@ def _validate_private_workspace(path: Path, repo_root: Path) -> None:
         raise PipelineError("workspace and raw input must stay outside src/ and public/")
 
 
-def _oss_bucket_from_environment() -> Any:
-    access_key_id = os.environ.get("OSS_ACCESS_KEY_ID")
-    access_key_secret = os.environ.get("OSS_ACCESS_KEY_SECRET")
-    security_token = os.environ.get("OSS_SECURITY_TOKEN")
-    if not access_key_id or not access_key_secret:
+def _oss_credentials_from_environment() -> tuple[str, str, str | None]:
+    """Read one complete credential convention from this process only, never mixing aliases."""
+    standard = (os.environ.get("OSS_ACCESS_KEY_ID"), os.environ.get("OSS_ACCESS_KEY_SECRET"))
+    legacy = (os.environ.get("AccessKey_ID"), os.environ.get("AccessKey_Secret"))
+    has_standard = any(standard)
+    has_legacy = any(legacy)
+    if not has_standard and not has_legacy:
         raise PipelineError("missing OSS credentials in environment; no network request was made")
+    if has_standard and has_legacy:
+        raise PipelineError("OSS credentials are mixed or incomplete; configure exactly one complete credential pair")
+    access_key_id, access_key_secret = standard if has_standard else legacy
+    if not access_key_id or not access_key_secret:
+        raise PipelineError("OSS credentials are mixed or incomplete; configure exactly one complete credential pair")
+    security_token = os.environ.get("OSS_SECURITY_TOKEN")
+    if not security_token and access_key_id.upper().startswith("STS"):
+        raise PipelineError("STS credential requires OSS_SECURITY_TOKEN; no network request was made")
+    return access_key_id, access_key_secret, security_token
+
+
+def _oss_bucket_from_environment() -> Any:
+    access_key_id, access_key_secret, security_token = _oss_credentials_from_environment()
     try:
         import oss2
     except ImportError as error:

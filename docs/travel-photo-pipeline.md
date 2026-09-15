@@ -2,7 +2,7 @@
 
 `tools/travel_photo_pipeline.py` 是可复用的本地优先流水线。它只接受 JPEG（v1 明确拒绝 RAW），对图像做方向校正、删除全部 EXIF/GPS/XMP/ICC/注释元数据并压缩为 JPEG。本次接入验收未执行真实 OSS 请求、上传或生成真实游记；没有真实批次名时绝不把示例当作输入。
 
-所有原图下载、预览图、清单、观察记录和草稿都在 Git 忽略的 `var/travel-photo-pipeline/<batch>/`。不要把它放到 `src/` 或 `public/`，不要提交原图、密钥、签名 URL 或草稿。流水线最多处理 100 张、单张输入/派生图最多 128 MiB、整批最多 512 MiB、最多 40,000,000 像素和一页；拒绝路径穿越和符号链接。源端只读，不写入或删除 `travel/<batch>/` 中的原图。
+所有原图下载、预览图、清单、观察记录和草稿都在 Git 忽略的 `var/travel-photo-pipeline/<workspace-id>/`。不要把它放到 `src/` 或 `public/`，不要提交原图、密钥、签名 URL 或草稿。`<workspace-id>` 必须在本机文件系统中唯一；对于包含大写字母的源批次，使用下文的派生存储映射作为目录名，不能仅以大小写区分目录。流水线最多处理 100 张、单张输入/派生图最多 128 MiB、整批最多 512 MiB、最多 40,000,000 像素和一页；拒绝路径穿越和符号链接。源端只读，不写入或删除 `travel/<batch>/` 中的原图。
 
 展示图长边上限 2400 px，模型预览长边上限 768 px，不放大小图；宽高按 EXIF 旋转和缩放后的实际结果记录。源图仅解码和本地处理，不经过 OSS 在线图片处理。整批原始字节快照最多 512 MiB，加上解码缓冲，建议 Runtime 为本任务保留至少 2 GiB 可用内存。
 
@@ -12,10 +12,10 @@
 
 ```bash
 python -m pip install -r tools/requirements-travel-photo-pipeline.txt
-python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo-pipeline/<batch> prepare --source local --batch <batch> --input <private-local-jpeg-directory>
+python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo-pipeline/<workspace-id> prepare --source local --batch <batch> --input <private-local-jpeg-directory>
 ```
 
-`<batch>` 必须是小写 slug，流水线只会推导精确的 `travel/<batch>/` 和 `blog-images/<batch>/` 前缀。输出对象名固定为 `blog-images/<batch>/v1-<原图SHA-256>.jpg`；完全相同的清单、派生图和草稿重复运行是幂等成功，任何不同字节都会安全拒绝覆盖。工作区会绑定一个 batch 和原图快照；输入新增、替换或改批次时请新建工作区，避免混入未经重新观察的版本。
+`<batch>` 是区分大小写的 ASCII slug（字母、数字、连字符），源端前缀始终按原样推导为精确的 `travel/<batch>/`，绝不转换为小写。例如 `SuZhou` 只会列举/读取 `travel/SuZhou/`，不会读取 `travel/suzhou/`。为兼容已有小写批次，小写 `<batch>` 的派生前缀仍是 `blog-images/<batch>/`；含大写字母时，派生存储映射为 `<batch 的小写形式>~<原始 ASCII 字节的十六进制>`，例如 `SuZhou` 映射为 `suzhou~53755a686f75`。因此大小写不同的源批次在 OSS、文章内容和 Windows 的私有工作目录都不会碰撞。输出对象名固定为 `blog-images/<storage-batch>/v1-<原图SHA-256>.jpg`；完全相同的清单、派生图和草稿重复运行是幂等成功，任何不同字节都会安全拒绝覆盖。工作区会绑定原始大小写的 batch 和原图快照；输入新增、替换或改批次时请新建工作区，避免混入未经重新观察的版本。文章 `article_id` 独立于 batch，但仍必须是小写 slug；若另一批次指定已存在的文章 ID，内容字节不同时会拒绝覆盖，保护人工编辑和跨批次隔离。
 
 ### 明确授权门槛
 
@@ -25,12 +25,19 @@ python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo
 | --- | --- | --- |
 | 远程读取原图 | `prepare --source oss --approve-remote-read` | 仅分页 list/get `travel/<batch>/`；无标志或缺凭据时在请求前失败。 |
 | 模型/人工查看派生小图 | `observation-template --approve-model-view` | 仅生成待审模板；执行者必须逐张实际查看 `previews/` 后才填记录。 |
-| 远程上传派生图 | `upload --approve-remote-read --approve-upload --approve-publish-photo` | 仅向 `blog-images/<batch>/` PUT；上传前读取精确既有对象并核对完整 SHA-256。 |
+| 远程上传派生图 | `upload --approve-remote-read --approve-upload --approve-publish-photo` | 仅向该源批次映射的 `blog-images/<storage-batch>/` PUT；上传前读取精确既有对象并核对完整 SHA-256。 |
 | 发布站内文章 | `stage-article --approve-publish-article` | 单独将已经审核的草稿写入内容集合；不上传图片、不改变 OSS ACL。 |
 
 `upload` 通过 `x-oss-forbid-overwrite: true` 请求服务端禁止覆盖；若对象已存在，只有下载并逐字节计算 SHA-256 后完全一致才作为幂等成功，否则失败。它不调用删除、ACL 或 IAM API。上传可能导致公开可访问，因此必须同时显式给出 `--approve-publish-photo`。所有命令都不接受密钥作为参数，也不打印环境变量。
 
-OSS 固定使用 bucket `figure-b` 和 endpoint `https://oss-cn-shanghai.aliyuncs.com`。运行前由账户所有者/管理员在私有环境中配置短期 STS 凭据 `OSS_ACCESS_KEY_ID`、`OSS_ACCESS_KEY_SECRET`、`OSS_SECURITY_TOKEN`；不要在命令行、聊天、Git 或 Markdown 中放密钥。凭据过期后由管理员刷新环境。当前候选公开图片域名为 `https://figure-b.ricardolsw.com`：仅完成过默认 TLS 证书/主机名校验（TLS 1.2，证书至 2026-11-03 23:59:59 GMT），**没有**验证匿名对象读取、CORS 或防盗链策略，不能据此声称图片已可公开访问。
+OSS 固定使用 bucket `figure-b` 和 endpoint `https://oss-cn-shanghai.aliyuncs.com`。运行时只读取**当前进程环境**，不接受密钥命令行参数，也不打印环境变量。账户所有者/管理员在私有运行时配置以下两组之一，ID 与 Secret 必须成对出现，绝不能混配：
+
+| 凭据对 | 可选项 | 认证方式 |
+| --- | --- | --- |
+| `OSS_ACCESS_KEY_ID` + `OSS_ACCESS_KEY_SECRET` | `OSS_SECURITY_TOKEN` | 有 token 使用 `oss2.StsAuth`；无 token 使用 `oss2.Auth`（长期 RAM AccessKey）。 |
+| `AccessKey_ID` + `AccessKey_Secret` | `OSS_SECURITY_TOKEN` | 与上一行相同，兼容既有别名。 |
+
+STS 身份在可辨识但缺少 `OSS_SECURITY_TOKEN` 时会在网络请求前安全拒绝；不配置任意完整对、配置半对，或同时配置两种命名对同样会在网络请求前失败。不要在命令行、聊天、Git 或 Markdown 中放密钥。STS 到期由管理员刷新；长期 RAM AccessKey 也必须使用仅限本批精确前缀的最小权限并由所有者轮换。当前候选公开图片域名为 `https://figure-b.ricardolsw.com`：仅完成过默认 TLS 证书/主机名校验（TLS 1.2，证书至 2026-11-03 23:59:59 GMT），**没有**验证匿名对象读取、CORS 或防盗链策略，不能据此声称图片已可公开访问。
 
 管理员为运行时配置环境时使用完整映射替换，并先保留/合并既有需要的变量：
 
@@ -38,20 +45,24 @@ OSS 固定使用 bucket `figure-b` 和 endpoint `https://oss-cn-shanghai.aliyunc
 multica agent env set 0a95da5a-3203-48d3-9913-afd189aafedb --custom-env-file <private-json>
 ```
 
-该操作仅限账户所有者/管理员；`<private-json>` 不属于仓库或任务附件。私有完整映射的最小形状仅含 STS 三元组占位符：
+该操作仅限账户所有者/管理员；`<private-json>` 不属于仓库或任务附件。私有完整映射可使用以下任一占位形状；不要同时放入两组 ID/Secret：
 
 ```json
-{"OSS_ACCESS_KEY_ID":"<sts-access-key-id>","OSS_ACCESS_KEY_SECRET":"<sts-access-key-secret>","OSS_SECURITY_TOKEN":"<sts-security-token>"}
+{"OSS_ACCESS_KEY_ID":"<access-key-id>","OSS_ACCESS_KEY_SECRET":"<access-key-secret>","OSS_SECURITY_TOKEN":"<sts-security-token-if-applicable>"}
 ```
 
-三项必须作为同一次短期 STS 凭据配置；该命令替换完整映射，管理员须合并所需既有变量。到期、泄露或撤销时立即删除/撤销旧 STS 并以新的三元组刷新；绝不把真实值放入聊天、argv、Git 或文档。
+```json
+{"AccessKey_ID":"<access-key-id>","AccessKey_Secret":"<access-key-secret>"}
+```
+
+该命令替换完整映射，管理员须合并所需既有变量。到期、泄露或撤销时立即删除/撤销旧凭据并安全刷新；绝不把真实值放入聊天、argv、Git 或文档。
 
 ### 观察、草稿与发布
 
 准备完成后，取得模型查看授权，再生成一对一模板：
 
 ```bash
-python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo-pipeline/<batch> observation-template --approve-model-view
+python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo-pipeline/<workspace-id> observation-template --approve-model-view
 ```
 
 执行者必须实际打开每张本地 `previews/*.jpg`，在 `observations.json` 中为每个 `source_sha256` 和 `derivative_sha256` 填写 `alt`、`caption`、`observation`。只能描述画面中可见内容；不要猜测地点、人物身份、关系、时间或感受。脚本强制记录与清单一一对应、摘要匹配且文本非空，但真实性仍由审阅者负责。
@@ -69,16 +80,16 @@ python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo
 使用经过审阅的观察 JSON 和人工提供的城市级元数据（标题、日期、地点、公开坐标、简介、标签）先生成私有草稿：
 
 ```bash
-python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo-pipeline/<batch> draft --metadata <private-metadata.json> --observations <private-observations.json>
+python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo-pipeline/<workspace-id> draft --metadata <private-metadata.json> --observations <private-observations.json>
 ```
 
-生成的 `cover` 和 `gallery.src` 是无查询参数的稳定 URL：`https://figure-b.ricardolsw.com/blog-images/<batch>/v1-<sha256>.jpg`，绝不使用签名 URL。Astro 内容 schema 只接受本地 Astro 资产或该精确的 HTTPS 域名/路径格式；组件为远程 JPEG 保留尺寸、懒加载和图库行为。
+生成的 `cover` 和 `gallery.src` 是无查询参数的稳定 URL：`https://figure-b.ricardolsw.com/blog-images/<storage-batch>/v1-<sha256>.jpg`，绝不使用签名 URL。Astro 内容 schema 只接受本地 Astro 资产或该精确的 HTTPS 域名/路径格式；组件为远程 JPEG 保留尺寸、懒加载和图库行为。
 
 私有草稿默认是 `draft: true`，不会触及站点内容。审阅并确认后才可执行 `stage-article --metadata <private-metadata.json> --observations <private-observations.json> --approve-publish-article`。它按批次保存 `article_id` 和文章 SHA-256；目标文章已存在但字节不同时拒绝覆盖，保护人工编辑。只有提供所有真实元数据和单独 `--approve-publish-article` 才会写入 `src/content/travel/`。本次没有真实批次，因此没有运行此命令、没有写入真实文章，也没有上传照片。
 
 ### 最小 RAM 权限策略（占位模板）
 
-为专用 STS/RAM 身份授予最小权限。以下是**每个实际 `<batch>` 单独替换后**交给账户管理员核验的 JSON 占位模板（请按阿里云账户/区域 ARN 格式复核后再应用）：
+为专用 STS/RAM 身份授予最小权限。以下是**每个实际源 `<batch>` 及其 `<storage-batch>` 映射单独替换后**交给账户管理员核验的 JSON 占位模板；`travel/<batch>/` 必须保留源端原始大小写（请按阿里云账户/区域 ARN 格式复核后再应用）：
 
 ```json
 {
@@ -95,19 +106,19 @@ python tools/travel_photo_pipeline.py --repo-root . --workspace var/travel-photo
       "Action": ["oss:GetObject"],
       "Resource": [
         "acs:oss:*:*:figure-b/travel/<batch>/*",
-        "acs:oss:*:*:figure-b/blog-images/<batch>/*"
+        "acs:oss:*:*:figure-b/blog-images/<storage-batch>/*"
       ]
     },
     {
       "Effect": "Allow",
       "Action": ["oss:PutObject"],
-      "Resource": ["acs:oss:*:*:figure-b/blog-images/<batch>/*"]
+      "Resource": ["acs:oss:*:*:figure-b/blog-images/<storage-batch>/*"]
     }
   ]
 }
 ```
 
-上传前使用精确 `GetObject` 核验，不需要 `blog-images` 的 List 权限。绝不授予 `DeleteObject`、任何 ACL/Policy 写入、bucket 管理、RAM/IAM 用户/角色/策略变更或 STS 签发权限。角色/用户的继承策略、群组策略和资源策略均可能叠加权限，管理员必须审计后确认不存在额外的 `GetObject`、`PutObject`、删除或 ACL 权限。不要使用主账号 AccessKey；管理员配置并刷新短期 STS 环境变量，运行者只读取进程环境。
+上传前使用精确 `GetObject` 核验，不需要 `blog-images` 的 List 权限。绝不授予 `DeleteObject`、任何 ACL/Policy 写入、bucket 管理、RAM/IAM 用户/角色/策略变更或 STS 签发权限。角色/用户的继承策略、群组策略和资源策略均可能叠加权限，管理员必须审计后确认不存在额外的 `GetObject`、`PutObject`、删除或 ACL 权限。不要使用主账号 AccessKey；管理员只能在私有运行时配置最小权限的 RAM 凭据或短期 STS 凭据，STS 到期由管理员刷新，运行者只读取当前进程环境。
 
 ### 验证
 
