@@ -1,24 +1,20 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
-import LegacyPostLayout from '../layouts/LegacyPostLayout.astro';
 import TravelPostLayout from '../layouts/TravelPostLayout.astro';
 import { toPathSegments } from '../lib/site';
 
 export async function getStaticPaths() {
-  const legacy = await getCollection('legacy');
   const travel = await getCollection('travel', ({ data }) => !data.draft && Boolean(data.legacyPath));
-  return [
-    ...legacy.map((entry) => ({ params: { path: toPathSegments(entry.data.legacyPath).join('/') }, props: { legacyEntry: entry } })),
-    ...travel.map((entry) => ({ params: { path: toPathSegments(entry.data.legacyPath!).join('/') }, props: { travelEntry: entry } })),
-  ];
+  return travel.map((entry) => ({
+    params: { path: toPathSegments(entry.data.legacyPath!).join('/') },
+    props: { entry },
+  }));
 }
 
 interface Props {
-  legacyEntry?: CollectionEntry<'legacy'>;
-  travelEntry?: CollectionEntry<'travel'>;
+  entry: CollectionEntry<'travel'>;
 }
-const { legacyEntry, travelEntry } = Astro.props;
+const { entry } = Astro.props;
 ---
 
-{legacyEntry && <LegacyPostLayout entry={legacyEntry} />}
-{travelEntry && <TravelPostLayout entry={travelEntry} canonicalPath={`/travel/${travelEntry.id}/`} />}
+<TravelPostLayout entry={entry} canonicalPath={`/travel/${entry.id}/`} />

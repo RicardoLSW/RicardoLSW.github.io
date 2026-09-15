@@ -1,6 +1,6 @@
 # Ricardo 的旅行影像日志
 
-这是一个部署在 GitHub Pages 的 Astro 静态站点，以旅行照片为主，同时保留原 Jekyll 博客的技术文章。
+这是一个部署在 GitHub Pages 的 Astro 静态站点，专注记录旅行照片与沿途笔记。
 
 ## 技术栈
 
@@ -23,10 +23,10 @@ npm run dev
 常用验证命令：
 
 ```bash
-npm test
 npm run check
 npm run build
-# 或一次执行全部验证
+npm test
+# 或一次执行全部验证（先生成站点，再验证输出）
 npm run verify
 ```
 
@@ -75,10 +75,9 @@ draft: false
 
 ## URL 兼容
 
-- 19 篇旧技术文章迁移到 `src/content/legacy/`，并通过 `legacyPath` 继续生成原来的 `/:categories/:title/` URL。
 - 重庆原 URL `/旅游/重庆/` 仍可访问，Canonical 指向新的 `/travel/chongqing/`。
-- `/posts/`、`/categories/`、`/tags/`、`/about/` 和 `/404.html` 均由 Astro 生成。
-- 原文中的外部图片 URL 保持不变。Charles 文章中的第三方破解下载与激活信息已移除并替换为官网链接。
+- `/travel/`、`/travel/map/`、`/tags/`、`/about/` 和 `/404.html` 均由 Astro 生成。
+- 旧技术文章及其归档路由不再随站点发布。
 
 ## 部署
 
