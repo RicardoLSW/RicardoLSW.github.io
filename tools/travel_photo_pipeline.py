@@ -37,7 +37,8 @@ MAX_IMAGE_PAGES = 1
 DERIVATIVE_LONG_EDGE = 2400
 PREVIEW_LONG_EDGE = 768
 JPEG_QUALITY = 86
-BATCH_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,79}$")
+SOURCE_BATCH_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{0,79}$")
+ARTICLE_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,79}$")
 RAW_EXTENSIONS = {".arw", ".cr2", ".cr3", ".dng", ".nef", ".orf", ".raf", ".rw2"}
 JPEG_EXTENSIONS = {".jpg", ".jpeg"}
 
@@ -59,9 +60,27 @@ class ObjectAlreadyExistsError(RuntimeError):
 
 
 def validate_batch(batch: str) -> str:
-    if not BATCH_PATTERN.fullmatch(batch):
-        raise PipelineError("batch must be a lowercase slug (letters, digits, hyphens) with no path separators")
+    """Validate a case-sensitive source batch without normalizing its spelling."""
+    if not SOURCE_BATCH_PATTERN.fullmatch(batch):
+        raise PipelineError("batch must be an ASCII slug (letters, digits, hyphens) with no path separators")
     return batch
+
+
+def validate_article_id(article_id: str) -> str:
+    """Keep article filenames lowercase so they remain safe on Windows filesystems."""
+    if not ARTICLE_ID_PATTERN.fullmatch(article_id):
+        raise PipelineError("article_id must be a lowercase slug (letters, digits, hyphens) with no path separators")
+    return article_id
+
+
+def storage_batch(batch: str) -> str:
+    """Map case-sensitive source batches to an injective Windows-safe public namespace."""
+    source_batch = validate_batch(batch)
+    if source_batch == source_batch.lower():
+        return source_batch
+    # `~` is not permitted in source batches, so the encoded namespace cannot
+    # collide with any existing all-lowercase batch. Hex preserves every byte.
+    return f"{source_batch.lower()}~{source_batch.encode('ascii').hex()}"
 
 
 def source_prefix(batch: str) -> str:
@@ -69,7 +88,7 @@ def source_prefix(batch: str) -> str:
 
 
 def derivative_prefix(batch: str) -> str:
-    return f"blog-images/{validate_batch(batch)}/"
+    return f"blog-images/{storage_batch(batch)}/"
 
 
 def derivative_key(batch: str, source_digest: str) -> str:
@@ -203,19 +222,51 @@ def _encode_derivative(raw: bytes, source_name: str) -> tuple[bytes, bytes, int,
         raise PipelineError("could not create sanitized JPEG") from error
 
 
-def _write_immutable(path: Path, data: bytes) -> bool:
-    """Create once; an exact existing byte sequence is an idempotent success."""
-    path.parent.mkdir(parents=True, exist_ok=True)
+def _existing_immutable_file_matches(path: Path, data: bytes) -> bool:
+    """Read an existing immutable target without following unsafe replacement types."""
+    if path.is_symlink() or not path.is_file():
+        raise PipelineError(f"refusing unsafe existing path: {path}")
     try:
-        with path.open("xb") as output:
-            output.write(data)
+        existing = path.read_bytes()
+    except OSError as error:
+        raise PipelineError(f"could not read existing immutable file: {path}") from error
+    if existing == data:
         return True
-    except FileExistsError:
-        if path.is_symlink() or not path.is_file():
-            raise PipelineError(f"refusing unsafe existing path: {path}")
-        if sha256_bytes(path.read_bytes()) == sha256_bytes(data):
+    raise PipelineError(f"refusing to overwrite existing file with different content: {path}")
+
+
+def _write_immutable(path: Path, data: bytes) -> bool:
+    """Publish complete bytes once; matching existing content is an idempotent success."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+        temporary = Path(temporary_name)
+        try:
+            output = os.fdopen(descriptor, "wb")
+        except Exception:
+            os.close(descriptor)
+            raise
+        with output:
+            output.write(data)
+            output.flush()
+            os.fsync(output.fileno())
+        try:
+            os.link(temporary, path)
+        except FileExistsError:
+            _existing_immutable_file_matches(path, data)
             return False
-        raise PipelineError(f"refusing to overwrite existing file with different content: {path}")
+        return True
+    except PipelineError:
+        raise
+    except OSError as error:
+        raise PipelineError(f"could not immutably write file: {path}") from error
+    finally:
+        if temporary is not None:
+            try:
+                temporary.unlink()
+            except FileNotFoundError:
+                pass
 
 
 def _workspace_file(workspace: Path, name: str) -> Path:
@@ -345,6 +396,13 @@ def prepare_local(input_directory: Path, workspace: Path, batch: str) -> dict[st
     return _prepare_sources(((photo.relative_to(input_directory.resolve()).as_posix(), photo) for photo in photos), workspace, batch)
 
 
+def _raise_redacted_oss_error(stage: str, error: Exception) -> None:
+    """Convert SDK failures to safe display errors without exposing request details."""
+    if getattr(error, "status", None) == 403:
+        raise PipelineError(f"OSS {stage} was forbidden (HTTP 403); request details are redacted") from None
+    raise PipelineError(f"OSS {stage} failed") from error
+
+
 def _oss_list(bucket: Any, prefix: str) -> Iterable[Any]:
     token: str | None = None
     pages = 0
@@ -352,10 +410,13 @@ def _oss_list(bucket: Any, prefix: str) -> Iterable[Any]:
         pages += 1
         if pages > MAX_OSS_PAGES:
             raise PipelineError("OSS pagination exceeds the page maximum")
-        if hasattr(bucket, "list_objects_v2"):
-            result = bucket.list_objects_v2(prefix=prefix, continuation_token=token)
-        else:  # Test doubles and older SDKs.
-            result = bucket.list_objects(prefix=prefix, continuation_token=token)
+        try:
+            if hasattr(bucket, "list_objects_v2"):
+                result = bucket.list_objects_v2(prefix=prefix, continuation_token=token or "")
+            else:  # Test doubles and older SDKs.
+                result = bucket.list_objects(prefix=prefix, continuation_token=token)
+        except Exception as error:
+            _raise_redacted_oss_error("list", error)
         for item in getattr(result, "object_list", []):
             yield item
         token = getattr(result, "next_continuation_token", None)
@@ -401,7 +462,12 @@ def prepare_oss(bucket: Any, workspace: Path, batch: str, *, approve_remote_read
                 raise PipelineError("RAW input is not supported in v1")
             if suffix not in JPEG_EXTENSIONS:
                 raise PipelineError("only JPEG input is supported in v1")
-            data = _read_limited(bucket.get_object(key), MAX_SOURCE_BYTES, "source photo")
+            try:
+                data = _read_limited(bucket.get_object(key), MAX_SOURCE_BYTES, "source photo")
+            except PipelineError:
+                raise
+            except Exception as error:
+                _raise_redacted_oss_error("source download", error)
             downloaded_total_bytes += len(data)
             if downloaded_total_bytes > MAX_BATCH_BYTES:
                 raise PipelineError(f"batch exceeds the {MAX_BATCH_BYTES} byte maximum")
@@ -412,6 +478,298 @@ def prepare_oss(bucket: Any, workspace: Path, batch: str, *, approve_remote_read
     except Exception:
         shutil.rmtree(raw_dir, ignore_errors=True)
         raise
+
+
+ETAG_PATTERN = re.compile(r"^[A-Fa-f0-9]{32}(?:-[1-9][0-9]*)?$")
+INCREMENTAL_PLAN_NAME = "incremental-plan.json"
+INCREMENTAL_ROUNDS_DIRECTORY = "incremental-rounds"
+INCREMENTAL_PROGRESS_DIRECTORY = "incremental-progress"
+
+
+def _normalize_etag(value: Any, error_message: str) -> str:
+    """Accept an optional RFC entity-tag wrapper without changing opaque tag bytes."""
+    etag = str(value)
+    if etag.startswith('"') or etag.endswith('"'):
+        if len(etag) < 2 or not (etag.startswith('"') and etag.endswith('"')):
+            raise PipelineError(error_message)
+        etag = etag[1:-1]
+    # The restricted OSS form excludes whitespace/control characters and header injection.
+    if not ETAG_PATTERN.fullmatch(etag):
+        raise PipelineError(error_message)
+    return etag
+
+
+def _source_etag(item: Any) -> str:
+    """Accept only normal OSS entity tags that are safe to send in If-Match."""
+    return _normalize_etag(getattr(item, "etag", ""), "OSS source is missing a valid ETag; incremental preparation cannot continue")
+
+
+def _if_match_header(etag: str) -> str:
+    """Format a validated opaque ETag as an RFC strong entity-tag."""
+    return f'"{_normalize_etag(etag, "incremental plan has an invalid source ETag")}"'
+
+
+def _snapshot_oss_sources(bucket: Any, batch: str) -> list[dict[str, Any]]:
+    """Capture the exact, case-sensitive OSS inventory without downloading objects."""
+    prefix = source_prefix(batch)
+    sources: list[dict[str, Any]] = []
+    keys: set[str] = set()
+    for item in _oss_list(bucket, prefix):
+        key = str(getattr(item, "key", ""))
+        try:
+            size = int(getattr(item, "size", -1))
+        except (TypeError, ValueError) as error:
+            raise PipelineError("OSS source has an invalid size") from error
+        if key.startswith(prefix) and key.endswith("/") and size == 0:
+            continue
+        if not _is_valid_oss_key(key, prefix):
+            raise PipelineError("OSS returned a key outside the exact travel batch prefix")
+        if key in keys:
+            raise PipelineError("OSS listing contains duplicate source keys")
+        keys.add(key)
+        if len(keys) > MAX_PHOTO_COUNT:
+            raise PipelineError(f"photo count exceeds the {MAX_PHOTO_COUNT} maximum")
+        if size < 1 or size > MAX_SOURCE_BYTES or size > MAX_BATCH_BYTES:
+            raise PipelineError(f"source photo exceeds the {MAX_SOURCE_BYTES} byte maximum")
+        suffix = Path(key).suffix.lower()
+        if suffix in RAW_EXTENSIONS:
+            raise PipelineError("RAW input is not supported in v1")
+        if suffix not in JPEG_EXTENSIONS:
+            raise PipelineError("only JPEG input is supported in v1")
+        sources.append({"key": key, "size": size, "etag": _source_etag(item)})
+    if not sources:
+        raise PipelineError("no OSS photos were found under the exact batch prefix")
+    return sorted(sources, key=lambda source: str(source["key"]))
+
+
+def _partition_incremental_sources(sources: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Partition the fixed source inventory in key order without exceeding one round's budget."""
+    rounds: list[dict[str, Any]] = []
+    current: list[str] = []
+    total_bytes = 0
+    for source in sources:
+        size = int(source["size"])
+        if current and total_bytes + size > MAX_BATCH_BYTES:
+            rounds.append({"index": len(rounds) + 1, "total_bytes": total_bytes, "sources": current})
+            current, total_bytes = [], 0
+        current.append(str(source["key"]))
+        total_bytes += size
+    if current:
+        rounds.append({"index": len(rounds) + 1, "total_bytes": total_bytes, "sources": current})
+    return rounds
+
+
+def _incremental_plan_path(workspace: Path) -> Path:
+    return _workspace_file(workspace, INCREMENTAL_PLAN_NAME)
+
+
+def _incremental_round_path(workspace: Path, index: int) -> Path:
+    return _workspace_file(workspace, f"{INCREMENTAL_ROUNDS_DIRECTORY}/{index:04d}-manifest.json")
+
+
+def _incremental_progress_path(workspace: Path, name: str) -> Path:
+    return _workspace_file(workspace, f"{INCREMENTAL_PROGRESS_DIRECTORY}/{name}.json")
+
+
+def _json_bytes(value: dict[str, Any]) -> bytes:
+    return (json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
+
+
+def _validate_incremental_plan(plan: dict[str, Any], batch: str) -> None:
+    """Reject altered plans, including any key that is not in this exact source prefix."""
+    prefix = source_prefix(batch)
+    if plan.get("incremental_plan_version") != 1 or plan.get("batch") != batch or plan.get("source_prefix") != prefix:
+        raise PipelineError("incremental plan does not match the requested exact batch")
+    sources = plan.get("sources")
+    if not isinstance(sources, list) or not sources or len(sources) > MAX_PHOTO_COUNT:
+        raise PipelineError("incremental plan has an invalid source inventory")
+    normalized: list[dict[str, Any]] = []
+    keys: set[str] = set()
+    for source in sources:
+        if not isinstance(source, dict):
+            raise PipelineError("incremental plan has an invalid source inventory")
+        key = source.get("key")
+        size = source.get("size")
+        etag = source.get("etag")
+        if not isinstance(key, str) or not _is_valid_oss_key(key, prefix) or key in keys:
+            raise PipelineError("incremental plan has an invalid source key")
+        if not isinstance(size, int) or size < 1 or size > MAX_SOURCE_BYTES or size > MAX_BATCH_BYTES:
+            raise PipelineError("incremental plan has an invalid source size")
+        if not isinstance(etag, str):
+            raise PipelineError("incremental plan has an invalid source ETag")
+        normalized_etag = _normalize_etag(etag, "incremental plan has an invalid source ETag")
+        # Retain opaque ETag case while accepting a legacy/hand-written outer wrapper.
+        source["etag"] = normalized_etag
+        keys.add(key)
+        normalized.append({"key": key, "size": size, "etag": normalized_etag})
+    if normalized != sorted(normalized, key=lambda source: str(source["key"])):
+        raise PipelineError("incremental plan source inventory is not deterministically ordered")
+    expected_rounds = _partition_incremental_sources(normalized)
+    if plan.get("rounds") != expected_rounds:
+        raise PipelineError("incremental plan rounds do not match the fixed source inventory")
+
+
+def _load_or_create_incremental_plan(workspace: Path, batch: str, snapshot: list[dict[str, Any]]) -> dict[str, Any]:
+    """Create once or require the remote inventory to be byte-for-byte identical on resume."""
+    path = _incremental_plan_path(workspace)
+    if path.exists():
+        plan = _load_json(path)
+        _validate_incremental_plan(plan, batch)
+        if plan["sources"] != snapshot:
+            raise PipelineError("OSS source snapshot changed since the incremental plan was created; use a new workspace")
+        return plan
+    plan = {
+        "incremental_plan_version": 1,
+        "batch": batch,
+        "source_prefix": source_prefix(batch),
+        "sources": snapshot,
+        "rounds": _partition_incremental_sources(snapshot),
+    }
+    _validate_incremental_plan(plan, batch)
+    _write_immutable(path, _json_bytes(plan))
+    return plan
+
+
+def _validate_incremental_photo(photo: dict[str, Any], expected: dict[str, Any]) -> None:
+    if photo.get("source_key") != expected["key"] or photo.get("source_size") != expected["size"] or photo.get("source_etag") != expected["etag"]:
+        raise PipelineError("incremental round does not match its fixed source snapshot")
+    preview_digest = photo.get("preview_sha256")
+    if not isinstance(preview_digest, str) or not re.fullmatch(r"[a-f0-9]{64}", preview_digest):
+        raise PipelineError("incremental round has an invalid preview_sha256")
+
+
+def _validate_incremental_round(
+    manifest: dict[str, Any], workspace: Path, batch: str, round_spec: dict[str, Any], sources_by_key: dict[str, dict[str, Any]]
+) -> None:
+    validate_manifest(manifest, workspace, verify_derivatives=True)
+    if manifest.get("batch") != batch or manifest.get("incremental_round") != round_spec["index"]:
+        raise PipelineError("incremental round manifest does not match its plan")
+    expected_sources = [sources_by_key[key] for key in round_spec["sources"]]
+    photos = manifest.get("photos", [])
+    if len(photos) != len(expected_sources):
+        raise PipelineError("incremental round manifest has an incomplete photo set")
+    for photo, expected in zip(photos, expected_sources, strict=True):
+        _validate_incremental_photo(photo, expected)
+        preview = _workspace_file(workspace, str(photo["local_preview"]))
+        if sha256_bytes(preview.read_bytes()) != photo["preview_sha256"]:
+            raise PipelineError("local preview does not match the incremental round manifest")
+
+
+def _download_incremental_source(bucket: Any, source: dict[str, Any]) -> bytes:
+    key = str(source["key"])
+    expected_size = int(source["size"])
+    try:
+        data = _read_limited(bucket.get_object(key, headers={"If-Match": _if_match_header(str(source["etag"]))}), expected_size, "source photo")
+    except PipelineError:
+        raise
+    except Exception as error:
+        _raise_redacted_oss_error("source download", error)
+    if len(data) != expected_size:
+        raise PipelineError("downloaded source size does not match the incremental plan")
+    return data
+
+
+def _prepare_incremental_round(
+    bucket: Any, workspace: Path, batch: str, round_spec: dict[str, Any], sources_by_key: dict[str, dict[str, Any]], seen_digests: set[str]
+) -> dict[str, Any]:
+    """Process one fixed-size round one source at a time; raw data never persists locally."""
+    photos: list[dict[str, Any]] = []
+    round_digests = set(seen_digests)
+    for key in round_spec["sources"]:
+        source = sources_by_key[key]
+        raw = _download_incremental_source(bucket, source)
+        source_path = Path(key)
+        inspect_jpeg(source_path, raw)
+        source_digest = sha256_bytes(raw)
+        if source_digest in round_digests:
+            raise PipelineError("duplicate source content would reuse an immutable derivative key")
+        round_digests.add(source_digest)
+        derivative, preview, width, height = _encode_derivative(raw, source_path.name)
+        derivative_key_name = derivative_key(batch, source_digest)
+        local_derivative = f"derivatives/{derivative_key_name}"
+        local_preview = f"previews/{source_digest}.jpg"
+        _write_immutable(_workspace_file(workspace, local_derivative), derivative)
+        _write_immutable(_workspace_file(workspace, local_preview), preview)
+        photos.append(
+            {
+                "source_key": key,
+                "source_size": source["size"],
+                "source_etag": source["etag"],
+                "source_sha256": source_digest,
+                "derivative_key": derivative_key_name,
+                "derivative_sha256": sha256_bytes(derivative),
+                "preview_sha256": sha256_bytes(preview),
+                "local_derivative": local_derivative,
+                "local_preview": local_preview,
+                "width": width,
+                "height": height,
+            }
+        )
+    manifest = {"version": 1, "batch": batch, "incremental_round": round_spec["index"], "photos": photos}
+    _validate_incremental_round(manifest, workspace, batch, round_spec, sources_by_key)
+    _write_immutable(_incremental_round_path(workspace, int(round_spec["index"])), _json_bytes(manifest))
+    _write_immutable(
+        _incremental_progress_path(workspace, f"{int(round_spec['index']):04d}-complete"),
+        _json_bytes({"round": round_spec["index"], "manifest_sha256": sha256_bytes(_json_bytes(manifest))}),
+    )
+    return manifest
+
+
+def _validate_incremental_root(manifest: dict[str, Any], workspace: Path, batch: str, plan: dict[str, Any]) -> None:
+    validate_manifest(manifest, workspace, verify_derivatives=True)
+    expected_sources = plan["sources"]
+    photos = manifest.get("photos", [])
+    if manifest.get("batch") != batch or manifest.get("incremental") is not True or len(photos) != len(expected_sources):
+        raise PipelineError("root manifest is not the complete incremental batch")
+    for photo, expected in zip(photos, expected_sources, strict=True):
+        _validate_incremental_photo(photo, expected)
+        preview = _workspace_file(workspace, str(photo["local_preview"]))
+        if sha256_bytes(preview.read_bytes()) != photo["preview_sha256"]:
+            raise PipelineError("local preview does not match the root manifest")
+
+
+def prepare_oss_incremental(
+    bucket: Any, workspace: Path, batch: str, *, approve_remote_read: bool = False, approve_incremental: bool = False
+) -> dict[str, Any]:
+    """Opt-in OSS preparation that fixes the inventory then safely resumes bounded rounds."""
+    if not approve_remote_read:
+        raise AuthorizationError("OSS preparation requires --approve-remote-read")
+    if not approve_incremental:
+        raise AuthorizationError("incremental preparation requires --approve-incremental")
+    batch = validate_batch(batch)
+    workspace = workspace.resolve()
+    snapshot = _snapshot_oss_sources(bucket, batch)
+    _bind_workspace_batch(workspace, batch)
+    plan = _load_or_create_incremental_plan(workspace, batch, snapshot)
+    manifest_path = _manifest_path(workspace)
+    if manifest_path.exists():
+        root_manifest = _load_json(manifest_path)
+        _validate_incremental_root(root_manifest, workspace, batch, plan)
+        return root_manifest
+    sources_by_key = {str(source["key"]): source for source in plan["sources"]}
+    completed_photos: list[dict[str, Any]] = []
+    seen_digests: set[str] = set()
+    for round_spec in plan["rounds"]:
+        round_path = _incremental_round_path(workspace, int(round_spec["index"]))
+        if round_path.exists():
+            round_manifest = _load_json(round_path)
+            _validate_incremental_round(round_manifest, workspace, batch, round_spec, sources_by_key)
+        else:
+            round_manifest = _prepare_incremental_round(bucket, workspace, batch, round_spec, sources_by_key, seen_digests)
+        for photo in round_manifest["photos"]:
+            digest = str(photo["source_sha256"])
+            if digest in seen_digests:
+                raise PipelineError("duplicate source content would reuse an immutable derivative key")
+            seen_digests.add(digest)
+            completed_photos.append(photo)
+    root_manifest = {"version": 1, "batch": batch, "incremental": True, "photos": completed_photos}
+    _validate_incremental_root(root_manifest, workspace, batch, plan)
+    _write_manifest(workspace, root_manifest)
+    _write_immutable(
+        _incremental_progress_path(workspace, "complete"),
+        _json_bytes({"manifest_sha256": sha256_bytes(_json_bytes(root_manifest)), "round_count": len(plan["rounds"])}),
+    )
+    return root_manifest
 
 
 def _is_missing_object(error: Exception) -> bool:
@@ -454,11 +812,12 @@ def upload_derivatives(
         raise AuthorizationError("upload preflight requires --approve-remote-read")
     validate_manifest(manifest, workspace, verify_derivatives=True)
     batch = validate_batch(str(manifest.get("batch", "")))
+    mapped_batch = storage_batch(batch)
     uploaded: list[str] = []
     skipped_existing: list[str] = []
     for photo in manifest.get("photos", []):
         key = str(photo.get("derivative_key", ""))
-        if not key.startswith(derivative_prefix(batch)) or not re.fullmatch(rf"blog-images/{re.escape(batch)}/v1-[a-f0-9]{{64}}\.jpg", key):
+        if not key.startswith(derivative_prefix(batch)) or not re.fullmatch(rf"blog-images/{re.escape(mapped_batch)}/v1-[a-f0-9]{{64}}\.jpg", key):
             raise PipelineError("manifest contains an invalid derivative key")
         derivative = _workspace_file(workspace.resolve(), str(photo.get("local_derivative", "")))
         if derivative.is_symlink() or not derivative.is_file():
@@ -532,7 +891,7 @@ def _validate_observations(manifest: dict[str, Any], observations: dict[str, Any
 def render_draft(manifest: dict[str, Any], observations: dict[str, Any], metadata: dict[str, Any]) -> str:
     """Render a truthful, unpublished Astro entry from externally reviewed observations."""
     observation_map = _validate_observations(manifest, observations)
-    article_id = validate_batch(_require_nonempty(metadata.get("article_id"), "article_id"))
+    article_id = validate_article_id(_require_nonempty(metadata.get("article_id"), "article_id"))
     title = _require_nonempty(metadata.get("title"), "title")
     published_date = _require_nonempty(metadata.get("date"), "date")
     try:
@@ -636,7 +995,7 @@ def stage_article(
     """Explicitly promote an approved staged entry while refusing human-edited replacements."""
     if not approve_publish_article:
         raise AuthorizationError("article promotion requires --approve-publish-article")
-    article_id = validate_batch(_require_nonempty(metadata.get("article_id"), "article_id"))
+    article_id = validate_article_id(_require_nonempty(metadata.get("article_id"), "article_id"))
     draft = render_draft(manifest, observations, metadata).encode("utf-8")
     state_path = _workspace_file(workspace.resolve(), "publication-state.json")
     if state_path.exists():
@@ -683,12 +1042,27 @@ def _validate_private_workspace(path: Path, repo_root: Path) -> None:
         raise PipelineError("workspace and raw input must stay outside src/ and public/")
 
 
-def _oss_bucket_from_environment() -> Any:
-    access_key_id = os.environ.get("OSS_ACCESS_KEY_ID")
-    access_key_secret = os.environ.get("OSS_ACCESS_KEY_SECRET")
-    security_token = os.environ.get("OSS_SECURITY_TOKEN")
-    if not access_key_id or not access_key_secret:
+def _oss_credentials_from_environment() -> tuple[str, str, str | None]:
+    """Read one complete credential convention from this process only, never mixing aliases."""
+    standard = (os.environ.get("OSS_ACCESS_KEY_ID"), os.environ.get("OSS_ACCESS_KEY_SECRET"))
+    legacy = (os.environ.get("AccessKey_ID"), os.environ.get("AccessKey_Secret"))
+    has_standard = any(standard)
+    has_legacy = any(legacy)
+    if not has_standard and not has_legacy:
         raise PipelineError("missing OSS credentials in environment; no network request was made")
+    if has_standard and has_legacy:
+        raise PipelineError("OSS credentials are mixed or incomplete; configure exactly one complete credential pair")
+    access_key_id, access_key_secret = standard if has_standard else legacy
+    if not access_key_id or not access_key_secret:
+        raise PipelineError("OSS credentials are mixed or incomplete; configure exactly one complete credential pair")
+    security_token = os.environ.get("OSS_SECURITY_TOKEN")
+    if not security_token and access_key_id.upper().startswith("STS"):
+        raise PipelineError("STS credential requires OSS_SECURITY_TOKEN; no network request was made")
+    return access_key_id, access_key_secret, security_token
+
+
+def _oss_bucket_from_environment() -> Any:
+    access_key_id, access_key_secret, security_token = _oss_credentials_from_environment()
     try:
         import oss2
     except ImportError as error:
@@ -708,6 +1082,8 @@ def main(argv: list[str] | None = None) -> int:
     prepare.add_argument("--source", choices=("local", "oss"), required=True)
     prepare.add_argument("--input", type=Path)
     prepare.add_argument("--approve-remote-read", action="store_true")
+    prepare.add_argument("--incremental", action="store_true", help="opt in to fixed-inventory bounded OSS rounds")
+    prepare.add_argument("--approve-incremental", action="store_true", help="confirm use of the incremental OSS workflow")
 
     observe = subcommands.add_parser("observation-template")
     observe.add_argument("--approve-model-view", action="store_true")
@@ -734,6 +1110,8 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "prepare":
             validate_batch(args.batch)
             if args.source == "local":
+                if args.incremental or args.approve_incremental:
+                    raise PipelineError("incremental preparation is supported only with --source oss")
                 if args.input is None:
                     raise PipelineError("prepare --source local requires --input")
                 _validate_private_workspace(args.input, repo_root)
@@ -741,7 +1119,19 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 if not args.approve_remote_read:
                     raise AuthorizationError("OSS preparation requires --approve-remote-read")
-                manifest = prepare_oss(_oss_bucket_from_environment(), workspace, args.batch, approve_remote_read=True)
+                bucket = _oss_bucket_from_environment()
+                if args.incremental:
+                    manifest = prepare_oss_incremental(
+                        bucket,
+                        workspace,
+                        args.batch,
+                        approve_remote_read=True,
+                        approve_incremental=args.approve_incremental,
+                    )
+                elif args.approve_incremental:
+                    raise PipelineError("--approve-incremental requires prepare --incremental")
+                else:
+                    manifest = prepare_oss(bucket, workspace, args.batch, approve_remote_read=True)
             print(json.dumps({"status": "prepared", "count": len(manifest["photos"])}, ensure_ascii=False))
         elif args.command == "observation-template":
             write_observation_template(workspace, _load_json(_manifest_path(workspace)), approve_model_view=args.approve_model_view)

@@ -4,7 +4,7 @@ import { z } from 'astro/zod';
 
 const hostedTravelImage = z
   .url()
-  .regex(/^https:\/\/figure-b\.ricardolsw\.com\/blog-images\/[a-z0-9][a-z0-9-]*\/v1-[a-f0-9]{64}\.jpg$/);
+  .regex(/^https:\/\/figure-b\.ricardolsw\.com\/blog-images\/[a-z0-9][a-z0-9-]*(?:~[a-f0-9]+)?\/v1-[a-f0-9]{64}\.jpg$/);
 
 const travel = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/travel' }),
