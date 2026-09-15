@@ -380,7 +380,7 @@ def _oss_list(bucket: Any, prefix: str) -> Iterable[Any]:
             raise PipelineError("OSS pagination exceeds the page maximum")
         try:
             if hasattr(bucket, "list_objects_v2"):
-                result = bucket.list_objects_v2(prefix=prefix, continuation_token=token)
+                result = bucket.list_objects_v2(prefix=prefix, continuation_token=token or "")
             else:  # Test doubles and older SDKs.
                 result = bucket.list_objects(prefix=prefix, continuation_token=token)
         except Exception as error:

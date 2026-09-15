@@ -102,6 +102,24 @@ class TravelPhotoPipelineTests(unittest.TestCase):
     def write_jpeg(self, name: str, data: bytes | None = None):
         (self.input / name).write_bytes(data or jpeg_bytes())
 
+    def test_oss_v2_first_page_uses_empty_string_token(self):
+        calls = []
+        next_token = "opaque-next+/="
+        prefix = pipeline.source_prefix("CaseBatch")
+
+        class V2Bucket:
+            def list_objects_v2(self, *, prefix, continuation_token):
+                calls.append((prefix, continuation_token))
+                first_page = len(calls) == 1
+                return types.SimpleNamespace(
+                    object_list=["first" if first_page else "second"],
+                    is_truncated=first_page,
+                    next_continuation_token=next_token if first_page else None,
+                )
+
+        self.assertEqual(list(pipeline._oss_list(V2Bucket(), prefix)), ["first", "second"])
+        self.assertEqual(calls, [(prefix, ""), (prefix, next_token)])
+
     def test_prepare_transposes_and_strips_all_exif(self):
         self.write_jpeg("camera.jpg", jpeg_bytes((20, 10), orientation=6))
 
