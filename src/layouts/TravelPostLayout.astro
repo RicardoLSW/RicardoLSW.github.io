@@ -16,13 +16,14 @@ const { Content } = await render(entry);
 const coverUrl = typeof entry.data.cover === 'string' ? entry.data.cover : entry.data.cover.src;
 const coverGalleryImage = entry.data.gallery?.find((item) => (typeof item.src === 'string' ? item.src : item.src.src) === coverUrl);
 const coverAlt = coverGalleryImage?.alt ?? `${entry.data.location}旅行照片`;
-const marker = [{
+const coordinates = entry.data.coordinates;
+const marker = coordinates ? [{
   title: entry.data.title,
   location: entry.data.location,
-  lat: entry.data.coordinates.lat,
-  lng: entry.data.coordinates.lng,
+  lat: coordinates.lat,
+  lng: coordinates.lng,
   href: `/travel/${entry.id}/`,
-}];
+}] : [];
 ---
 
 <BaseLayout
@@ -49,10 +50,12 @@ const marker = [{
       )}
       <div class="travel-hero-scrim"></div>
       <div class="travel-hero-copy">
-        <p class="coordinate-line" aria-label={`坐标 ${entry.data.coordinates.lat}, ${entry.data.coordinates.lng}`}>
-          {entry.data.coordinates.lat.toFixed(2)}° N / {entry.data.coordinates.lng.toFixed(2)}° E
-        </p>
-        <p class="eyebrow"><span>{entry.data.location}</span><time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time></p>
+        {coordinates && (
+          <p class="coordinate-line" aria-label={`坐标 ${coordinates.lat}, ${coordinates.lng}`}>
+            {coordinates.lat.toFixed(2)}° N / {coordinates.lng.toFixed(2)}° E
+          </p>
+        )}
+        <p class="eyebrow"><span>{entry.data.location}</span><time datetime={entry.data.date.toISOString()} aria-label={`拍摄日期 ${formatDate(entry.data.date)}`}>{formatDate(entry.data.date)}</time></p>
         <h1>{entry.data.title}</h1>
         <p>{entry.data.description}</p>
       </div>
@@ -80,12 +83,14 @@ const marker = [{
       </section>
     )}
 
-    <section class="article-map" aria-labelledby="article-map-title">
-      <div class="section-heading">
-        <div><p class="section-kicker" lang="en">Where</p><h2 id="article-map-title">抵达重庆</h2></div>
-        <p>仅使用城市级坐标标记目的地，不展示具体拍摄位置。</p>
-      </div>
-      <TripMap markers={marker} height="24rem" label={`${entry.data.location}位置地图`} />
-    </section>
+    {coordinates && (
+      <section class="article-map" aria-labelledby="article-map-title">
+        <div class="section-heading">
+          <div><p class="section-kicker" lang="en">Where</p><h2 id="article-map-title">抵达{entry.data.location}</h2></div>
+          <p>仅使用城市级坐标标记目的地，不展示具体拍摄位置。</p>
+        </div>
+        <TripMap markers={marker} height="24rem" label={`${entry.data.location}位置地图`} />
+      </section>
+    )}
   </article>
 </BaseLayout>

@@ -5,8 +5,8 @@ import { site } from '../lib/site';
 
 export async function GET(context: APIContext) {
   const items = (await getCollection('travel', ({ data }) => !data.draft))
-    .map((entry) => ({ title: entry.data.title, description: entry.data.description, pubDate: entry.data.date, link: `/travel/${entry.id}/` }))
-    .sort((a, b) => b.pubDate.valueOf() - a.pubDate.valueOf());
+    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+    .map((entry) => ({ title: entry.data.title, description: entry.data.description, pubDate: entry.data.publishedDate, link: `/travel/${entry.id}/` }));
 
   return rss({
     title: site.title,
