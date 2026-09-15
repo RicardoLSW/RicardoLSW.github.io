@@ -2,6 +2,11 @@
 title: "树影、桥洞与水上的灯"
 date: 2021-05-08
 location: "苏州市"
+# 城市级代表点，按苏州市政府公开坐标取约数；不是照片拍摄位置。
+# 来源：https://en.wikipedia.org/wiki/Suzhou
+coordinates:
+  lat: 31.3
+  lng: 120.62
 cover: "https://figure-b.ricardolsw.com/blog-images/suzhou~53755a686f75/v1-d9be048e6d90a6ea0d07fcf588a77191562199706ba8cf89a42b6a8b021b400e.jpg"
 description: "树影、水面、屋檐与灯光之间，一组苏州摄影随记。"
 tags: ["摄影", "苏州"]
