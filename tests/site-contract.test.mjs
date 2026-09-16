@@ -105,6 +105,15 @@ test('accepts only canonical hosted travel JPEG URLs while preserving local Astr
   assert.match(home, /<img src=\{image\.src\} width=\{image\.width\} height=\{image\.height\}/);
 });
 
+test('constrains both hosted and local homepage frames to the same two-row grid', () => {
+  const css = read('src', 'styles', 'global.css');
+
+  assert.match(css, /\.home-hero-frames\s*\{[^}]*grid-template-rows:\s*repeat\(2, minmax\(0, 1fr\)\)/s);
+  assert.match(css, /\.home-hero-frames > :is\(picture, img\)\s*\{[^}]*min-width:\s*0;[^}]*min-height:\s*0;[^}]*overflow:\s*hidden/s);
+  assert.match(css, /\.home-hero-frames > :is\(picture, img\):first-child\s*\{[^}]*grid-row:\s*1 \/ -1/s);
+  assert.match(css, /\.home-hero h1\s*\{[^}]*max-width:\s*7em;[^}]*font-size:\s*clamp\(2\.5rem, 5\.5vw, 5rem\)/s);
+});
+
 test('keeps travel-only RSS and tag pages reusable for future travel entries', () => {
   const rss = read('src', 'pages', 'rss.xml.ts');
   const tags = read('src', 'pages', 'tags', 'index.astro');
