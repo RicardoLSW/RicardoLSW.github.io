@@ -183,15 +183,47 @@ test('publishes the complete Suzhou essay with an authorized city marker and no 
   assert.doesNotMatch(item, /<pubDate>/);
 });
 
-test('shows the authorized Suzhou marker while preserving Chongqing markers', () => {
+test('publishes the approved Tianjin photo essay dated October 5, 2023', () => {
+  const post = read('src', 'content', 'travel', 'tianjin.md');
+  const page = read('dist', 'travel', 'tianjin', 'index.html');
+  const urls = [...post.matchAll(/- src: (https:\/\/figure-b\.ricardolsw\.com\/blog-images\/u~e5a4a9e6b4a5\/v1-[a-f0-9]{64}\.jpg)/g)].map((match) => match[1]);
+
+  assert.match(post, /date: 2023-10-05\n/);
+  assert.match(post, /draft: false\n/);
+  assert.match(post, /coordinates:\s*\n\s+lat: 39\.1336\s*\n\s+lng: 117\.2054/);
+  assert.doesNotMatch(post, /publishedDate:|source_key|localhost|OSSAccessKeyId|Signature=/);
+  assert.equal(urls.length, 28);
+  assert.equal(new Set(urls).size, 28);
+  assert.ok(post.includes(`cover: ${urls[0]}\n`));
+  assert.equal((page.match(/data-pswp-width=/g) ?? []).length, 28);
+  for (const url of urls) assert.ok(page.includes(url));
+  assert.match(page, /天津｜灯影与旧影/);
+  assert.match(page, /2023年国庆期间，天津的河畔灯影与展厅旧影，一同留在镜头里。/);
+  assert.match(page, /2023-10-05/);
+  assert.match(page, /非实际拍摄点/);
+  assert.match(page, /class="article-map"/);
+  for (const route of [['index.html'], ['travel', 'index.html'], ['tags', 'index.html']]) {
+    assert.match(read('dist', ...route), /\/travel\/tianjin\//);
+  }
+  assert.match(read('dist', 'sitemap-0.xml'), /\/travel\/tianjin\//);
+  const items = read('dist', 'rss.xml').match(/<item>[^]*?<\/item>/g) ?? [];
+  const item = items.find((item) => item.includes('<title>天津｜灯影与旧影</title>'));
+  assert.ok(item);
+  assert.doesNotMatch(item, /<pubDate>/);
+});
+
+test('shows the authorized Tianjin and Suzhou markers while preserving Chongqing markers', () => {
   for (const route of [['index.html'], ['travel', 'map', 'index.html']]) {
     const page = read('dist', ...route);
     const payload = page.match(/data-markers="([^"]*)"/)?.[1];
     assert.ok(payload);
     const markers = JSON.parse(payload.replaceAll('&#34;', '"').replaceAll('&quot;', '"').replaceAll('&amp;', '&'));
-    assert.equal(markers.length, 2);
+    assert.equal(markers.length, 3);
     const chongqing = markers.find((marker) => marker.href === '/travel/chongqing/');
     const suzhou = markers.find((marker) => marker.href === '/travel/suzhou/');
+    const tianjin = markers.find((marker) => marker.href === '/travel/tianjin/');
+    assert.equal(tianjin.lat, 39.1336);
+    assert.equal(tianjin.lng, 117.2054);
     assert.equal(chongqing.lat, 29.56301);
     assert.equal(chongqing.lng, 106.55156);
     assert.equal(suzhou.lat, 31.3);
